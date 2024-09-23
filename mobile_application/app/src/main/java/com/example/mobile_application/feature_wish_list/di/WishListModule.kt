@@ -1,13 +1,13 @@
-package com.kanyideveloper.joomia.feature_wish_list.di
+package com.example.mobile_application.feature_wish_list.di
 
 import android.content.Context
 import androidx.room.Room
 import com.google.gson.Gson
-import com.kanyideveloper.joomia.feature_wish_list.data.local.WishlistDatabase
-import com.kanyideveloper.joomia.feature_wish_list.data.repository.WishlistRepositoryImpl
-import com.kanyideveloper.joomia.feature_wish_list.data.util.Converters
-import com.kanyideveloper.joomia.feature_wish_list.domain.repository.WishlistRepository
-import com.kanyideveloper.joomia.feature_wish_list.util.Constant.WISHLIST_DATABASE
+import com.example.mobile_application.feature_wish_list.data.local.WishlistDatabase
+import com.example.mobile_application.feature_wish_list.data.repository.WishlistRepositoryImpl
+import com.example.mobile_application.feature_wish_list.data.util.Converters
+import com.example.mobile_application.feature_wish_list.domain.repository.WishlistRepository
+import com.example.mobile_application.feature_wish_list.util.Constant.WISHLIST_DATABASE
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

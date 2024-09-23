@@ -1,11 +1,11 @@
 package com.example.mobile_application.feature_products.presentation.product_details
 
-import android.widget.RatingBar
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,8 +27,9 @@ import com.example.mobile_application.feature_products.domain.model.Product
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.StepSize
 import com.example.mobile_application.feature_wish_list.domain.model.Wishlist
-import com.example.mobile_application.feature_wish_list.presentation.wishlist.WishlistViewModel
+import com.example.mobile_application.feature_wish_list.presentation.WishlistViewModel
 import androidx.navigation.NavController
+import com.example.mobile_application.feature_wish_list.data.mapper.toWishlistRating
 import com.gowtham.ratingbar.RatingBarConfig
 import com.gowtham.ratingbar.RatingBarStyle
 

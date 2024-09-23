@@ -1,4 +1,4 @@
-package com.kanyideveloper.joomia.feature_wish_list.data.local
+package com.example.mobile_application.feature_wish_list.data.local
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao

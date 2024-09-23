@@ -1,11 +1,11 @@
-package com.kanyideveloper.joomia.feature_wish_list.data.repository
+package com.example.mobile_application.feature_wish_list.data.repository
 
 import androidx.lifecycle.LiveData
-import com.kanyideveloper.joomia.feature_wish_list.data.local.WishlistDao
-import com.kanyideveloper.joomia.feature_wish_list.data.local.WishlistEntity
-import com.kanyideveloper.joomia.feature_wish_list.data.mapper.toEntity
-import com.kanyideveloper.joomia.feature_wish_list.domain.model.Wishlist
-import com.kanyideveloper.joomia.feature_wish_list.domain.repository.WishlistRepository
+import com.example.mobile_application.feature_wish_list.data.local.WishlistDao
+import com.example.mobile_application.feature_wish_list.data.local.WishlistEntity
+import com.example.mobile_application.feature_wish_list.data.mapper.toEntity
+import com.example.mobile_application.feature_wish_list.domain.model.Wishlist
+import com.example.mobile_application.feature_wish_list.domain.repository.WishlistRepository
 
 class WishlistRepositoryImpl(
     private val wishlistDao: WishlistDao

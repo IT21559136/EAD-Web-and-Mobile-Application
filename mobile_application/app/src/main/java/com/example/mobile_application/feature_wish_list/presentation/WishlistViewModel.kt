@@ -1,11 +1,11 @@
-package com.kanyideveloper.joomia.feature_wish_list.presentation.wishlist
+package com.example.mobile_application.feature_wish_list.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kanyideveloper.joomia.core.util.UiEvents
-import com.kanyideveloper.joomia.feature_wish_list.domain.model.Wishlist
-import com.kanyideveloper.joomia.feature_wish_list.domain.repository.WishlistRepository
+import com.example.mobile_application.core.util.UiEvents
+import com.example.mobile_application.feature_wish_list.domain.model.Wishlist
+import com.example.mobile_application.feature_wish_list.domain.repository.WishlistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

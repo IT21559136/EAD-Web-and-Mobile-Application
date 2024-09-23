@@ -1,19 +1,19 @@
-package com.kanyideveloper.joomia.feature_wish_list.presentation.wishlist
+package com.example.mobile_application.feature_wish_list.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -26,33 +26,31 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.kanyideveloper.joomia.R
-import com.kanyideveloper.joomia.core.presentation.ui.theme.YellowMain
-import com.kanyideveloper.joomia.core.util.UiEvents
-import com.kanyideveloper.joomia.destinations.ProductDetailsScreenDestination
-import com.kanyideveloper.joomia.feature_wish_list.data.local.WishlistEntity
-import com.kanyideveloper.joomia.feature_wish_list.data.mapper.toDomain
-import com.kanyideveloper.joomia.feature_wish_list.data.mapper.toProduct
-import com.kanyideveloper.joomia.feature_wish_list.domain.model.Wishlist
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.example.mobile_application.R
+import com.example.mobile_application.core.presentation.ui.theme.YellowMain
+import com.example.mobile_application.core.util.UiEvents
+import com.example.mobile_application.feature_wish_list.data.local.WishlistEntity
+import com.example.mobile_application.feature_wish_list.data.mapper.toDomain
+import com.example.mobile_application.feature_wish_list.domain.model.Wishlist
+import androidx.navigation.NavController
 import kotlinx.coroutines.flow.collectLatest
 
-@Destination
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WishlistScreen(
-    navigator: DestinationsNavigator,
+    navController: NavController,
     viewModel: WishlistViewModel = hiltViewModel(),
 ) {
-
     val wishlistItems = viewModel.wishlistItems.observeAsState(initial = emptyList())
-    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is UiEvents.SnackbarEvent -> {
-                    scaffoldState.snackbarHostState.showSnackbar(event.message)
+                    snackbarHostState.showSnackbar(
+                        message = event.message,
+                    )
                 }
                 else -> {}
             }
@@ -60,12 +58,12 @@ fun WishlistScreen(
     }
 
     Scaffold(
-        backgroundColor = Color.White,
-        scaffoldState = scaffoldState,
+        containerColor = Color.White,
         topBar = {
             TopAppBar(
-                elevation = 1.dp,
-                backgroundColor = Color.White,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White // Set the background color here
+                ),
                 title = {
                     Text(
                         modifier = Modifier
@@ -77,11 +75,7 @@ fun WishlistScreen(
                     )
                 },
                 actions = {
-                    IconButton(
-                        onClick = {
-                            viewModel.deleteAllWishlist()
-                        },
-                    ) {
+                    IconButton(onClick = { viewModel.deleteAllWishlist() }) {
                         Icon(
                             imageVector = Icons.Outlined.Delete,
                             contentDescription = null,
@@ -91,21 +85,22 @@ fun WishlistScreen(
                 }
             )
         }
-    ) {
+    ) {padding->
         WishListScreenContent(
+            modifier = Modifier.padding(padding),
             wishlistItems = wishlistItems,
             onClickOneWishItem = { wishlist ->
-                navigator.navigate(ProductDetailsScreenDestination(wishlist.toProduct()))
+                navController.navigate("product_details/${wishlist.id}") // Update to your navigation route
             },
-            onClickWishIcon = { wishlist ->
-                viewModel.deleteFromWishlist(wishlist)
-            }
+            onClickWishIcon = { wishlist -> viewModel.deleteFromWishlist(wishlist) }
         )
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun WishListScreenContent(
+    modifier: Modifier = Modifier,
     wishlistItems: State<List<WishlistEntity>>,
     onClickOneWishItem: (Wishlist) -> Unit,
     onClickWishIcon: (Wishlist) -> Unit,
@@ -114,7 +109,8 @@ private fun WishListScreenContent(
         LazyColumn {
             items(wishlistItems.value) { wishlist ->
                 WishlistItem(
-                    wishlist = wishlist.toDomain(), modifier = Modifier
+                    wishlist = wishlist.toDomain(),
+                    modifier = Modifier
                         .fillMaxWidth()
                         .height(135.dp)
                         .padding(8.dp),
@@ -124,15 +120,14 @@ private fun WishListScreenContent(
             }
         }
 
-        if ((wishlistItems.value.isEmpty() || wishlistItems.value.isEmpty())) {
+        if (wishlistItems.value.isEmpty()) {
             Column(
                 Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    modifier = Modifier
-                        .size(220.dp),
+                    modifier = Modifier.size(220.dp),
                     painter = painterResource(id = R.drawable.ic_artwork),
                     contentDescription = null
                 )
@@ -141,7 +136,7 @@ private fun WishListScreenContent(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@ExperimentalMaterial3Api
 @Composable
 fun WishlistItem(
     wishlist: Wishlist,
@@ -152,10 +147,8 @@ fun WishlistItem(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
-        elevation = 3.dp,
-        onClick = {
-            onClickOneWishItem(wishlist)
-        }
+        elevation = CardDefaults.elevatedCardElevation(3.dp),
+        onClick = { onClickOneWishItem(wishlist) }
     ) {
         Row {
             Image(
@@ -197,10 +190,8 @@ fun WishlistItem(
                     fontWeight = FontWeight.Light
                 )
                 IconButton(
-                    onClick = {
-                        onClickWishIcon(wishlist)
-                    },
-                    modifier = Modifier.align(End),
+                    onClick = { onClickWishIcon(wishlist) },
+                    modifier = Modifier.align(Alignment.End),
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_heart_fill),
