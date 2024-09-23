@@ -1,11 +1,10 @@
-package com.kanyideveloper.joomia.feature_wish_list.data.mapper
+package com.example.mobile_application.feature_wish_list.data.mapper
 
-import com.kanyideveloper.joomia.feature_products.domain.model.Product
-import com.kanyideveloper.joomia.feature_wish_list.data.local.RatingEntity
-import com.kanyideveloper.joomia.feature_wish_list.data.local.WishlistEntity
-import com.kanyideveloper.joomia.feature_wish_list.domain.model.Rating
-import com.kanyideveloper.joomia.feature_wish_list.domain.model.Wishlist
-
+import com.example.mobile_application.feature_products.domain.model.Product
+import com.example.mobile_application.feature_wish_list.data.local.RatingEntity
+import com.example.mobile_application.feature_wish_list.data.local.WishlistEntity
+import com.example.mobile_application.feature_wish_list.domain.model.Rating
+import com.example.mobile_application.feature_wish_list.domain.model.Wishlist
 
 internal fun RatingEntity.toDomain(): Rating {
     return Rating(
@@ -22,14 +21,14 @@ internal fun Rating.toEntity(): RatingEntity {
 }
 
 
-internal fun Rating.toProductRating(): com.kanyideveloper.joomia.feature_products.domain.model.Rating {
-    return com.kanyideveloper.joomia.feature_products.domain.model.Rating(
+internal fun Rating.toProductRating(): com.example.mobile_application.feature_products.domain.model.Rating {
+    return com.example.mobile_application.feature_products.domain.model.Rating(
         count = count,
         rate = rate
     )
 }
 
-internal fun com.kanyideveloper.joomia.feature_products.domain.model.Rating.toWishlistRating(): Rating {
+internal fun com.example.mobile_application.feature_products.domain.model.Rating.toWishlistRating(): Rating {
     return Rating(
         count = count,
         rate = rate

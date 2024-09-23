@@ -1,4 +1,4 @@
-package com.kanyideveloper.joomia.feature_wish_list.domain.model
+package com.example.mobile_application.feature_wish_list.domain.model
 
 data class Wishlist(
     val image: String,

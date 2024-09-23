@@ -75,6 +75,9 @@ dependencies {
     // Lifecycle runtime for managing app states
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
+    // Lifecycle runtime livedata
+    implementation(libs.androidx.runtime.livedata)
+
     // Jetpack Compose activity support
     implementation(libs.androidx.activity.compose)
 
@@ -123,6 +126,13 @@ dependencies {
 
     // Rating Bar
     implementation("com.github.a914-gowtham:compose-ratingbar:1.2.3")
+
+    // Room components
+    implementation("androidx.room:room-runtime:2.5.0") // Check for the latest version
+    kapt("androidx.room:room-compiler:2.5.0") // For annotation processing
+
+    // Optional - Kotlin Extensions and Coroutines support for Room
+    implementation("androidx.room:room-ktx:2.5.0")
 
     // Timber for logging
     implementation(libs.timber)
