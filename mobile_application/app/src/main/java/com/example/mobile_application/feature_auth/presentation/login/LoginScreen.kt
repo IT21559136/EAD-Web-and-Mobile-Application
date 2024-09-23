@@ -14,8 +14,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.mobile_application.core.domain.model.TextFieldState
 import com.example.mobile_application.core.util.UiEvents
-import com.example.mobile_application.feature_auth.presentation.login.LoginViewModel
-import com.example.mobile_application.feature_auth.presentation.login.LoginState
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalComposeUiApi::class)

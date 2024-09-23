@@ -1,6 +1,6 @@
-package com.kanyideveloper.joomia.feature_products.presentation.home
+package com.example.mobile_application.feature_products.presentation.home
 
-import com.kanyideveloper.joomia.feature_products.domain.model.Product
+import com.example.mobile_application.feature_products.domain.model.Product
 
 data class ProductsState(
     val products: List<Product> = emptyList(),
