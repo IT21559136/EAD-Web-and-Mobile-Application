@@ -31,35 +31,36 @@ fun CustomScaffold(
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar(  // Use NavigationBar instead of BottomNavigation for Material 3
-                    containerColor = MainWhiteColor,  // Replaces backgroundColor
-                    tonalElevation = 5.dp  // Replaces elevation
+                NavigationBar(
+                    containerColor = MainWhiteColor,
+                    tonalElevation = 5.dp
                 ) {
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentDestination = navBackStackEntry?.destination
+                    val currentRoute = navBackStackEntry?.destination?.route
+
                     items.forEach { item ->
-                        NavigationBarItem(  // Use NavigationBarItem for Material 3
+                        NavigationBarItem(
                             icon = {
                                 Icon(
                                     painter = painterResource(id = item.icon),
                                     contentDescription = null
                                 )
                             },
-                            selected = currentDestination?.route?.contains(item.destination.route) == true,
+                            selected = currentRoute == item.route,  // Directly check against item's route
                             onClick = {
-                                navController.navigate(item.destination.route) {
-                                    navController.graph.startDestinationRoute?.let { screen_route ->
-                                        popUpTo(screen_route) {
-                                            saveState = true
-                                        }
+                                // Navigate to the item’s route
+                                navController.navigate(item.route) {
+                                    // Clear back stack to the start destination
+                                    navController.graph.startDestinationRoute?.let { startDestination ->
+                                        popUpTo(startDestination) { saveState = true }
                                     }
                                     launchSingleTop = true
                                     restoreState = true
                                 }
                             },
                             colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                                selectedIconColor = DarkBlue,  // Replaces selectedContentColor
-                                unselectedIconColor = GrayColor  // Replaces unselectedContentColor
+                                selectedIconColor = DarkBlue,
+                                unselectedIconColor = GrayColor
                             )
                         )
                     }
