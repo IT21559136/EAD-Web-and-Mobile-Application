@@ -8,6 +8,9 @@ import androidx.navigation.compose.composable
 import com.example.mobile_application.feature_auth.presentation.auth_dashboard.AuthDashboardScreen
 import com.example.mobile_application.feature_auth.presentation.login.LoginScreen
 import com.example.mobile_application.feature_auth.presentation.register.RegisterScreen
+import com.example.mobile_application.feature_products.presentation.home.HomeScreen
+import com.example.mobile_application.feature_profile.presentation.AccountScreen
+import com.example.mobile_application.feature_wish_list.presentation.WishlistScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -17,6 +20,9 @@ fun NavGraph(navController: NavHostController) {
         composable("login") { LoginScreen(navController) }
         composable("signup") { RegisterScreen(navController) }
         composable("home") { HomeScreen(navController) }
+        composable("account") { AccountScreen(navController) }
+        composable("wishlist") { WishlistScreen(navController) }
+        composable("cart") { WishlistScreen(navController) }
         // Add more destinations here as needed
     }
 }

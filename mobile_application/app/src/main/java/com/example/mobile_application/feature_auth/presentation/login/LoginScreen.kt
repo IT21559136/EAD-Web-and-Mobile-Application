@@ -16,7 +16,7 @@ import com.example.mobile_application.core.domain.model.TextFieldState
 import com.example.mobile_application.core.util.UiEvents
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalComposeUiApi::class)
+
 @Composable
 fun LoginScreen(
     navController: NavController,
