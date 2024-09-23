@@ -67,6 +67,7 @@ android {
     }
 }
 
+
 dependencies {
     // AndroidX Core library for Kotlin extensions
     implementation(libs.androidx.core.ktx)
@@ -111,7 +112,6 @@ dependencies {
 
     // Dagger Hilt for Dependency Injection
     implementation(libs.google.hilt.android)
-    implementation(libs.androidx.material3.android)
     kapt(libs.google.hilt.compiler)
     implementation(libs.google.hilt.navigation.compose)
 
@@ -121,7 +121,10 @@ dependencies {
     implementation(libs.okhttp)
     implementation("com.squareup.okhttp3:logging-interceptor:${libs.versions.okhttp.get()}")
 
+    // Rating Bar
+    implementation("com.github.a914-gowtham:compose-ratingbar:1.2.3")
 
+    // Timber for logging
     implementation(libs.timber)
 
     // Unit testing with JUnit

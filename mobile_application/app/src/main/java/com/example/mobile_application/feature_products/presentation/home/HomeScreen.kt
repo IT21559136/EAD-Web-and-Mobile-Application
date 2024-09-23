@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -14,7 +15,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddShoppingCart
-import androidx.compose.material3.tokens.FilledTextFieldTokens
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -46,15 +46,13 @@ import com.example.mobile_application.core.util.UiEvents
 import com.example.mobile_application.feature_products.domain.model.Product
 import androidx.navigation.NavHostController
 import com.example.mobile_application.core.presentation.ui.theme.DarkBlue
-import com.kanyideveloper.joomia.feature_products.presentation.home.HomeViewModel
-import com.kanyideveloper.joomia.feature_products.presentation.home.ProductsState
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    viewModel: HomeViewModel = hiltViewModel(),
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var filtersExpanded by remember { mutableStateOf(false) }
@@ -84,11 +82,11 @@ fun HomeScreen(
         val snackbarHostState = remember { SnackbarHostState() }
 
         LaunchedEffect(key1 = true) {
-            viewModel.eventFlow.collectLatest { event: UiEvents -> // Specify the type here
+            viewModel.eventFlow.collectLatest { event -> // Specify the type here
                 when (event) {
                     is UiEvents.SnackbarEvent -> {
                         snackbarHostState.showSnackbar(
-                            message = event.message
+                            message = event.message,
                         )
                     }
                     else -> {}
@@ -225,6 +223,7 @@ private fun HomeScreenContent(
         )
     }
 }
+
 
 @Composable
 private fun ProductItem(
@@ -381,7 +380,6 @@ fun MyTopAppBar(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val containerColor = FilledTextFieldTokens.ContainerColor.toColor()
             TextField(
                 value = currentSearchText,
                 onValueChange = {
@@ -477,7 +475,7 @@ fun Categories(
         items(categories) { category ->
             Text(
                 text = category,
-                style = typography.body1.merge(),
+                style = MaterialTheme.typography.bodyLarge,
                 color = Color.Black,
                 modifier = Modifier
                     .clip(

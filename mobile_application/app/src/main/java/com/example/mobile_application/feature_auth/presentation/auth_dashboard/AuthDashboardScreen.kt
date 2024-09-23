@@ -59,13 +59,14 @@ fun AuthDashboardScreen(
                         .padding(horizontal = 16.dp, vertical = 16.dp),
                     verticalArrangement = Arrangement.Bottom
                 ) {
+                    // Fixed by moving the `text` parameter as the first argument
                     Text(
+                        text = "Make your shopping enjoyable with us",  // `text` moved to the first argument
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 8.dp, end = 24.dp),
                         color = YellowMain,
-                        fontSize = 24.sp,
-                        text = "Make your shopping enjoyable with us"
+                        fontSize = 24.sp
                     )
                     Spacer(modifier = Modifier.height(32.dp))
                     Button(
@@ -79,11 +80,11 @@ fun AuthDashboardScreen(
 
                     ) {
                         Text(
+                            text = "Sign In", // `text` moved to the first argument
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
-                            textAlign = TextAlign.Center,
-                            text = "Sign In"
+                            textAlign = TextAlign.Center
                         )
                     }
 
@@ -103,11 +104,11 @@ fun AuthDashboardScreen(
                         shape = RoundedCornerShape(8)
                     ) {
                         Text(
+                            text = "Sign Up", // `text` moved to the first argument
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
-                            textAlign = TextAlign.Center,
-                            text = "Sign Up"
+                            textAlign = TextAlign.Center
                         )
                     }
                     Spacer(modifier = Modifier.height(42.dp))

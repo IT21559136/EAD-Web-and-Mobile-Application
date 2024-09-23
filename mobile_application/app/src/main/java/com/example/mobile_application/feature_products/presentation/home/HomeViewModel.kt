@@ -1,13 +1,13 @@
-package com.kanyideveloper.joomia.feature_products.presentation.home
+package com.example.mobile_application.feature_products.presentation.home
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kanyideveloper.joomia.core.util.Resource
-import com.kanyideveloper.joomia.core.util.UiEvents
-import com.kanyideveloper.joomia.feature_products.domain.use_case.GetCategoriesUseCase
-import com.kanyideveloper.joomia.feature_products.domain.use_case.GetProductsUseCase
+import com.example.mobile_application.core.util.Resource
+import com.example.mobile_application.core.util.UiEvents
+import com.example.mobile_application.feature_products.domain.use_case.GetCategoriesUseCase
+import com.example.mobile_application.feature_products.domain.use_case.GetProductsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -20,8 +20,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getProductsUseCase: GetProductsUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase,
-) :
-    ViewModel() {
+) : ViewModel() {
 
     private val _selectedCategory = mutableStateOf("All")
     val selectedCategory: State<String> = _selectedCategory
@@ -52,7 +51,6 @@ class HomeViewModel @Inject constructor(
     init {
         getProducts(selectedCategory.value)
         getCategories()
-
     }
 
     private fun getCategories() {
