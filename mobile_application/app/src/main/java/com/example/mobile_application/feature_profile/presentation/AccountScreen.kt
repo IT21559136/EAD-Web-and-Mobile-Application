@@ -7,12 +7,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,49 +26,57 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.example.mobile_application.R
+import com.example.mobile_application.core.presentation.ui.theme.GrayColor
+import com.example.mobile_application.core.presentation.ui.theme.YellowMain
+import com.example.mobile_application.core.util.UiEvents
+import com.example.mobile_application.feature_profile.domain.model.Account
+import com.example.mobile_application.feature_profile.domain.model.User
 import kotlinx.coroutines.flow.collectLatest
 import java.util.*
 
-@Destination
+@ExperimentalMaterial3Api
 @Composable
 fun AccountScreen(
-    viewModel: ProfileViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator,
+    navController: NavController,
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
-    val scaffoldState = rememberScaffoldState()
-    LaunchedEffect(true) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(key1 = true) {
         viewModel.getProfile()
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is UiEvents.SnackbarEvent -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
+                    snackbarHostState.showSnackbar(
                         message = event.message,
                         duration = SnackbarDuration.Short
                     )
                 }
                 is UiEvents.NavigateEvent -> {
-                    navigator.navigate(event.route) {
+                    navController.navigate(event.route) {
                         // Adjusting back stack
-                        popUpTo(AccountScreenDestination.route) { inclusive = false }
-                        popUpTo(HomeScreenDestination.route) { inclusive = false }
-                        popUpTo(WishlistScreenDestination.route) { inclusive = false }
-                        popUpTo(CartScreenDestination.route) { inclusive = false }
+                        popUpTo("account") { inclusive = false }
+                        popUpTo("home") { inclusive = false }
+                        popUpTo("wishlist") { inclusive = false }
+                        popUpTo("cart") { inclusive = false }
                     }
                 }
+
+                else -> {}
             }
         }
     }
 
     Scaffold(
-        scaffoldState = scaffoldState,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
-                elevation = 1.dp,
-                backgroundColor = Color.White,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White // Set the background color here
+                ),
                 title = {
                     Text(
                         text = "My Profile",
@@ -173,7 +182,7 @@ fun UserItem(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
-        elevation = 3.dp
+        elevation = CardDefaults.elevatedCardElevation(3.dp),
     ) {
         Row {
             Image(
@@ -200,49 +209,53 @@ fun UserItem(
 
 @Composable
 private fun UserDetails(user: User) {
-    Column(
-        modifier = Modifier
-            .weight(2f)
-            .padding(5.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
-        Text(
-            text = "${user.name?.firstname?.capitalize(Locale.getDefault())} ${user.name?.lastname?.capitalize(Locale.getDefault())}",
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        Spacer(modifier = Modifier.height(5.dp))
-        Text(
-            text = "@${user.username}",
-            color = Color.Black,
-            fontSize = 16.sp,
-            maxLines = 3,
-            fontWeight = FontWeight.Light
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        EditProfileButton()
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .weight(2f) // This will now work because it's inside a Row
+                .padding(5.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                text = "${user.name?.firstname?.capitalize(Locale.getDefault())} ${user.name?.lastname?.capitalize(Locale.getDefault())}",
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(
+                text = "@${user.username}",
+                color = Color.Black,
+                fontSize = 16.sp,
+                maxLines = 3,
+                fontWeight = FontWeight.Light
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            EditProfileButton()
+        }
     }
 }
 
 @Composable
 private fun EditProfileButton() {
-    Button(
-        modifier = Modifier.align(Alignment.End),
-        onClick = { /* TODO: Implement edit profile action */ },
-        colors = ButtonDefaults.buttonColors(
-            contentColor = Color.Black,
-            backgroundColor = YellowMain
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Text(
-            modifier = Modifier.padding(3.dp),
-            fontSize = 11.sp,
-            textAlign = TextAlign.Center,
-            text = "Edit profile"
-        )
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Button(
+            modifier = Modifier.align(Alignment.End),
+            onClick = { /* TODO: Implement edit profile action */ },
+            colors = ButtonDefaults.buttonColors(
+                contentColor = Color.Black,
+                containerColor = YellowMain
+            ),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Text(
+                modifier = Modifier.padding(3.dp),
+                fontSize = 11.sp,
+                textAlign = TextAlign.Center,
+                text = "Edit profile"
+            )
+        }
     }
 }
 
