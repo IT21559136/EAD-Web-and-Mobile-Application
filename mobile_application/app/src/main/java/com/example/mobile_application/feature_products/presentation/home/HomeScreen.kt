@@ -47,6 +47,7 @@ import com.example.mobile_application.feature_products.domain.model.Product
 import androidx.navigation.NavHostController
 import com.example.mobile_application.core.presentation.ui.theme.DarkBlue
 import kotlinx.coroutines.flow.collectLatest
+import kotlin.io.encoding.Base64
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -78,7 +79,7 @@ fun HomeScreen(
                 },
             )
         },
-    ) { padding ->
+    ) { padding->
         val snackbarHostState = remember { SnackbarHostState() }
 
         LaunchedEffect(key1 = true) {
@@ -153,7 +154,7 @@ private fun HomeScreenContent(
     selectedCategory: String,
     onSelectCategory: (String) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier.fillMaxWidth()) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             contentPadding = PaddingValues(16.dp)
@@ -235,7 +236,6 @@ private fun ProductItem(
         modifier = modifier
             .padding(4.dp)
             .clickable {
-                // Use navController to navigate to ProductDetailsScreen
                 navController.navigate("product_details/${product.id}") // Assuming you use product ID in route
             },
         elevation = CardDefaults.elevatedCardElevation(2.dp),
@@ -314,17 +314,25 @@ private fun ProductItem(
                     .size(40.dp)
                     .align(Alignment.End),
                 shape = CircleShape,
+                border = BorderStroke(0.dp, Color.Transparent),
+                contentPadding = PaddingValues(0.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MainWhiteColor,
+                    contentColor = Color.White,
+                    containerColor = YellowMain,
                 )
             ) {
-                Icon(imageVector = Icons.Default.AddShoppingCart, contentDescription = null)
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    imageVector = Icons.Filled.AddShoppingCart,
+                    contentDescription = null,
+                    tint = MainWhiteColor
+                )
             }
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyTopAppBar(
     currentSearchText: String,
@@ -332,130 +340,131 @@ fun MyTopAppBar(
     onSearch: () -> Unit,
     onToggleExpand: () -> Unit,
 ) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(12.dp),
-    ) {
-        Row(
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Column(
             Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .padding(12.dp)
         ) {
             Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            ImageRequest.Builder(LocalContext.current)
+                                .data(data = "https://firebasestorage.googleapis.com/v0/b/mealtime-7a501.appspot.com/o/tinywow_Joomia%20Black%20Friday_16608968%20(1).png?alt=media&token=8b874def-e543-482e-80f7-c8cbe9d9f206")
+                                .apply(block = fun ImageRequest.Builder.() {
+                                    crossfade(true)
+                                }).build()
+                        ),
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(35.dp),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Hi, John", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+
+                Icon(
+                    modifier = Modifier
+                        .size(24.dp),
+                    painter = painterResource(id = R.drawable.ic_allert),
+                    contentDescription = null,
+                    tint = DarkBlue
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                Modifier
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        ImageRequest.Builder(LocalContext.current)
-                            .data(data = "https://firebasestorage.googleapis.com/v0/b/mealtime-7a501.appspot.com/o/tinywow_Joomia%20Black%20Friday_16608968%20(1).png?alt=media&token=8b874def-e543-482e-80f7-c8cbe9d9f206")
-                            .apply(block = fun ImageRequest.Builder.() {
-                                crossfade(true)
-                            }).build()
-                    ),
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(35.dp),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Hi, John", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
-
-            Icon(
-                modifier = Modifier
-                    .size(24.dp),
-                painter = painterResource(id = R.drawable.ic_allert),
-                contentDescription = null,
-                tint = DarkBlue
-            )
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Row(
-            Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextField(
-                value = currentSearchText,
-                onValueChange = {
-                    onSearchTextChange(it)
-                },
-                placeholder = {
-                    Text(
-                        text = "Search",
-                    )
-                },
-
-                modifier = Modifier
-                    .fillMaxWidth(0.80f)
-                    .background(MainWhiteColor, shape = RoundedCornerShape(8.dp))
-                    .clickable {
-
+                TextField(
+                    value = currentSearchText,
+                    onValueChange = {
+                        onSearchTextChange(it)
                     },
-                shape = RoundedCornerShape(size = 8.dp),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Words,
-                    autoCorrect = true,
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Search
-                ),
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        onSearch()
+                    placeholder = {
+                        Text(
+                            text = "Search",
+                        )
+                    },
+
+                    modifier = Modifier
+                        .fillMaxWidth(0.80f)
+                        .background(MainWhiteColor, shape = RoundedCornerShape(8.dp))
+                        .clickable {
+
+                        },
+                    shape = RoundedCornerShape(size = 8.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        autoCorrectEnabled = true,
+                        capitalization = KeyboardCapitalization.Words,
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Search
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            onSearch()
+                        }
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        disabledTextColor = MainWhiteColor,
+                        focusedContainerColor = MainWhiteColor,
+                        unfocusedContainerColor = MainWhiteColor,
+                        disabledContainerColor = MainWhiteColor,
+                        focusedIndicatorColor = MainWhiteColor,
+                        unfocusedIndicatorColor = MainWhiteColor,
+                        disabledIndicatorColor = MainWhiteColor,
+                    ),
+                    textStyle = TextStyle(color = Color.Black),
+                    maxLines = 1,
+                    singleLine = true,
+                    leadingIcon = {
+                        Icon(
+                            modifier = Modifier
+                                .size(24.dp),
+                            painter = painterResource(id = R.drawable.ic_search),
+                            contentDescription = null,
+                            tint = DarkBlue
+                        )
                     }
-                ),
-                colors = TextFieldDefaults.colors(
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black,
-                    disabledTextColor = MainWhiteColor,
-                    focusedContainerColor = MainWhiteColor,
-                    unfocusedContainerColor = MainWhiteColor,
-                    disabledContainerColor = MainWhiteColor,
-                    focusedIndicatorColor = MainWhiteColor,
-                    unfocusedIndicatorColor = MainWhiteColor,
-                    disabledIndicatorColor = MainWhiteColor,
-                ),
-                textStyle = TextStyle(color = Color.Black),
-                maxLines = 1,
-                singleLine = true,
-                leadingIcon = {
+                )
+
+                IconButton(onClick = onToggleExpand) {
                     Icon(
                         modifier = Modifier
-                            .size(24.dp),
-                        painter = painterResource(id = R.drawable.ic_search),
+                            .size(55.dp)
+                            .clip(
+                                shape = RoundedCornerShape(
+                                    size = 8.dp
+                                )
+                            )
+                            .background(
+                                MainWhiteColor
+                            )
+                            .padding(
+                                start = 4.dp,
+                                end = 4.dp,
+                                top = 4.dp,
+                                bottom = 4.dp
+                            ),
+                        painter = painterResource(id = R.drawable.ic_filter),
                         contentDescription = null,
                         tint = DarkBlue
                     )
                 }
-            )
-
-            IconButton(onClick = onToggleExpand) {
-                Icon(
-                    modifier = Modifier
-                        .size(55.dp)
-                        .clip(
-                            shape = RoundedCornerShape(
-                                size = 8.dp
-                            )
-                        )
-                        .background(
-                            MainWhiteColor
-                        )
-                        .padding(
-                            start = 4.dp,
-                            end = 4.dp,
-                            top = 4.dp,
-                            bottom = 4.dp
-                        ),
-                    painter = painterResource(id = R.drawable.ic_filter),
-                    contentDescription = null,
-                    tint = DarkBlue
-                )
             }
         }
     }
