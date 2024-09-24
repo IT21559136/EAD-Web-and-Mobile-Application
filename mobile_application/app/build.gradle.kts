@@ -99,6 +99,10 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core:1.0.1")
     implementation("androidx.compose.material:material-icons-extended:1.0.1")
 
+    // Animation
+    //implementation(libs.androidx.animation)
+    implementation("androidx.compose.animation:animation:1.7.2")
+
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.1.0")
 
@@ -123,16 +127,17 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:${libs.versions.retrofit.get()}") // Gson Converter
     implementation(libs.okhttp)
     implementation("com.squareup.okhttp3:logging-interceptor:${libs.versions.okhttp.get()}")
+    implementation("com.squareup:javapoet:1.13.0")
 
     // Rating Bar
     implementation("com.github.a914-gowtham:compose-ratingbar:1.2.3")
 
     // Room components
-    implementation("androidx.room:room-runtime:2.5.0") // Check for the latest version
-    kapt("androidx.room:room-compiler:2.5.0") // For annotation processing
+    implementation("androidx.room:room-runtime:2.6.1") // Check for the latest version
+    kapt("androidx.room:room-compiler:2.6.1") // For annotation processing
 
     // Optional - Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:2.5.0")
+    implementation("androidx.room:room-ktx:2.6.1")
 
     // Timber for logging
     implementation(libs.timber)
@@ -153,4 +158,7 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+}
+hilt {
+    enableAggregatingTask = false
 }

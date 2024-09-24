@@ -25,24 +25,15 @@ import com.example.mobile_application.core.presentation.ui.theme.poppins
 @Composable
 fun RegisterScreen(navController: NavController) {
     Scaffold(
-        topBar = {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.Top) {
-                Text(text = "Getting Started", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                Text(
-                    text = "Create an account to continue with your shopping",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Light
-                )
-            }
+        content = {
+            RegisterScreenContent(
+                modifier = Modifier.fillMaxWidth(),
+                onClickSignUp = {
+                    navController.navigate("login")
+                }
+            )
         }
-    ) { padding ->
-        RegisterScreenContent(
-            modifier = Modifier.padding(padding),
-            onClickSignUp = {
-                navController.navigate("login")
-            }
-        )
-    }
+    )
 }
 
 @Composable
@@ -51,20 +42,35 @@ private fun RegisterScreenContent(
     onClickSignUp: () -> Unit,
 ) {
     LazyColumn(
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)
     ) {
         item {
             Spacer(modifier = Modifier.height(64.dp))
+            Column(
+                Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.Top
+            ) {
+                Text(text = "Getting Started", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "Create an account to continue with your shopping",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+        item {
+           Spacer(modifier = Modifier.height(64.dp))
 
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = "",
                 onValueChange = {},
                 label = { Text(text = "Name") },
-                keyboardOptions = KeyboardOptions(
+                keyboardOptions = KeyboardOptions.Default.copy(
                     capitalization = KeyboardCapitalization.Words,
-                    autoCorrect = true,
                     keyboardType = KeyboardType.Text,
+                    autoCorrectEnabled = true
                 ),
                 maxLines = 1,
                 singleLine = true,
@@ -78,8 +84,8 @@ private fun RegisterScreenContent(
                 value = "",
                 onValueChange = {},
                 label = { Text(text = "Email") },
-                keyboardOptions = KeyboardOptions(
-                    autoCorrect = true,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    autoCorrectEnabled = true,
                     keyboardType = KeyboardType.Email,
                 ),
                 maxLines = 1,
@@ -94,8 +100,8 @@ private fun RegisterScreenContent(
                 value = "",
                 onValueChange = {},
                 label = { Text(text = "Password") },
-                keyboardOptions = KeyboardOptions(
-                    autoCorrect = true,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    autoCorrectEnabled = true,
                     keyboardType = KeyboardType.Password,
                 ),
                 maxLines = 1,
@@ -106,7 +112,6 @@ private fun RegisterScreenContent(
             Spacer(modifier = Modifier.height(32.dp))
 
             val context = LocalContext.current
-
             Button(
                 onClick = {
                     Toast.makeText(
