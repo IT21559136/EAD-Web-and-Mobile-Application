@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,17 +47,24 @@ fun ProductDetailsScreen(
     Scaffold(
         containerColor = Color.White,
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = product.title)
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_chevron_left), contentDescription = null)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {
+            Row(
+                Modifier.fillMaxWidth().padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = {
+                        navController.popBackStack()
+                    },
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_chevron_left),
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+                IconButton(
+                    onClick = {
                         if (inWishlist) {
                             viewModel.deleteFromWishlist(
                                 Wishlist(
@@ -84,18 +92,30 @@ fun ProductDetailsScreen(
                                 )
                             )
                         }
-                    }) {
-                        Icon(
-                            painter = if (inWishlist) painterResource(id = R.drawable.ic_heart_fill) else painterResource(id = R.drawable.ic_heart),
-                            tint = if (inWishlist) YellowMain else GrayColor,
-                            contentDescription = null
-                        )
-                    }
+                    },
+                ) {
+                    Icon(
+                        painter = if (inWishlist) {
+                            painterResource(id = R.drawable.ic_heart_fill)
+                        } else {
+                            painterResource(id = R.drawable.ic_heart)
+                        },
+                        tint = if (inWishlist) {
+                            YellowMain
+                        } else {
+                            GrayColor
+                        },
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp)
+                    )
                 }
-            )
+            }
         }
-    ) {padding ->
-        DetailsScreenContent(product = product, modifier = Modifier.fillMaxSize().padding(padding))
+    ) {padding->
+        DetailsScreenContent(
+            product = product,
+            modifier = Modifier.fillMaxSize().padding(start = 0.dp, top = 16.dp, end = 0.dp, bottom = 0.dp),
+        )
     }
 }
 
@@ -116,8 +136,8 @@ fun DetailsScreenContent(
                         }).build()
                 ),
                 contentDescription = null,
-                modifier = modifier.fillMaxWidth().height(250.dp),
-                contentScale = ContentScale.Crop
+                modifier = modifier.fillMaxWidth().height(250.dp).align(Alignment.Center),
+                contentScale = ContentScale.Inside
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
@@ -129,68 +149,93 @@ fun DetailsScreenContent(
                 containerColor =MainWhiteColor
             )
         ) {
-            Column(
-                modifier = modifier.padding(16.dp),
-                verticalArrangement = Arrangement.Top
+            Box(
+                modifier = modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = product.title,
-                    color = Color.Black,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp,
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                val rating: Float by remember { mutableStateOf(product.rating.rate.toFloat()) }
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.Top
                 ) {
-                    RatingBar(
-                        value = rating,
-                        config = RatingBarConfig()
-                            .activeColor(YellowMain)
-                            .inactiveColor(GrayColor)
-                            .stepSize(StepSize.HALF)
-                            .numStars(5)
-                            .isIndicator(true)
-                            .size(16.dp)
-                            .padding(3.dp)
-                            .style(RatingBarStyle.HighLighted),
-                        onValueChange = {},
-                        onRatingChanged = {}
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "(${product.rating.count})",
+                        text = product.title,
                         color = Color.Black,
-                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp,
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    val rating: Float by remember { mutableStateOf(product.rating.rate.toFloat()) }
+
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RatingBar(
+                            value = rating,
+                            config = RatingBarConfig()
+                                .activeColor(YellowMain)
+                                .inactiveColor(GrayColor)
+                                .stepSize(StepSize.HALF)
+                                .numStars(5)
+                                .isIndicator(true)
+                                .size(16.dp)
+                                .padding(3.dp)
+                                .style(RatingBarStyle.HighLighted),
+                            onValueChange = {},
+                            onRatingChanged = {}
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "(${product.rating.count})",
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Light
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "$${product.description}",
+                        color = Color.Black,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Light
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = "$${product.price}",
-                    color = Color.Black,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Button(
-                    onClick = { /* Handle add to cart */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = YellowMain),
-                    shape = RoundedCornerShape(16.dp)
+                Row(
+                    modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.Bottom
                 ) {
                     Text(
-                        text = stringResource(R.string.add_to_cart),
-                        color = Color.Black
+                        text = "$${product.price}",
+                        color = Color.Black,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
                     )
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Button(
+                        onClick = { /* Handle add to cart */ },
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.Black,
+                            containerColor = YellowMain
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.add_to_cart),
+                            color = Color.Black,
+                            modifier = Modifier.fillMaxWidth().padding(5.dp),
+                            fontSize = 16.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }
