@@ -62,8 +62,9 @@ fun LoginScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-    ) {
+    ) { padding->
             LoginScreenContent(
+                modifier = Modifier.padding(padding),
                 usernameState = usernameState,
                 passwordState = passwordState,
                 rememberMeState = rememberMeState,
@@ -83,6 +84,7 @@ fun LoginScreen(
 
 @Composable
 private fun LoginScreenContent(
+    modifier: Modifier = Modifier,
     usernameState: TextFieldState,
     passwordState: TextFieldState,
     rememberMeState: Boolean,
@@ -95,7 +97,7 @@ private fun LoginScreenContent(
     onClickSignIn: () -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(), // Fills the entire screen
+        modifier.fillMaxSize(), // Fills the entire screen
         contentAlignment = Alignment.Center // Centers the content vertically and horizontally
     ) {
         LazyColumn(
