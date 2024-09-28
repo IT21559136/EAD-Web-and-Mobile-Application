@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,7 +28,10 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.mobile_application.R
+import com.example.mobile_application.core.presentation.ui.theme.DarkBlue
+import com.example.mobile_application.core.presentation.ui.theme.GrayColor
 import com.example.mobile_application.core.presentation.ui.theme.MainWhiteColor
+import com.example.mobile_application.core.presentation.ui.theme.YellowMain
 import com.example.mobile_application.core.util.LoadingAnimation
 import com.example.mobile_application.core.util.UiEvents
 import com.example.mobile_application.feature_cart.domain.model.CartProduct
@@ -64,32 +69,48 @@ fun CartScreen(
                 ),
                 title = {
                     Text(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         text = "My Cart",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                 },
+                actions = {
+                    // Add a delete button in the top bar
+                    IconButton(onClick = {
+                        viewModel.onDeleteSelectedItems() // Implement this in ViewModel
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_delete),
+                            contentDescription = "Delete Selected Items",
+                            tint = DarkBlue
+                        )
+                    }
+                }
             )
         }
     ) {padding->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier = Modifier.fillMaxSize().padding(padding)
         ) {
             CartScreenContent(
                 state = state,
-                modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 12.dp)
+                modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 12.dp),
+                onItemSelected = { item, isSelected ->
+                    viewModel.onItemSelected(item, isSelected)
+                }
             )
         }
     }
 }
 
 @Composable
-private fun CartScreenContent(state: CartItemsState, modifier: Modifier = Modifier) {
+private fun CartScreenContent(
+    state: CartItemsState,
+    modifier: Modifier = Modifier,
+    onItemSelected: (CartProduct, Boolean) -> Unit
+) {
     Box(modifier.fillMaxSize()) {
         LazyColumn (
             modifier = Modifier
@@ -99,17 +120,11 @@ private fun CartScreenContent(state: CartItemsState, modifier: Modifier = Modifi
             items(state.cartItems) { cartItem ->
                 CartItem(
                     cartItem = cartItem,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(4.dp),
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(4.dp),
+                    isSelected = state.selectedItems.contains(cartItem), // Check if item is selected
+                    onItemSelected = onItemSelected
                 )
             }
-//            item {
-//                if (state.cartItems.isNotEmpty()) {
-//                    CheckoutComponent(state = state)
-//                }
-//            }
         }
 
         if (state.isLoading) {
@@ -131,9 +146,7 @@ private fun CartScreenContent(state: CartItemsState, modifier: Modifier = Modifi
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
                     textAlign = TextAlign.Center,
                     text = state.error,
                     color = Color.Red
@@ -153,6 +166,12 @@ private fun CartScreenContent(state: CartItemsState, modifier: Modifier = Modifi
                     painter = painterResource(id = R.drawable.ic_artwork),
                     contentDescription = null
                 )
+                Text(
+                    text = "Your cart is empty",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = GrayColor,
+                    textAlign = TextAlign.Center
+                )
             }
         }
 
@@ -160,11 +179,7 @@ private fun CartScreenContent(state: CartItemsState, modifier: Modifier = Modifi
         if (state.cartItems.isNotEmpty()) {
             CheckoutComponent(
                 state = state,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(12.dp)
+                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().background(Color.White).padding(12.dp)
             )
         }
     }
@@ -172,22 +187,21 @@ private fun CartScreenContent(state: CartItemsState, modifier: Modifier = Modifi
 
 @Composable
 private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifier) {
-    Column(modifier = modifier
-        .padding(5.dp)
-        .fillMaxWidth()) {
+    Column(modifier = modifier.padding(5.dp).fillMaxWidth()) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "${state.cartItems.size} items")
+            Text(text = "${state.selectedItems.size} items")
             Text(
-                text = "${state.cartItems.sumOf { (it.price * it.quantity) }}",
+                text = "${state.selectedItems.sumOf { (it.price * it.quantity) }}",
                 color = Color.Black,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
         }
         Spacer(modifier = Modifier.height(5.dp))
+
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -208,8 +222,9 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
             Text(text = "Total")
             Text(
                 text = "$${
-                    state.cartItems.sumOf { (it.price * it.quantity) } + 60.00
-                }", color = Color.Black,
+                    state.selectedItems.sumOf { (it.price * it.quantity) } + 60.00
+                }",
+                color = Color.Black,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -221,9 +236,9 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
             shape = RoundedCornerShape(8)
         ) {
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp), text = "Checkout", textAlign = TextAlign.Center
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                text = "Checkout",
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -234,16 +249,28 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
 fun CartItem(
     cartItem: CartProduct,
     modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
+    onItemSelected: (CartProduct, Boolean) -> Unit
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.height(130.dp),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.elevatedCardElevation(3.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         )
     ) {
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically){
+            // Checkbox to select the item
+            Checkbox(
+                checked = isSelected,
+                onCheckedChange = { onItemSelected(cartItem, it) },
+                modifier = Modifier.padding(8.dp),
+                colors = CheckboxDefaults.colors(
+                    checkedColor = YellowMain,
+                    uncheckedColor = Color.Gray
+                )
+            )
             Image(
                 painter = rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
@@ -254,17 +281,12 @@ fun CartItem(
                         }).build()
                 ),
                 contentDescription = null,
-                modifier = Modifier
-                    .padding(12.dp)
-                    .weight(1f)
-                    .fillMaxHeight(),
+                modifier = Modifier.padding(12.dp).weight(1f).fillMaxHeight(),
                 contentScale = ContentScale.Inside,
             )
-            //Spacer(modifier = Modifier.width(5.dp))
+
             Column(
-                modifier = Modifier
-                    .weight(2f)
-                    .padding(10.dp)
+                modifier = Modifier.weight(2f).padding(10.dp)
             ) {
                 Text(
                     text = cartItem.name,
@@ -283,8 +305,7 @@ fun CartItem(
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
                     text = "${cartItem.quantity} Pc",
                     color = Color.Black,

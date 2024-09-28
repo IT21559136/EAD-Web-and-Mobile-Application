@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobile_application.core.util.Resource
 import com.example.mobile_application.core.util.UiEvents
+import com.example.mobile_application.feature_cart.domain.model.CartProduct
+import com.example.mobile_application.feature_cart.domain.use_case.DeleteCartItemsUseCase
 import com.example.mobile_application.feature_cart.domain.use_case.GetCartItemsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
-    private val getCartItemsUseCase: GetCartItemsUseCase
+    private val getCartItemsUseCase: GetCartItemsUseCase,
+    private val deleteCartItemsUseCase: DeleteCartItemsUseCase // Add use case to delete items
 ) : ViewModel() {
     private val _state = mutableStateOf(CartItemsState())
     val state: State<CartItemsState> = _state
@@ -56,6 +59,47 @@ class CartViewModel @Inject constructor(
                         )
                     )
                 }
+            }
+        }
+    }
+
+    // Add or remove a cart item from the selected items list
+    fun onItemSelected(item: CartProduct, isSelected: Boolean) {
+        _state.value = state.value.copy(
+            selectedItems = if (isSelected) {
+                state.value.selectedItems + item // Add item to selectedItems
+            } else {
+                state.value.selectedItems - item // Remove item from selectedItems
+            }
+        )
+    }
+
+    // Delete all selected items from the cart
+    fun onDeleteSelectedItems() {
+        viewModelScope.launch {
+            val selectedItems = state.value.selectedItems
+            if (selectedItems.isNotEmpty()) {
+                val updatedCartItems = state.value.cartItems - selectedItems
+                _state.value = state.value.copy(
+                    cartItems = updatedCartItems,
+                    selectedItems = emptyList() // Clear selected items after deletion
+                )
+
+                // Perform deletion in repository (use case)
+                deleteCartItemsUseCase(selectedItems)
+
+                // Show a snackbar confirming the deletion
+                _eventFlow.emit(
+                    UiEvents.SnackbarEvent(
+                        message = "Selected items have been deleted."
+                    )
+                )
+            } else {
+                _eventFlow.emit(
+                    UiEvents.SnackbarEvent(
+                        message = "No items selected for deletion."
+                    )
+                )
             }
         }
     }

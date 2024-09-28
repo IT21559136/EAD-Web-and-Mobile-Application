@@ -6,6 +6,7 @@ import com.example.mobile_application.feature_auth.data.local.AuthPreferences
 import com.example.mobile_application.feature_cart.data.remote.CartApiService
 import com.example.mobile_application.feature_cart.data.repository.CartRepositoryImpl
 import com.example.mobile_application.feature_cart.domain.repository.CartRepository
+import com.example.mobile_application.feature_cart.domain.use_case.DeleteCartItemsUseCase
 import com.example.mobile_application.feature_cart.domain.use_case.GetCartItemsUseCase
 import dagger.Module
 import dagger.Provides
@@ -47,5 +48,13 @@ object CartModule {
         gson: Gson
     ): GetCartItemsUseCase {
         return GetCartItemsUseCase(cartRepository, authPreferences, gson)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteCartItemsUseCase(
+        cartRepository: CartRepository,
+    ): DeleteCartItemsUseCase {
+        return DeleteCartItemsUseCase(cartRepository)
     }
 }

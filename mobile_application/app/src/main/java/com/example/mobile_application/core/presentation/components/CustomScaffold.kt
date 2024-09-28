@@ -71,7 +71,7 @@ fun CustomScaffold(
                             colors = NavigationBarItemDefaults.colors(
                                 selectedIconColor = DarkBlue,
                                 unselectedIconColor = GrayColor,
-                                indicatorColor = MainWhiteColor
+                                indicatorColor = Color.LightGray
                             )
                         )
                     }

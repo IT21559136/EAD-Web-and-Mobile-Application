@@ -39,4 +39,23 @@ class CartRepositoryImpl(
             emit(Resource.Error(message = "Oops, something went wrong!"))
         }
     }
+
+    override suspend fun deleteCartItems(cartItems: List<CartProduct>) {
+        TODO("Not yet implemented")
+    }
+
+//    override suspend fun deleteCartItems(cartItems: List<CartProduct>) {
+//        Timber.d("Delete cart items called")
+//        try {
+//            // Extract the IDs of the items to be deleted
+//            val cartItemIds = cartItems.map { it.id }
+//            // Make API call to delete the items
+//            cartApiService.deleteCartItems(cartItemIds)
+//            Timber.d("Cart items deleted successfully")
+//        } catch (e: IOException) {
+//            Timber.e("IOException: Could not reach the server, please check your internet connection!")
+//        } catch (e: HttpException) {
+//            Timber.e("HttpException: Oops, something went wrong!")
+//        }
+//    }
 }

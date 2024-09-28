@@ -5,5 +5,6 @@ import com.example.mobile_application.feature_cart.domain.model.CartProduct
 data class CartItemsState(
     val cartItems: List<CartProduct> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val selectedItems: List<CartProduct> = emptyList() // Track selected items
 )
