@@ -1,6 +1,7 @@
 package com.example.mobile_application.feature_cart.presentation.cart
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,6 +26,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.mobile_application.R
+import com.example.mobile_application.core.presentation.ui.theme.MainWhiteColor
 import com.example.mobile_application.core.util.LoadingAnimation
 import com.example.mobile_application.core.util.UiEvents
 import com.example.mobile_application.feature_cart.domain.model.CartProduct
@@ -54,11 +56,11 @@ fun CartScreen(
     }
 
     Scaffold(
-        containerColor = Color.White,
+        containerColor = Color.White,//MainWhiteColor,
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White // Set the background color here
+                    containerColor = MainWhiteColor//Color.White
                 ),
                 title = {
                     Text(
@@ -72,29 +74,42 @@ fun CartScreen(
                 },
             )
         }
-    ) {
-        CartScreenContent(state = state)
+    ) {padding->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            CartScreenContent(
+                state = state,
+                modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 12.dp)
+            )
+        }
     }
 }
 
 @Composable
-private fun CartScreenContent(state: CartItemsState) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn {
+private fun CartScreenContent(state: CartItemsState, modifier: Modifier = Modifier) {
+    Box(modifier.fillMaxSize()) {
+        LazyColumn (
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 190.dp) // Leave space for the CheckoutComponent
+        ) {
             items(state.cartItems) { cartItem ->
                 CartItem(
                     cartItem = cartItem,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(130.dp)
+                        .fillMaxHeight()
                         .padding(4.dp),
                 )
             }
-            item {
-                if (state.cartItems.isNotEmpty()) {
-                    CheckoutComponent(state = state)
-                }
-            }
+//            item {
+//                if (state.cartItems.isNotEmpty()) {
+//                    CheckoutComponent(state = state)
+//                }
+//            }
         }
 
         if (state.isLoading) {
@@ -140,12 +155,26 @@ private fun CartScreenContent(state: CartItemsState) {
                 )
             }
         }
+
+        // Display the fixed CheckoutComponent at the bottom
+        if (state.cartItems.isNotEmpty()) {
+            CheckoutComponent(
+                state = state,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(12.dp)
+            )
+        }
     }
 }
 
 @Composable
-private fun CheckoutComponent(state: CartItemsState) {
-    Column(Modifier.padding(12.dp)) {
+private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifier) {
+    Column(modifier = modifier
+        .padding(5.dp)
+        .fillMaxWidth()) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -210,6 +239,9 @@ fun CartItem(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.elevatedCardElevation(3.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
     ) {
         Row {
             Image(
@@ -223,16 +255,16 @@ fun CartItem(
                 ),
                 contentDescription = null,
                 modifier = Modifier
-                    .padding(5.dp)
+                    .padding(12.dp)
                     .weight(1f)
                     .fillMaxHeight(),
-                contentScale = ContentScale.Inside
+                contentScale = ContentScale.Inside,
             )
-            Spacer(modifier = Modifier.width(5.dp))
+            //Spacer(modifier = Modifier.width(5.dp))
             Column(
                 modifier = Modifier
                     .weight(2f)
-                    .padding(5.dp)
+                    .padding(10.dp)
             ) {
                 Text(
                     text = cartItem.name,

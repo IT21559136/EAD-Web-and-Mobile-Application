@@ -88,11 +88,17 @@ fun AccountScreen(
                 }
             )
         }
-    ) {
-        AccountScreenContent(
-            user = viewModel.profileState.value,
-            onClickSignOut = { viewModel.logout() }
-        )
+    ) { padding->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            AccountScreenContent(
+                user = viewModel.profileState.value,
+                onClickSignOut = { viewModel.logout() }
+            )
+        }
     }
 }
 
