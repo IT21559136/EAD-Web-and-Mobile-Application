@@ -1,5 +1,7 @@
-﻿using BackendServices.DTOs;
+﻿using System.Security.Claims;
+using BackendServices.DTOs;
 using BackendServices.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BackendServices.Controllers;
 
@@ -33,13 +35,44 @@ public class ProductController : ControllerBase
         return Ok(product);
     }
 
+    //[HttpPost]
+    //[Authorize(Roles = "Vendor")]
+    // public async Task<IActionResult> CreateProduct([FromBody] ProductDTO productDTO)
+    // {
+    //     //var vendorId = User.Identity.Name; // Assuming authentication provides vendor ID
+    //     var vendorId = User.Claims.FirstOrDefault(c => c.Type == "VendorId")?.Value;
+    //     
+    //     if (string.IsNullOrEmpty(vendorId))
+    //     {
+    //         return Unauthorized("Vendor ID not found.");
+    //     }
+    //
+    //     await _productService.CreateProduct(productDTO, vendorId);
+    //     return CreatedAtAction(nameof(GetProductById), new { id = productDTO.Name }, productDTO);
+    // }
+    
     [HttpPost]
+    [Authorize(Roles = "Vendor")]
     public async Task<IActionResult> CreateProduct([FromBody] ProductDTO productDTO)
     {
-        var vendorId = User.Identity.Name; // Assuming authentication provides vendor ID
+        // Check authentication state
+        if (!User.Identity.IsAuthenticated)
+        {
+            return Unauthorized("User is not authenticated.");
+        }
+
+        var vendorId = User.Claims.FirstOrDefault(c => c.Type == "VendorId")?.Value;
+
+        if (string.IsNullOrEmpty(vendorId))
+        {
+            return Unauthorized("Vendor ID not found.");
+        }
+
         await _productService.CreateProduct(productDTO, vendorId);
         return CreatedAtAction(nameof(GetProductById), new { id = productDTO.Name }, productDTO);
     }
+
+
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct(string id, [FromBody] ProductDTO productDTO)
