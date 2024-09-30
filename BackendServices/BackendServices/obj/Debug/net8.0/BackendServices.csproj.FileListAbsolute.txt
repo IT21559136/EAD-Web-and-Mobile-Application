@@ -45,3 +45,13 @@ D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\obj\Deb
 D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\obj\Debug\net8.0\BackendServices.pdb
 D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\obj\Debug\net8.0\BackendServices.genruntimeconfig.cache
 D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\obj\Debug\net8.0\ref\BackendServices.dll
+D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\bin\Debug\net8.0\BCrypt.Net-Next.dll
+D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+D:\GitHub\EAD-Web-and-Mobile-Application\BackendServices\BackendServices\bin\Debug\net8.0\Microsoft.Bcl.TimeProvider.dll

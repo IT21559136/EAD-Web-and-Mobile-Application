@@ -1,7 +1,6 @@
 ﻿namespace BackendServices.DTOs;
 
-// DTOs/RegisterDto.cs
-public class RegisterDto
+public class LoginDTO
 {
     public string Username { get; set; }
     public string Password { get; set; }

@@ -1,5 +1,9 @@
-﻿using BackendServices.DTOs;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using BackendServices.DTOs;
 using BackendServices.Models;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 
 
@@ -14,14 +18,16 @@ using BCrypt.Net;
 public class AuthController : ControllerBase
 {
     private readonly IMongoCollection<User> _users;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(IMongoDatabase database)
+    public AuthController(IMongoDatabase database, IConfiguration configuration)
     {
         _users = database.GetCollection<User>("Users");
+        _configuration = configuration;
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+    public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
     {
         var userExists = await _users.Find(u => u.Username == registerDto.Username).FirstOrDefaultAsync();
         if (userExists != null)
@@ -44,6 +50,66 @@ public class AuthController : ControllerBase
 
         return Ok("User registered successfully.");
     }
+    
+    
+    // [HttpPost("login")]
+    // public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
+    // {
+    //     var user = await _users.Find(u => u.Username == loginDto.Username).FirstOrDefaultAsync();
+    //     if (user == null || !BCrypt.Verify(loginDto.Password, user.PasswordHash))
+    //     {
+    //         return Unauthorized("Invalid credentials.");
+    //     }
+    //
+    //     var tokenHandler = new JwtSecurityTokenHandler();
+    //     var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]); // Use the key from appsettings.json
+    //     var tokenDescriptor = new SecurityTokenDescriptor
+    //     {
+    //         Subject = new ClaimsIdentity(new[]
+    //         {
+    //             new Claim(ClaimTypes.Name, user.Username),
+    //             new Claim(ClaimTypes.Role, user.Role)
+    //         }),
+    //         Expires = DateTime.UtcNow.AddHours(1),
+    //         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+    //     };
+    //     var token = tokenHandler.CreateToken(tokenDescriptor);
+    //     var tokenString = tokenHandler.WriteToken(token);
+    //
+    //     return Ok(new { Token = tokenString });
+    // }
+    
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
+    {
+        var user = await _users.Find(u => u.Username == loginDto.Username).FirstOrDefaultAsync();
+        if (user == null || !BCrypt.Verify(loginDto.Password, user.PasswordHash))
+        {
+            return Unauthorized("Invalid credentials.");
+        }
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, user.Username), // Use Username for authentication
+                new Claim("VendorId", user.Id), // Store ObjectId as VendorId
+                new Claim(ClaimTypes.Role, user.Role) // Store Role
+            }),
+            Expires = DateTime.UtcNow.AddHours(1),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var tokenString = tokenHandler.WriteToken(token);
+
+        return Ok(new { Token = tokenString });
+    }
+
+
+
+    
 }
 
 
