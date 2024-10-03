@@ -127,6 +127,17 @@ namespace BackendServices.Services
         {
             return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
         }
+        // Notify vendor about an order
+        public async Task NotifyVendorAsync(string vendorEmail, string message)
+        {
+            // Implement notification logic (email, SMS, or push notification)
+        }
+
+        // Notify customer about the order status change
+        public async Task NotifyCustomerAsync(string customerId, string message)
+        {
+            // Implement notification logic
+        }
     }
 
     

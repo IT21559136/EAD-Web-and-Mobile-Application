@@ -1,28 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "D:\\GitHub\\EAD-Web-and-Mobile-Application\\BackendServices\\BackendServices\\BackendServices.csproj": {}
+    "C:\\Users\\Tharuka Nisal\\Documents\\EAD\\EAD-Web-and-Mobile-Application\\BackendServices\\BackendServices\\BackendServices.csproj": {}
   },
   "projects": {
-    "D:\\GitHub\\EAD-Web-and-Mobile-Application\\BackendServices\\BackendServices\\BackendServices.csproj": {
+    "C:\\Users\\Tharuka Nisal\\Documents\\EAD\\EAD-Web-and-Mobile-Application\\BackendServices\\BackendServices\\BackendServices.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\EAD-Web-and-Mobile-Application\\BackendServices\\BackendServices\\BackendServices.csproj",
+        "projectUniqueName": "C:\\Users\\Tharuka Nisal\\Documents\\EAD\\EAD-Web-and-Mobile-Application\\BackendServices\\BackendServices\\BackendServices.csproj",
         "projectName": "BackendServices",
-        "projectPath": "D:\\GitHub\\EAD-Web-and-Mobile-Application\\BackendServices\\BackendServices\\BackendServices.csproj",
-        "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\EAD-Web-and-Mobile-Application\\BackendServices\\BackendServices\\obj\\",
+        "projectPath": "C:\\Users\\Tharuka Nisal\\Documents\\EAD\\EAD-Web-and-Mobile-Application\\BackendServices\\BackendServices\\BackendServices.csproj",
+        "packagesPath": "C:\\Users\\Tharuka Nisal\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Tharuka Nisal\\Documents\\EAD\\EAD-Web-and-Mobile-Application\\BackendServices\\BackendServices\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\Tharuka Nisal\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -94,7 +91,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Users\\Tharuka Nisal\\.dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
