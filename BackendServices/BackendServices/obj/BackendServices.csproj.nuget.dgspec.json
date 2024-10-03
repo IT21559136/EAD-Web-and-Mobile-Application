@@ -60,7 +60,7 @@
             },
             "Microsoft.IdentityModel.Tokens": {
               "target": "Package",
-              "version": "[8.1.0, )"
+              "version": "[8.0.0, )"
             },
             "MongoDB.Driver": {
               "target": "Package",
@@ -72,7 +72,7 @@
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
-              "version": "[8.0.2, )"
+              "version": "[8.0.0, )"
             }
           },
           "imports": [
