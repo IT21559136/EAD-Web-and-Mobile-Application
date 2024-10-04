@@ -60,7 +60,7 @@ fun AccountScreen(
                         // Adjusting back stack
                         popUpTo("account") { inclusive = false }
                         popUpTo("home") { inclusive = false }
-                        popUpTo("wishlist") { inclusive = false }
+                        popUpTo("orders") { inclusive = false }
                         popUpTo("cart") { inclusive = false }
                     }
                 }
