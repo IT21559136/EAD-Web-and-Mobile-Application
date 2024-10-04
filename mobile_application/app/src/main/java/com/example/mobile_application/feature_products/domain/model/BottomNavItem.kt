@@ -8,9 +8,9 @@ sealed class BottomNavItem(var icon: Int, var route: String) {
         route = "home" // Adjust to your actual route name
     )
 
-    data object Wishlist : BottomNavItem(
+    data object Orders : BottomNavItem(
         icon = R.drawable.ic_shopping_bag,
-        route = "wishlist" // Adjust to your actual route name
+        route = "orders" // Adjust to your actual route name
     )
 
     data object Cart : BottomNavItem(

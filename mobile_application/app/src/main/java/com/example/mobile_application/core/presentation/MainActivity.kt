@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     // Define the routes where the bottom bar should be visible
                     val bottomBarRoutes = listOf(
                         "home",
-                        "wishlist",
+                        "orders",
                         "cart",
                         "account"
                     )

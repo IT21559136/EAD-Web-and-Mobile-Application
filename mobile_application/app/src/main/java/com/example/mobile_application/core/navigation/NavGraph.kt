@@ -23,6 +23,7 @@ import com.example.mobile_application.feature_auth.presentation.auth_dashboard.A
 import com.example.mobile_application.feature_auth.presentation.login.LoginScreen
 import com.example.mobile_application.feature_auth.presentation.register.RegisterScreen
 import com.example.mobile_application.feature_cart.presentation.cart.CartScreen
+import com.example.mobile_application.feature_orders.presentation.OrderScreen
 import com.example.mobile_application.feature_products.domain.model.Product
 import com.example.mobile_application.feature_products.presentation.home.HomeScreen
 import com.example.mobile_application.feature_products.presentation.product_details.ProductDetailsScreen
@@ -40,7 +41,7 @@ fun NavGraph(navController: NavHostController) {
         composable("signup") { RegisterScreen(navController) }
         composable("home") { HomeScreen(navController) }
         composable("account") { AccountScreen(navController) }
-        composable("wishlist") { WishlistScreen(navController) }
+        composable("orders") { OrderScreen(navController) }
         composable("cart") { CartScreen(navController) }
 
         // Product Details Route (with productId as argument)
