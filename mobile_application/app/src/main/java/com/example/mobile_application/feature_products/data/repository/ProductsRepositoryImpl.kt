@@ -2,7 +2,6 @@ package com.example.mobile_application.feature_products.data.repository
 
 import com.example.mobile_application.core.util.Resource
 import com.example.mobile_application.feature_products.data.remote.ProductsApiService
-import com.example.mobile_application.feature_products.data.remote.dto.ProductDto
 import com.example.mobile_application.feature_products.data.remote.mappers.toDomain
 import com.example.mobile_application.feature_products.domain.model.Product
 import com.example.mobile_application.feature_products.domain.repository.ProductsRepository
