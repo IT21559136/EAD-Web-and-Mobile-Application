@@ -244,6 +244,12 @@ namespace BackendServices.Services
 
         return true;
     }
+    
+    
+    public async Task DeleteCommentAsync(string vendorId, string commentId)
+    {
+        await _vendorRepository.DeleteCommentAsync(vendorId, commentId);
+    }
 
 
     
