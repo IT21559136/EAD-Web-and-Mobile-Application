@@ -171,6 +171,27 @@ namespace BackendServices.Controllers
 
             return Ok("Comment updated successfully.");
         }
+        
+        
+        
+        [Authorize]
+        [HttpDelete("{vendorId}/comments/{commentId}")]
+        public async Task<IActionResult> DeleteComment(string vendorId, string commentId)
+        {
+            try
+            {
+                await _vendorService.DeleteCommentAsync(vendorId, commentId);
+                return NoContent();  // Returns HTTP 204
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);  // Returns HTTP 404 if vendor or comment not found
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);  // Returns HTTP 500 for any other error
+            }
+        }
 
 
 

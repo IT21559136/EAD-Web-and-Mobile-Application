@@ -12,4 +12,6 @@ public interface IVendorRepository
     Task<Vendor> GetVendorByIdAsync(string vendorId);
     Task AddCommentAsync(string vendorId, VendorComment comment);
     
+    Task DeleteCommentAsync(string vendorId, string commentId);
+    
 }
