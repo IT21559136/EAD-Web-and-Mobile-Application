@@ -19,18 +19,25 @@ class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase
 ) : ViewModel() {
 
-    private val _usernameState = mutableStateOf(TextFieldState(text = "johnd"))
+    private val _usernameState = mutableStateOf(TextFieldState())
     val usernameState: State<TextFieldState> = _usernameState
 
     fun setUsername(value: String) {
         _usernameState.value = _usernameState.value.copy(text = value)
     }
 
-    private val _passwordState = mutableStateOf(TextFieldState(text = "m38rmF$"))
+    private val _passwordState = mutableStateOf(TextFieldState())
     val passwordState: State<TextFieldState> = _passwordState
 
     fun setPassword(value: String) {
         _passwordState.value = _passwordState.value.copy(text = value)
+    }
+
+    private val _emailState = mutableStateOf(TextFieldState())
+    val emailState: State<TextFieldState> = _emailState
+
+    fun setEmail(value: String) {
+        _emailState.value = _emailState.value.copy(text = value)
     }
 
     private val _rememberMeState = mutableStateOf(false)
@@ -53,7 +60,8 @@ class LoginViewModel @Inject constructor(
             val loginResult = loginUseCase(
                 username = usernameState.value.text,
                 password = passwordState.value.text,
-                rememberMe = rememberMeState.value
+                email = emailState.value.text,
+                rememberMe = rememberMeState.value,
             )
 
             _loginState.value = loginState.value.copy(isLoading = false)
@@ -64,6 +72,10 @@ class LoginViewModel @Inject constructor(
 
             if (loginResult.passwordError != null) {
                 _passwordState.value = passwordState.value.copy(error = loginResult.passwordError)
+            }
+
+            if (loginResult.emailError != null) {
+                _emailState.value = emailState.value.copy(error = loginResult.emailError)
             }
 
             when (loginResult.result) {

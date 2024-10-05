@@ -1,5 +1,6 @@
 package com.example.mobile_application.feature_auth.presentation.login
 
+import android.provider.ContactsContract.CommonDataKinds.Email
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.HistoricalChange
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -34,6 +36,7 @@ fun LoginScreen(
     // States from ViewModel
     val usernameState = viewModel.usernameState.value
     val passwordState = viewModel.passwordState.value
+    val emailState = viewModel.emailState.value
     val rememberMeState = viewModel.rememberMeState.value
     val loginState = viewModel.loginState.value
 
@@ -67,10 +70,12 @@ fun LoginScreen(
                 modifier = Modifier.padding(padding),
                 usernameState = usernameState,
                 passwordState = passwordState,
+                emailState = emailState,
                 rememberMeState = rememberMeState,
                 loginState = loginState,
                 onUserNameTextChange = { viewModel.setUsername(it) },
                 onPasswordTextChange = { viewModel.setPassword(it) },
+                onEmailTextChange = {viewModel.setEmail(it)},
                 onRememberMeClicked = { viewModel.setRememberMe(it) },
                 onClickForgotPassword = { navController.navigate("forgot_password") },
                 onClickDontHaveAccount = { navController.navigate("signup") },
@@ -87,10 +92,12 @@ private fun LoginScreenContent(
     modifier: Modifier = Modifier,
     usernameState: TextFieldState,
     passwordState: TextFieldState,
+    emailState:TextFieldState,
     rememberMeState: Boolean,
     loginState: LoginState,
     onUserNameTextChange: (String) -> Unit,
     onPasswordTextChange: (String) -> Unit,
+    onEmailTextChange: (String) -> Unit,
     onRememberMeClicked: (Boolean) -> Unit,
     onClickForgotPassword: () -> Unit,
     onClickDontHaveAccount: () -> Unit,
@@ -166,6 +173,32 @@ private fun LoginScreenContent(
                     if (passwordState.error != null) {
                         Text(
                             text = passwordState.error ?: "",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column {
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = emailState.text,
+                        onValueChange = onEmailTextChange,
+                        label = { Text(text = "Email") },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+                        maxLines = 1,
+                        singleLine = true,
+                        isError = emailState.error != null
+                    )
+                    if (emailState.error != null) {
+                        Text(
+                            text = emailState.error ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.End,

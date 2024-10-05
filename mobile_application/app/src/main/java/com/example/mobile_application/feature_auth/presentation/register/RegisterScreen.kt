@@ -7,8 +7,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -18,31 +22,89 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.mobile_application.core.domain.model.TextFieldState
 import com.example.mobile_application.core.presentation.ui.theme.YellowMain
 import com.example.mobile_application.core.presentation.ui.theme.poppins
+import com.example.mobile_application.core.util.UiEvents
+import com.example.mobile_application.feature_auth.presentation.login.LoginState
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(
+    navController: NavController,
+    viewModel: RegisterViewModel = hiltViewModel()
+) {
+    // States from ViewModel
+    val usernameState = viewModel.usernameState.value
+    val passwordState = viewModel.passwordState.value
+    val confirmPwdState = viewModel.confirmPwdState.value
+    val emailState = viewModel.emailState.value
+    val loginState = viewModel.loginState.value
+
+    // SnackbarHostState to manage snackbar behavior
+    val snackbarHostState = remember { SnackbarHostState() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Handle events from the ViewModel
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is UiEvents.SnackbarEvent -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.message,
+                        duration = SnackbarDuration.Short
+                    )
+                }
+                is UiEvents.NavigateEvent -> {
+                    navController.navigate(event.route) {
+                        popUpTo("signup") { inclusive = true } // Optional back stack handling
+                    }
+                }
+            }
+        }
+    }
+
     Scaffold(
-        content = {
-            RegisterScreenContent(
-                modifier = Modifier.fillMaxWidth(),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { padding->
+             RegisterScreenContent(
+                modifier = Modifier.fillMaxWidth().padding(),
+                usernameState = usernameState,
+                passwordState = passwordState,
+                confirmPwdState = confirmPwdState,
+                emailState = emailState,
+                loginState = loginState,
+                onUserNameTextChange = { viewModel.setUsername(it) },
+                onPasswordTextChange = { viewModel.setPassword(it) },
+                onConfirmPwdTextChange = { viewModel.setConfirmPassword(it) },
+                onEmailTextChange = {viewModel.setEmail(it)},
                 onClickSignUp = {
+                    keyboardController?.hide()
+                    viewModel.registerUser()
                     navController.navigate("login")
                 }
             )
         }
-    )
 }
 
 @Composable
 private fun RegisterScreenContent(
     modifier: Modifier = Modifier,
+    usernameState: TextFieldState,
+    passwordState: TextFieldState,
+    confirmPwdState: TextFieldState,
+    emailState: TextFieldState,
+    loginState: LoginState,
+    onUserNameTextChange: (String) -> Unit,
+    onPasswordTextChange: (String) -> Unit,
+    onConfirmPwdTextChange: (String) -> Unit,
+    onEmailTextChange: (String) -> Unit,
     onClickSignUp: () -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)
     ) {
         item {
@@ -64,9 +126,9 @@ private fun RegisterScreenContent(
 
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = "",
-                onValueChange = {},
-                label = { Text(text = "Name") },
+                value = usernameState.text,
+                onValueChange = onUserNameTextChange,
+                label = { Text(text = "Username") },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     capitalization = KeyboardCapitalization.Words,
                     keyboardType = KeyboardType.Text,
@@ -74,15 +136,25 @@ private fun RegisterScreenContent(
                 ),
                 maxLines = 1,
                 singleLine = true,
+                isError = usernameState.error != null
             )
+            if (usernameState.error != null) {
+                Text(
+                    text = usernameState.error ?: "",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
         item {
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = "",
-                onValueChange = {},
+                value = emailState.text,
+                onValueChange = onEmailTextChange,
                 label = { Text(text = "Email") },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     autoCorrectEnabled = true,
@@ -90,16 +162,52 @@ private fun RegisterScreenContent(
                 ),
                 maxLines = 1,
                 singleLine = true,
+                isError = emailState.error != null
             )
+            if (emailState.error != null) {
+                Text(
+                    text = emailState.error ?: "",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = passwordState.text,
+                onValueChange = onPasswordTextChange,
+                label = { Text(text = "Password") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    autoCorrectEnabled = true,
+                    keyboardType = KeyboardType.Password,
+                ),
+                maxLines = 1,
+                singleLine = true,
+                isError = passwordState.error != null
+            )
+            if (passwordState.error != null) {
+                Text(
+                    text = passwordState.error ?: "",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
         item {
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = "",
-                onValueChange = {},
-                label = { Text(text = "Password") },
+                value = confirmPwdState.text,
+                onValueChange = onConfirmPwdTextChange,
+                label = { Text(text = "Confirm Password") },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     autoCorrectEnabled = true,
                     keyboardType = KeyboardType.Password,
@@ -108,19 +216,13 @@ private fun RegisterScreenContent(
                 singleLine = true,
             )
         }
+
         item {
             Spacer(modifier = Modifier.height(32.dp))
-
-            val context = LocalContext.current
             Button(
-                onClick = {
-                    Toast.makeText(
-                        context,
-                        "This API does not provide an endpoint for registering, just login with the credentials provided in the README file",
-                        Toast.LENGTH_LONG
-                    ).show()
-                },
-                shape = RoundedCornerShape(8)
+                onClick = onClickSignUp,
+                shape = RoundedCornerShape(8),
+                enabled = !loginState.isLoading
             ) {
                 Text(
                     modifier = Modifier
@@ -129,6 +231,7 @@ private fun RegisterScreenContent(
                 )
             }
         }
+
         item {
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -148,6 +251,18 @@ private fun RegisterScreenContent(
                     fontFamily = poppins,
                     textAlign = TextAlign.Center
                 )
+            }
+        }
+
+        item {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (loginState.isLoading) {
+                    CircularProgressIndicator()
+                }
             }
         }
     }

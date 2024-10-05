@@ -1,10 +1,12 @@
 package com.example.mobile_application.feature_auth.data.repository
 
+import com.example.mobile_application.core.util.JwtUtils.getUserIdFromToken
 import com.example.mobile_application.core.util.Resource
 import com.example.mobile_application.feature_auth.data.dto.UserResponseDto
 import com.example.mobile_application.feature_auth.data.local.AuthPreferences
 import com.example.mobile_application.feature_auth.data.remote.AuthApiService
 import com.example.mobile_application.feature_auth.data.remote.request.LoginRequest
+import com.example.mobile_application.feature_auth.data.remote.request.RegisterRequest
 import com.example.mobile_application.feature_auth.domain.repository.LoginRepository
 import kotlinx.coroutines.flow.first
 import retrofit2.HttpException
@@ -15,12 +17,46 @@ class LoginRepositoryImpl(
     private val authApiService: AuthApiService,
     private val authPreferences: AuthPreferences
 ) : LoginRepository {
+    override suspend fun register(registerRequest: RegisterRequest): Resource<Unit> {
+        Timber.d("Register called")
+        return try {
+            // Send the registration request to the API
+            authApiService.registerUser(registerRequest)
+
+            // Optionally, you can fetch the user details after successful registration
+            val newUser = getAllUsers(registerRequest.email)
+
+            if (newUser != null) {
+                // Save the user data locally
+                authPreferences.saveUserdata(newUser)
+            }
+
+            // Return success if no issues
+            Resource.Success(Unit)
+        } catch (e: IOException) {
+            Timber.e("Registration failed due to network error: ${e.localizedMessage}")
+            Resource.Error(message = "Could not reach the server, please check your internet connection!")
+        } catch (e: HttpException) {
+            Timber.e("Registration failed due to server error: ${e.localizedMessage}")
+            Resource.Error(message = "An unknown error occurred, please try again!")
+        }
+    }
+
     override suspend fun login(loginRequest: LoginRequest, rememberMe: Boolean): Resource<Unit> {
         Timber.d("Login called")
         return try {
             val response = authApiService.loginUser(loginRequest)
             Timber.d("Login Token: ${response.token}")
 
+            // Extract user ID from the token
+            val userId = getUserIdFromToken(response.token)
+            Timber.d("Extracted User ID: $userId")
+
+            if (userId != null) {
+                //fetch more user data using the userId
+                val userResponse = authApiService.getUser(userId.toInt())
+                authPreferences.saveUserdata(userResponse)
+            }
             getAllUsers(loginRequest.username)?.let { authPreferences.saveUserdata(it) }
 
             if (rememberMe) {
