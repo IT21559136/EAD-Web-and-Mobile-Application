@@ -3,8 +3,9 @@ package com.example.mobile_application.feature_auth.domain.use_case
 import com.example.mobile_application.feature_auth.data.remote.request.RegisterRequest
 import com.example.mobile_application.feature_auth.domain.model.LoginResult
 import com.example.mobile_application.feature_auth.domain.repository.LoginRepository
+import javax.inject.Inject
 
-class RegisterUseCase (
+class RegisterUseCase @Inject constructor(
     private val loginRepository: LoginRepository
 ){
     suspend operator fun invoke(

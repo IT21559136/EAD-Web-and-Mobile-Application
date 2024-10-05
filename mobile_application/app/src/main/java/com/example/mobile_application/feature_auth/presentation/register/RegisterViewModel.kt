@@ -1,6 +1,5 @@
 package com.example.mobile_application.feature_auth.presentation.register
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -55,15 +54,6 @@ class RegisterViewModel @Inject constructor(
     // Event flow to notify UI about events (like success or errors)
     private val _eventFlow = MutableSharedFlow<UiEvents>()
     val eventFlow: SharedFlow<UiEvents> = _eventFlow.asSharedFlow()
-
-    // States for form inputs and error handling
-//    var username: MutableState<String> = mutableStateOf("")
-//    var email: MutableState<String> = mutableStateOf("")
-//    var password: MutableState<String> = mutableStateOf("")
-//    var confirmPassword: MutableState<String> = mutableStateOf("")
-//
-//    var isLoading: MutableState<Boolean> = mutableStateOf(false)
-    private var errorMessage: MutableState<String?> = mutableStateOf(null)
 
     fun registerUser() {
         viewModelScope.launch {

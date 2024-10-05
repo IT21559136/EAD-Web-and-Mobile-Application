@@ -141,7 +141,7 @@ fun OrderItem(
             Image(
                 painter = rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
-                        .data(order.productImageUrl)
+                        .data(order.image)
                         .apply { crossfade(true) }
                         .build()
                 ),

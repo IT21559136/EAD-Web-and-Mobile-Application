@@ -36,7 +36,7 @@ class OrderViewModel @Inject constructor(
         viewModelScope.launch {
             getOrdersUseCase().collect { result ->
                 _orderState.value = orderState.value.copy(
-                    orders = result
+                    orders = result.data?: emptyList()
                 )
             }
         }

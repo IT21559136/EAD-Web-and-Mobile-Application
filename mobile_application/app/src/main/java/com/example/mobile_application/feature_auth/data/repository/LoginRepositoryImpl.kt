@@ -1,5 +1,6 @@
 package com.example.mobile_application.feature_auth.data.repository
 
+import android.util.Log
 import com.example.mobile_application.core.util.JwtUtils.getUserIdFromToken
 import com.example.mobile_application.core.util.Resource
 import com.example.mobile_application.feature_auth.data.dto.UserResponseDto
@@ -64,6 +65,8 @@ class LoginRepositoryImpl(
             }
             Resource.Success(Unit)
         } catch (e: IOException) {
+            Log.d("login error","Login failed due to network error: ${e.localizedMessage}")
+            Timber.e("Login failed due to network error: ${e.localizedMessage}")
             Resource.Error(message = "Could not reach the server, please check your internet connection!")
         } catch (e: HttpException) {
             Resource.Error(message = "An Unknown error occurred, please try again!")

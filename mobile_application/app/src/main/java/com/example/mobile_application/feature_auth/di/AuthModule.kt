@@ -1,6 +1,7 @@
 package com.example.mobile_application.feature_auth.di
 
 import com.example.mobile_application.core.util.Constants.BASE_URL
+import com.example.mobile_application.core.util.getUnsafeOkHttpClient
 import com.example.mobile_application.feature_auth.data.local.AuthPreferences
 import com.example.mobile_application.feature_auth.data.remote.AuthApiService
 import com.example.mobile_application.feature_auth.data.repository.LoginRepositoryImpl
@@ -8,6 +9,7 @@ import com.example.mobile_application.feature_auth.domain.repository.LoginReposi
 import com.example.mobile_application.feature_auth.domain.use_case.AutoLoginUseCase
 import com.example.mobile_application.feature_auth.domain.use_case.LoginUseCase
 import com.example.mobile_application.feature_auth.domain.use_case.LogoutUseCase
+import com.example.mobile_application.feature_auth.domain.use_case.RegisterUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,6 +27,7 @@ object AuthModule {
     fun provideAuthApiService(): AuthApiService {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .client(getUnsafeOkHttpClient())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(AuthApiService::class.java)
@@ -46,6 +49,12 @@ object AuthModule {
     @Singleton
     fun provideLoginUseCase(loginRepository: LoginRepository): LoginUseCase {
         return LoginUseCase(loginRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegisterUseCase(loginRepository: LoginRepository): RegisterUseCase {
+        return RegisterUseCase(loginRepository)
     }
 
     @Provides
