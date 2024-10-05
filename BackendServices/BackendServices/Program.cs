@@ -240,6 +240,70 @@
 // app.Run();
 
 
+// using System.Text;
+// using BackendServices;
+// using BackendServices.Configurations;
+// using BackendServices.Helpers;
+// using BackendServices.Models;
+// using BackendServices.Services;
+// using Microsoft.AspNetCore.Authentication.JwtBearer;
+// using Microsoft.IdentityModel.Tokens;
+//
+// var builder = WebApplication.CreateBuilder(args);
+//
+// // Add MongoDB settings
+// builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings"));
+// builder.Services.AddScoped<UserService>();  // Change to Scoped
+// builder.Services.AddScoped<VendorService>();  // Change to Scoped
+// builder.Services.AddScoped<ProductService>();  // Change to Scoped
+//
+// // Register repositories as scoped services
+// builder.Services.AddScoped<IUserRepository, UserRepository>();
+// builder.Services.AddScoped<IVendorRepository, VendorRepository>();
+// builder.Services.AddScoped<IProductRepository, ProductRepository>();
+//
+// // Add JWT settings
+// builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+// builder.Services.AddSingleton<JwtHelper>();  // JwtHelper can remain as singleton
+//
+// // Add JWT authentication
+// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//     .AddJwtBearer(options =>
+//     {
+//         options.TokenValidationParameters = new TokenValidationParameters
+//         {
+//             ValidateIssuer = true,
+//             ValidateAudience = true,
+//             ValidateLifetime = true,
+//             ValidateIssuerSigningKey = true,
+//             ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+//             ValidAudience = builder.Configuration["JwtSettings:Audience"],
+//             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]))
+//         };
+//     });
+//
+// // Add services to the container
+// builder.Services.AddControllers();
+// builder.Services.AddEndpointsApiExplorer();
+// builder.Services.AddSwaggerGen();
+//
+// var app = builder.Build();
+//
+// // Configure the HTTP request pipeline
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseSwagger();
+//     app.UseSwaggerUI();
+// }
+//
+// app.UseHttpsRedirection();
+// app.UseAuthentication();  // Ensure Authentication is used
+// app.UseAuthorization();
+// app.MapControllers();
+//
+// app.Run();
+
+
 using System.Text;
 using BackendServices;
 using BackendServices.Configurations;
@@ -261,6 +325,9 @@ builder.Services.AddScoped<ProductService>();  // Change to Scoped
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IVendorRepository, VendorRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();  // Register NotificationService
+builder.Services.AddScoped<IOrderRepository, OrderRepository>(); 
+builder.Services.AddScoped<OrderService>(); 
 
 // Add JWT settings
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
