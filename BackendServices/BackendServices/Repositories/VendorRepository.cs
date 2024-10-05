@@ -55,6 +55,25 @@ public class VendorRepository : IVendorRepository
     }
     
     
+    public async Task DeleteCommentAsync(string vendorId, string commentId)
+    {
+        var vendor = await _vendors.Find(v => v.Id == vendorId).FirstOrDefaultAsync();
+        if (vendor == null)
+        {
+            throw new ArgumentException("Vendor not found.");
+        }
+
+        var comment = vendor.Comments.FirstOrDefault(c => c.Id == commentId);
+        if (comment == null)
+        {
+            throw new ArgumentException("Comment not found.");
+        }
+
+        vendor.Comments.Remove(comment);
+        await _vendors.ReplaceOneAsync(v => v.Id == vendor.Id, vendor);
+    }
+    
+    
 
 
 }

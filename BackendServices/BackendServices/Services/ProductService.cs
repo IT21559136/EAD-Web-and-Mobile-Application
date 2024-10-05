@@ -242,5 +242,17 @@ namespace BackendServices.Services
             }
             return products;
         }
+        
+        
+        public async Task<string> GetVendorEmailByProductIdAsync(string productId)
+        {
+            var product = await _productRepository.GetProductByIdAsync(productId);
+            if (product == null)
+            {
+                throw new InvalidOperationException("Product not found.");
+            }
+
+            return product.VendorEmail;
+        }
     }
 }
