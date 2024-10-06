@@ -1,26 +1,94 @@
 // src/components/UserManagement.js
-import React, { useState } from 'react';
-import { Table, Button, Form, Input, Select, Switch, Space, Modal } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Form, Input, Select, Switch, Space, Modal, message } from 'antd';
 import { PlusOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
-const initialUsers = [
-  { key: '1', fullName: 'John Doe', email: 'john@example.com', role: 'Administrator', status: true },
-  { key: '2', fullName: 'Jane Smith', email: 'jane@example.com', role: 'Vendor', status: false },
-  { key: '3', fullName: 'Michael Brown', email: 'michael@example.com', role: 'CSR', status: true },
-];
-
 const UserManagement = () => {
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState([]);
   const [editingKey, setEditingKey] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [addForm] = Form.useForm();
   const [editForm] = Form.useForm();
   const [searchText, setSearchText] = useState('');
 
+  // Fetch users from API on component mount
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const token = localStorage.getItem('token'); // Assuming you are storing the token in localStorage
+        if (token) {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          console.log('Token payload:', payload); // Check for expiry and other claims
+        }
+
+        const response = await fetch('/api/Auth/users', {
+          headers: {
+            // 'Authorization': `Bearer ${token}`, // Include the token
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('Response:', response);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const formattedUsers = data.map(user => ({
+          key: user.id,
+          fullName: user.username,
+          email: user.email,
+          role: user.role,
+          status: user.status === 1
+        }));
+
+        setUsers(formattedUsers);
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  // Add New User with API
+  const handleAddUser = async () => {
+    try {
+      const values = await addForm.validateFields();
+      const newUser = {
+        username: values.fullName,
+        email: values.email,
+        password: values.email, // Use email as password for simplicity
+        role: values.role,
+      };
+
+      const response = await fetch('/api/Auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create user.');
+      }
+
+      setUsers([...users, { key: users.length + 1, ...values, status: values.status }]);
+      setIsModalVisible(false);
+      addForm.resetFields();
+      message.success('User added successfully!');
+    } catch (error) {
+      message.error(error.message || 'Failed to add user.');
+    }
+  };
+
   // Filter users by search text
-  const filteredUsers = users.filter((user) => user.fullName.toLowerCase().includes(searchText.toLowerCase()));
+  const filteredUsers = users.filter((user) =>
+    user.fullName?.toLowerCase().includes(searchText?.toLowerCase() || '')
+  );
+
 
   // Table Columns for Users with Editing
   const columns = [
@@ -139,24 +207,24 @@ const UserManagement = () => {
     setEditingKey('');
   };
 
-  // Add New User Modal
-  const handleAddUser = () => {
-    addForm
-      .validateFields()
-      .then((values) => {
-        const newUser = {
-          key: `${users.length + 1}`,
-          ...values,
-          status: values.status ? true : false,
-        };
-        setUsers([...users, newUser]);
-        setIsModalVisible(false);
-        addForm.resetFields();
-      })
-      .catch((info) => {
-        console.log('Validate Failed:', info);
-      });
-  };
+  // // Add New User Modal
+  // const handleAddUser = () => {
+  //   addForm
+  //     .validateFields()
+  //     .then((values) => {
+  //       const newUser = {
+  //         key: `${users.length + 1}`,
+  //         ...values,
+  //         status: values.status ? true : false,
+  //       };
+  //       setUsers([...users, newUser]);
+  //       setIsModalVisible(false);
+  //       addForm.resetFields();
+  //     })
+  //     .catch((info) => {
+  //       console.log('Validate Failed:', info);
+  //     });
+  // };
 
   // Search handler
   const onSearch = (e) => {
