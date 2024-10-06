@@ -55,6 +55,7 @@ public class OrderRepository : IOrderRepository
         var client = new MongoClient(mongoSettings.Value.ConnectionString);
         var database = client.GetDatabase(mongoSettings.Value.DatabaseName);
         _orders = database.GetCollection<Order>("Orders");
+        
     }
 
     public async Task CreateOrderAsync(Order order)
@@ -71,4 +72,14 @@ public class OrderRepository : IOrderRepository
     {
         await _orders.ReplaceOneAsync(o => o.Id == order.Id, order);
     }
+    
+    
+    // Fetch orders by vendor email
+    public async Task<List<Order>> GetOrdersByVendorEmailAsync(string vendorEmail)
+    {
+        var filter = Builders<Order>.Filter.ElemMatch(o => o.Items, item => item.VendorEmail == vendorEmail);
+        return await _orders.Find(filter).ToListAsync();
+    }
+    
+ 
 }

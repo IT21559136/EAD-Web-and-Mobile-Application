@@ -23,6 +23,7 @@ public interface IOrderRepository
 
     // Update an existing order
     Task UpdateOrderAsync(Order order);
+    Task<List<Order>> GetOrdersByVendorEmailAsync(string vendorEmail);
 
     // Get all orders for a customer
     // Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId);

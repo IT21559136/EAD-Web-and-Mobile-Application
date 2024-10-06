@@ -1,8 +1,10 @@
-﻿using BackendServices.DTOs;
+﻿using System.Security.Claims;
+using BackendServices.DTOs;
 using BackendServices.Models;
 using BackendServices.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace BackendServices.Controllers;
 
@@ -99,6 +101,7 @@ public class OrderController : ControllerBase
 
             var orderItem = new OrderItem
             {
+                Id = ObjectId.GenerateNewId().ToString(), 
                 ProductId = itemDto.ProductId,
                 Quantity = itemDto.Quantity,
                 VendorEmail = vendorEmail
@@ -148,4 +151,35 @@ public class OrderController : ControllerBase
         await _orderService.MarkOrderAsDelivered(orderId, vendorEmail);
         return Ok("Order marked as delivered.");
     }
+    
+    
+
+    
+    
+    
+    [Authorize(Roles = "Vendor, Admin")]
+    [HttpGet("my-orders")]
+    public async Task<IActionResult> GetMyOrders()
+    {
+        // Get the vendor's email from the JWT token
+        var vendorEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+
+        // If no vendor email found, return unauthorized
+        if (string.IsNullOrEmpty(vendorEmail))
+        {
+            return Unauthorized("Vendor email not found in the token.");
+        }
+
+        // Call the service method to get orders by vendor email
+        var orders = await _orderService.GetOrdersByVendorEmailAsync(vendorEmail);
+    
+        if (orders == null || !orders.Any())
+        {
+            return NotFound($"No orders found for vendor: {vendorEmail}");
+        }
+
+        return Ok(orders);
+    }
+
+
 }

@@ -17,6 +17,7 @@ public class ProductDTO
     public string Category { get; set; }
     public string Description { get; set; }
     public string Image { get; set; }
+    public DateTime CreatedDate { get; set; }
 }
 
     

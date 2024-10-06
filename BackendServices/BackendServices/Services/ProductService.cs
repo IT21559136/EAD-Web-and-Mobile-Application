@@ -254,5 +254,18 @@ namespace BackendServices.Services
 
             return product.VendorEmail;
         }
+        
+        /// Fetch the products filtered by status, category, and optional date
+        public async Task<List<Product>> GetProductsByStatusAsync(string category, bool? productStatus, DateTime? startDate)
+        {
+            return await _productRepository.GetProductsByStatusAsync(category, productStatus, startDate);
+        }
+        
+        
+        // Fetch the products by category
+        public async Task<List<Product>> GetProductsByCategoryAsync(string categoryName)
+        {
+            return await _productRepository.GetProductsByCategoryAsync(categoryName);
+        }
     }
 }
