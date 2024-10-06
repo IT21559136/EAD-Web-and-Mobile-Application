@@ -1,42 +1,34 @@
 ﻿using System.Net;
 using System.Net.Mail;
 
-namespace BackendServices.Services;
-
-public class EmailService
+namespace BackendServices.Services
 {
-    private readonly SmtpClient client;
-
-    public EmailService()
+    public class EmailService
     {
-        // Configure the SMTP client with your Mailtrap settings
-        client = new SmtpClient("bulk.smtp.mailtrap.io", 587)
-        {
-            Credentials = new NetworkCredential("api", "********ff98"),
-            EnableSsl = true
-        };
-    }
+        private readonly SmtpClient _client;
+        private readonly string _fromEmail;
 
-    public void SendEmail()
-    {
-        try
+        public EmailService()
         {
-            // var mailMessage = new MailMessage
-            // {
-            //     From = new MailAddress("hello@demomailtrap.com"), // Set the sender's email address
-            //     Subject = subject,
-            //     Body = body,
-            //     IsBodyHtml = true // Set to true if you are sending HTML content
-            // };
-            //
-            // mailMessage.To.Add(toEmail);
+            // Initialize SMTP client and email configurations (keep this as is)
+            _client = new SmtpClient("bulk.smtp.mailtrap.io", 587)
+            {
+                Credentials = new NetworkCredential("smtp@mailtrap.io", "2c60006e49265889677f41b8d86cff98"),
+                EnableSsl = true
+            };
             
-            client.Send("hello@demomailtrap.com", "tharuneo37@gmail.com", "Hello world", "testbody");
-            Console.WriteLine("Email sent successfully!");
         }
-        catch (Exception ex)
+
+        // The method with parameters for subject and body
+        public static void SendCustomEmail(string toEmail, string subject, string body)
         {
-            Console.WriteLine($"Error sending email: {ex.Message}");
+            var client = new SmtpClient("bulk.smtp.mailtrap.io", 587)
+            {
+                Credentials = new NetworkCredential("smtp@mailtrap.io", "2c60006e49265889677f41b8d86cff98"),
+                EnableSsl = true
+            };
+            client.Send("hello@demomailtrap.com", toEmail, subject, body);
+            System.Console.WriteLine("Sent");   
         }
     }
 }
