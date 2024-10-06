@@ -236,7 +236,7 @@ private fun ProductItem(
         modifier = modifier
             .padding(4.dp)
             .clickable {
-                navController.navigate("product_details/${product.id}") // Assuming you use product ID in route
+               // navController.navigate("product_details/${product.id}") // Assuming you use product ID in route
             },
         elevation = CardDefaults.elevatedCardElevation(2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -264,7 +264,7 @@ private fun ProductItem(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = product.title,
+                text = product.productName,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 fontSize = 14.sp,
@@ -294,7 +294,7 @@ private fun ProductItem(
                 )
                 Text(
                     modifier = Modifier.align(Alignment.CenterVertically),
-                    text = "${product.rating.rate} (${product.rating.count})",
+                    text = "rating",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Light
                 )

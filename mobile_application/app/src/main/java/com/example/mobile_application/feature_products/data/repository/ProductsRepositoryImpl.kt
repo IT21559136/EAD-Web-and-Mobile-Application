@@ -32,15 +32,11 @@ class ProductsRepositoryImpl(private val productsApiService: ProductsApiService)
         }
     }
 
-    override suspend fun getProductById(productId: Int): Flow<Resource<Product>> = flow {
-        emit(Resource.Loading())
-        try {
-            val product = productsApiService.getProductById(productId)
-            emit(Resource.Success(product))
+    override suspend fun getProductById(productId: Int): Product {
+        return try {
+            productsApiService.getProductById(productId)
         } catch (e: IOException) {
-            emit(Resource.Error(message = "Could not reach the server, please check your internet connection!"))
-        } catch (e: HttpException) {
-            emit(Resource.Error(message = "Failed to load product details!"))
+            throw IOException("Could not reach the server, please check your internet connection!")
         }
     }
 }

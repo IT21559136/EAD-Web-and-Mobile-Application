@@ -29,7 +29,6 @@ import com.example.mobile_application.feature_products.presentation.home.HomeScr
 import com.example.mobile_application.feature_products.presentation.product_details.ProductDetailsScreen
 import com.example.mobile_application.feature_products.presentation.product_details.ProductDetailsViewModel
 import com.example.mobile_application.feature_profile.presentation.AccountScreen
-import com.example.mobile_application.feature_wish_list.presentation.WishlistScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

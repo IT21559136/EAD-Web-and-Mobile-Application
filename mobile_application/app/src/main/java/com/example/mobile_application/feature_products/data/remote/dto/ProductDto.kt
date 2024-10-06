@@ -4,6 +4,8 @@ package com.example.mobile_application.feature_products.data.remote.dto
 import com.google.gson.annotations.SerializedName
 
 data class ProductDto(
+    @SerializedName("id")
+    val id: Int,
     @SerializedName("productName")
     val productName: String,
     @SerializedName("price")

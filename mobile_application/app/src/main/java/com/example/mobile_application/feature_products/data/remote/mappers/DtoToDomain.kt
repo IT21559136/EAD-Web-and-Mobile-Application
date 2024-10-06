@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName
 
 internal fun ProductDto.toDomain(): Product {
     return Product(
+        id = id,
         productName = productName,
         price = price,
         quantity = quantity,

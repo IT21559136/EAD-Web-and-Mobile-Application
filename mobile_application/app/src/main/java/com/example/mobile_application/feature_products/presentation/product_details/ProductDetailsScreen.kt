@@ -25,14 +25,7 @@ import com.example.mobile_application.core.presentation.ui.theme.GrayColor
 import com.example.mobile_application.core.presentation.ui.theme.MainWhiteColor
 import com.example.mobile_application.core.presentation.ui.theme.YellowMain
 import com.example.mobile_application.feature_products.domain.model.Product
-import com.gowtham.ratingbar.RatingBar
-import com.gowtham.ratingbar.StepSize
-import com.example.mobile_application.feature_wish_list.domain.model.Wishlist
-import com.example.mobile_application.feature_wish_list.presentation.WishlistViewModel
 import androidx.navigation.NavController
-import com.example.mobile_application.feature_wish_list.data.mapper.toWishlistRating
-import com.gowtham.ratingbar.RatingBarConfig
-import com.gowtham.ratingbar.RatingBarStyle
 
 
 @ExperimentalMaterial3Api
@@ -40,9 +33,9 @@ import com.gowtham.ratingbar.RatingBarStyle
 fun ProductDetailsScreen(
     product: Product,
     navController: NavController,
-    viewModel: WishlistViewModel = hiltViewModel(),
+   // viewModel: WishlistViewModel = hiltViewModel(),
 ) {
-    val inWishlist = viewModel.inWishlist(product.id).observeAsState().value != null
+   // val inWishlist = viewModel.inWishlist(product.id).observeAsState().value != null
 
     Scaffold(
         containerColor = Color.White,
@@ -63,52 +56,52 @@ fun ProductDetailsScreen(
                         modifier = Modifier.size(32.dp)
                     )
                 }
-                IconButton(
-                    onClick = {
-                        if (inWishlist) {
-                            viewModel.deleteFromWishlist(
-                                Wishlist(
-                                    image = product.image,
-                                    title = product.title,
-                                    id = product.id,
-                                    liked = true,
-                                    price = product.price,
-                                    description = product.description,
-                                    category = product.category,
-                                    rating = product.rating.toWishlistRating()
-                                )
-                            )
-                        } else {
-                            viewModel.insertFavorite(
-                                Wishlist(
-                                    image = product.image,
-                                    title = product.title,
-                                    id = product.id,
-                                    liked = true,
-                                    price = product.price,
-                                    description = product.description,
-                                    category = product.category,
-                                    rating = product.rating.toWishlistRating()
-                                )
-                            )
-                        }
-                    },
-                ) {
-                    Icon(
-                        painter = if (inWishlist) {
-                            painterResource(id = R.drawable.ic_heart_fill)
-                        } else {
-                            painterResource(id = R.drawable.ic_heart)
-                        },
-                        tint = if (inWishlist) {
-                            YellowMain
-                        } else {
-                            GrayColor
-                        },
-                        contentDescription = null,
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
+//                IconButton(
+//                    onClick = {
+//                        if (inWishlist) {
+//                            viewModel.deleteFromWishlist(
+//                                Wishlist(
+//                                    image = product.image,
+//                                    title = product.productName,
+//                                    id = product.id,
+//                                    liked = true,
+//                                    price = product.price,
+//                                    description = product.description,
+//                                    category = product.category,
+//                                    rating = product.rating.toWishlistRating()
+//                                )
+//                            )
+//                        } else {
+//                            viewModel.insertFavorite(
+//                                Wishlist(
+//                                    image = product.image,
+//                                    title = product.title,
+//                                    id = product.id,
+//                                    liked = true,
+//                                    price = product.price,
+//                                    description = product.description,
+//                                    category = product.category,
+//                                    rating = product.rating.toWishlistRating()
+//                                )
+//                            )
+//                        }
+//                    },
+//                ) {
+//                    Icon(
+//                        painter = if (inWishlist) {
+//                            painterResource(id = R.drawable.ic_heart_fill)
+//                        } else {
+//                            painterResource(id = R.drawable.ic_heart)
+//                        },
+//                        tint = if (inWishlist) {
+//                            YellowMain
+//                        } else {
+//                            GrayColor
+//                        },
+//                        contentDescription = null,
+//                        modifier = Modifier.size(32.dp)
+//                    )
+//                }
             }
         }
     ) {padding->
@@ -157,7 +150,7 @@ fun DetailsScreenContent(
                     verticalArrangement = Arrangement.Top
                 ) {
                     Text(
-                        text = product.title,
+                        text = product.productName,
                         color = Color.Black,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp,
@@ -165,33 +158,33 @@ fun DetailsScreenContent(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    val rating: Float by remember { mutableStateOf(product.rating.rate.toFloat()) }
+                   // val rating: Float by remember { mutableStateOf(product.rating.rate.toFloat()) }
 
                     Row(
                         horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        RatingBar(
-                            value = rating,
-                            config = RatingBarConfig()
-                                .activeColor(YellowMain)
-                                .inactiveColor(GrayColor)
-                                .stepSize(StepSize.HALF)
-                                .numStars(5)
-                                .isIndicator(true)
-                                .size(16.dp)
-                                .padding(3.dp)
-                                .style(RatingBarStyle.HighLighted),
-                            onValueChange = {},
-                            onRatingChanged = {}
-                        )
+//                        RatingBar(
+//                            value = rating,
+//                            config = RatingBarConfig()
+//                                .activeColor(YellowMain)
+//                                .inactiveColor(GrayColor)
+//                                .stepSize(StepSize.HALF)
+//                                .numStars(5)
+//                                .isIndicator(true)
+//                                .size(16.dp)
+//                                .padding(3.dp)
+//                                .style(RatingBarStyle.HighLighted),
+//                            onValueChange = {},
+//                            onRatingChanged = {}
+//                        )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "(${product.rating.count})",
-                            color = Color.Black,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Light
-                        )
+//                        Text(
+//                            text = "(${product.rating.count})",
+//                            color = Color.Black,
+//                            fontSize = 16.sp,
+//                            fontWeight = FontWeight.Light
+//                        )
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
