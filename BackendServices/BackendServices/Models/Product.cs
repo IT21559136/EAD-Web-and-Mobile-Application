@@ -22,7 +22,7 @@ using MongoDB.Bson.Serialization.Attributes;
 // }
 
 
-
+[BsonIgnoreExtraElements]
 public class Product
 {
     [BsonId]

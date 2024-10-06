@@ -148,5 +148,12 @@ public class ProductRepository : IProductRepository
         return await _products.Find(filter).ToListAsync();
     }
     
+    
+    
+    // Method to get all products
+    public async Task<List<Product>> GetAllProductsAsync()
+    {
+        return await _products.Find(product => true).ToListAsync(); // Fetches all products
+    }
 
 }
