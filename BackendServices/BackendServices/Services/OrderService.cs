@@ -186,7 +186,7 @@ public class OrderService
         {
             throw new InvalidOperationException("Order not found.");
         }
-
+    
         if (vendorEmail != null)
         {
             // Mark individual vendor's product as delivered
@@ -195,7 +195,7 @@ public class OrderService
             {
                 vendorStatus.Status = "Delivered";
             }
-
+    
             // Check if all vendors have delivered
             if (order.VendorStatuses.All(vs => vs.Status == "Delivered"))
             {
@@ -211,10 +211,19 @@ public class OrderService
             // Mark the entire order as delivered by CSR/Admin
             order.Status = "Delivered";
         }
-
+    
         await _orderRepository.UpdateOrderAsync(order);
-
+    
         // Notify the customer
         await _notificationService.NotifyCustomerOrderDeliveredAsync(order.CustomerId, order);
     }
+    
+    
+    // Fetch orders by vendor email
+    public async Task<List<Order>> GetOrdersByVendorEmailAsync(string vendorEmail)
+    {
+        return await _orderRepository.GetOrdersByVendorEmailAsync(vendorEmail);
+    }
+    
+   
 }

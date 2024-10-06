@@ -115,5 +115,38 @@ public class ProductRepository : IProductRepository
         var update = Builders<Product>.Update.Set(p => p.ProductStatus, productStatus);
         await _products.UpdateOneAsync(filter, update);
     }
+    
+    
+    // Fetch products filtered by ProductStatus, category, and date
+    public async Task<List<Product>> GetProductsByStatusAsync(string category, bool? productStatus, DateTime? startDate)
+    {
+        var filterBuilder = Builders<Product>.Filter;
+
+        // Filter by category
+        var filter = filterBuilder.Eq(p => p.Category, category);
+
+        // Filter by ProductStatus if it's provided
+        if (productStatus.HasValue)
+        {
+            filter = filter & filterBuilder.Eq(p => p.ProductStatus, productStatus.Value);
+        }
+
+        // Filter by date if startDate is provided
+        if (startDate.HasValue)
+        {
+            filter = filter & filterBuilder.Gte(p => p.CreatedDate, startDate.Value);
+        }
+
+        return await _products.Find(filter).ToListAsync();
+    }
+    
+    
+    // Fetch products filtered by category
+    public async Task<List<Product>> GetProductsByCategoryAsync(string categoryName)
+    {
+        var filter = Builders<Product>.Filter.Eq(p => p.Category, categoryName);
+        return await _products.Find(filter).ToListAsync();
+    }
+    
 
 }
