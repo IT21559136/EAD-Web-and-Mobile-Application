@@ -311,27 +311,50 @@ using BackendServices.Helpers;
 using BackendServices.Models;
 using BackendServices.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;  // Ensure this is included for MongoDBSettings
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;  // Ensure this is included for MongoDB
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add MongoDB settings
+// Add MongoDB settings and register MongoDB client and database
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings"));
-builder.Services.AddScoped<UserService>();  // Change to Scoped
-builder.Services.AddScoped<VendorService>();  // Change to Scoped
-builder.Services.AddScoped<ProductService>();  // Change to Scoped
+
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<MongoDBSettings>>().Value;
+    return new MongoClient(settings.ConnectionString);  // MongoClient setup
+});
+
+builder.Services.AddScoped<IMongoDatabase>(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<MongoDBSettings>>().Value;
+    var client = sp.GetRequiredService<IMongoClient>();
+    return client.GetDatabase(settings.DatabaseName);  // MongoDatabase setup
+});
+
+// Register services as scoped
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<VendorService>();
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<EmailService>(); // Registering EmailService
+
 
 // Register repositories as scoped services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IVendorRepository, VendorRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<INotificationService, NotificationService>();  // Register NotificationService
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>(); 
-builder.Services.AddScoped<OrderService>(); 
+builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 // Add JWT settings
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-builder.Services.AddSingleton<JwtHelper>();  // JwtHelper can remain as singleton
+builder.Services.AddSingleton<JwtHelper>();  // JwtHelper remains as a singleton
 
 // Add JWT authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
