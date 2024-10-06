@@ -168,7 +168,7 @@ namespace BackendServices.Controllers
             };
 
             await _productService.CreateProductAsync(product);
-            return Ok("Product created successfully.");
+            return Ok(new { message = "Product created successfully." });
         }
 
         // Vendor updates a product
@@ -179,13 +179,13 @@ namespace BackendServices.Controllers
             var existingProduct = await _productService.GetProductByIdAsync(productId);
             if (existingProduct == null)
             {
-                return NotFound("Product not found.");
+                return NotFound(new { error = "Product not found." });
             }
 
             var vendorEmail = User.FindFirst(ClaimTypes.Email)?.Value;  // Vendor Email from token
             if (existingProduct.VendorEmail != vendorEmail)
             {
-                return Unauthorized("You can only update your own products.");
+                return Unauthorized(new { error = "You can only update your own products." });
             }
 
             // Update fields
@@ -198,7 +198,7 @@ namespace BackendServices.Controllers
 
             // Vendor cannot change StockStatus or CategoryStatus
             await _productService.UpdateProductAsync(existingProduct);
-            return Ok("Product updated successfully.");
+            return Ok(new { message = "Product updated successfully." });
         }
 
         // Vendor deletes a product
@@ -209,17 +209,17 @@ namespace BackendServices.Controllers
             var existingProduct = await _productService.GetProductByIdAsync(productId);
             if (existingProduct == null)
             {
-                return NotFound("Product not found.");
+                return NotFound(new { error = "Product not found." });
             }
 
             var vendorEmail = User.FindFirst(ClaimTypes.Email)?.Value;  // Vendor Email from token
             if (existingProduct.VendorEmail != vendorEmail)
             {
-                return Unauthorized("You can only delete your own products.");
+                return Unauthorized(new { error = "You can only delete your own products." });
             }
 
             await _productService.DeleteProductAsync(productId);
-            return Ok("Product deleted successfully.");
+            return Ok(new { message = "Product deleted successfully." });
         }
 
         // Admin updates stock status
@@ -228,7 +228,7 @@ namespace BackendServices.Controllers
         public async Task<IActionResult> UpdateStockStatus(string productId, [FromBody] int stockStatus)
         {
             await _productService.UpdateStockStatusAsync(productId, stockStatus);
-            return Ok("Stock status updated successfully.");
+            return Ok(new { message = "Stock status updated successfully." });
         }
 
         // Admin updates category status
@@ -248,11 +248,11 @@ namespace BackendServices.Controllers
             var product = await _productService.GetProductByIdAsync(productId);
             if (product == null)
             {
-                return NotFound("Product not found.");
+                return NotFound(new { error = "Product not found." });
             }
 
             await _productService.UpdateProductStatusAsync(productId, productStatus);
-            return Ok("Product status updated successfully.");
+            return Ok(new { message = "Product status updated successfully." });
         }
         
         
@@ -275,7 +275,7 @@ namespace BackendServices.Controllers
     
             if (products == null || !products.Any())
             {
-                return NotFound($"No products found in the category: {categoryName}");
+                return NotFound(new { error = $"No products found in the category: {categoryName}" });
             }
     
             return Ok(products);
@@ -292,7 +292,7 @@ namespace BackendServices.Controllers
         
             if (products == null || !products.Any())
             {
-                return NotFound("No products found.");
+                return NotFound(new { error = "No products found." });
             }
         
             return Ok(products); // Return all products

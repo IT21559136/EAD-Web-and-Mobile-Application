@@ -4,4 +4,5 @@ public class CommentDTO
 {
     public string Comment { get; set; }
     public int Rank { get; set; }
+    public string ProductId { get; set; }
 }

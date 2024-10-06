@@ -12,4 +12,5 @@ public class VendorComment
     public int Rank { get; set; }  // Rank between 1 and 5
     public string UserId { get; set; }  // ID of the user who made the comment
     public DateTime Timestamp { get; set; }  // When the comment was made
+    public String ProductId { get; set; }
 }

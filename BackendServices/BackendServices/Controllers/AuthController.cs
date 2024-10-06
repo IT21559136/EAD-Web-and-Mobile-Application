@@ -132,7 +132,8 @@ using BCrypt.Net;
         {
             if (!await _userService.IsEmailUniqueAsync(model.Email))
             {
-                return BadRequest("Email already exists.");
+                //return BadRequest("Email already exists.");
+                return BadRequest(new { error = "Email already exists." });
             }
 
             var newUser = new User
@@ -145,7 +146,8 @@ using BCrypt.Net;
             };
 
             await _userService.CreateUserAsync(newUser);
-            return Ok("User registered successfully.");
+            //return Ok("User registered successfully.");
+            return Ok(new { message = "User registered successfully." });
         }
 
         [HttpPost("login")]
@@ -154,7 +156,7 @@ using BCrypt.Net;
             var user = await _userService.GetUserByEmailAsync(model.Email);
             if (user == null || !UserService.VerifyPassword(model.Password, user.Password) || user.Status != 1)
             {
-                return Unauthorized("Invalid credentials or inactive account.");
+                return Unauthorized(new { error = "Invalid credentials or inactive account." });
             }
 
             var token = _jwtHelper.GenerateJwtToken(user);
@@ -169,27 +171,27 @@ using BCrypt.Net;
             var user = await _userService.GetUserByEmailAsync(email);
             if (user == null)
             {
-                return NotFound("User not found.");
+                return NotFound(new { error = "User not found." });
             }
 
             user.Status = 0;
             await _userService.UpdateUserAsync(user);
-            return Ok("Account deactivated.");
+            return Ok(new { message = "Account deactivated." });
         }
 
-        [Authorize(Roles = "Customer Service Representative")]
+        [Authorize(Roles = "CSR")]
         [HttpPost("activate")]
         public async Task<IActionResult> ActivateAccount([FromBody] string email)
         {
             var user = await _userService.GetUserByEmailAsync(email);
             if (user == null)
             {
-                return NotFound("User not found.");
+                return NotFound(new { error = "User not found." });
             }
 
             user.Status = 1;
             await _userService.UpdateUserAsync(user);
-            return Ok("Account activated.");
+            return Ok(new { message = "Account activated." });
         }
 
         [Authorize]
@@ -211,6 +213,46 @@ using BCrypt.Net;
         // Implement the forget password with email verification and password reset logic similarly.
 
 
+        // [Authorize]
+        // [HttpDelete("delete-account")]
+        // public async Task<IActionResult> DeleteAccount()
+        // {
+        //     var role = User.FindFirst(ClaimTypes.Role)?.Value;
+        //     var userId = User.FindFirst("UserId")?.Value;
+        //     var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        //
+        //     var user = await _userService.GetUserByEmailAsync(email);
+        //     if (user == null)
+        //     {
+        //         return NotFound(new { error = "User not found." });
+        //     }
+        //
+        //     // Vendors cannot delete their accounts
+        //     if (user.Role == "Vendor")
+        //     {
+        //         return new ObjectResult(new { error = "Vendors cannot delete their own accounts." }) { StatusCode = StatusCodes.Status403Forbidden };
+        //     }
+        //
+        //     // Admin or CSR can delete any account
+        //     if (role == "Admin" || role == "CSR")
+        //     {
+        //         await _userService.DeleteUserAsync(userId);
+        //         return Ok(new { message = "User account deleted by Admin/CSR." });
+        //     }
+        //
+        //     // Normal users can delete their own accounts
+        //     if (userId == user.Id)
+        //     {
+        //         await _userService.DeleteUserAsync(userId);
+        //         return Ok(new { message = "Your account has been deleted." });
+        //     }
+        //
+        //     return new ObjectResult(new { error = "Unauthorized to delete this account." }) { StatusCode = StatusCodes.Status403Forbidden };
+        // }
+        
+        
+        
+        // 1. Endpoint to delete the logged-in user's own account
         [Authorize]
         [HttpDelete("delete-account")]
         public async Task<IActionResult> DeleteAccount()
@@ -222,33 +264,46 @@ using BCrypt.Net;
             var user = await _userService.GetUserByEmailAsync(email);
             if (user == null)
             {
-                return NotFound("User not found.");
+                return NotFound(new { error = "User not found." });
             }
 
-            // Vendors cannot delete their accounts
+            // Vendors cannot delete their own accounts
             if (user.Role == "Vendor")
             {
-                return Forbid("Vendors cannot delete their own accounts.");
+                return new ObjectResult(new { error = "Vendors cannot delete their own accounts." }) { StatusCode = StatusCodes.Status403Forbidden };
             }
 
-            // Admin or CSR can delete any account
-            if (role == "Admin" || role == "Customer Service Representative")
-            {
-                await _userService.DeleteUserAsync(userId);
-                return Ok("User account deleted by Admin/CSR.");
-            }
-
-            // Normal users can delete their own accounts
+            // Users can delete their own accounts
             if (userId == user.Id)
             {
                 await _userService.DeleteUserAsync(userId);
-                return Ok("Your account has been deleted.");
+                return Ok(new { message = "Your account has been deleted." });
             }
 
-            return Forbid("Unauthorized to delete this account.");
+            return new ObjectResult(new { error = "Unauthorized to delete this account." }) { StatusCode = StatusCodes.Status403Forbidden };
         }
+        
+        
+        // 2. Endpoint for Admin/CSR to delete another user's account, including vendors
+        [Authorize(Roles = "Admin,CSR")]
+        [HttpDelete("delete-user/{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _userService.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound(new { error = $"User with ID {id} not found." });
+            }
 
-        [Authorize(Roles = "Admin, Customer Service Representative, Vendor")]
+            // Admin or CSR can delete any account, including Vendor
+            await _userService.DeleteUserAsync(id);
+            return Ok(new { message = $"User account with ID {id} deleted successfully." });
+        }
+        
+        
+        
+
+        [Authorize(Roles = "Admin, CSR")]
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -257,7 +312,7 @@ using BCrypt.Net;
             return Ok(users);
         }
 
-        [Authorize(Roles = "Admin, Customer Service Representative, Vendor")]
+       [Authorize(Roles = "Admin, Vendor, CSR, User")]
         [HttpGet("users/{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
@@ -265,9 +320,40 @@ using BCrypt.Net;
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
             {
-                return NotFound("User not found.");
+                return NotFound(new { error = "User not found." });
             }
             return Ok(user);
+        }
+        
+        
+        
+        [Authorize]
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] UserDTO userDto)
+        {
+            // Retrieve the current user from the database
+            var existingUser = await _userService.GetUserByIdAsync(id);
+            if (existingUser == null)
+            {
+                return NotFound(new { error = $"User with ID {id} not found." });
+            }
+
+            // Map the fields from the DTO to the existing user entity
+            existingUser.Username = userDto.Username;
+            existingUser.Email = userDto.Email;
+            existingUser.Role = userDto.Role;
+            existingUser.Status = userDto.Status;
+
+            // Optionally, you can update the password if necessary
+            if (!string.IsNullOrEmpty(userDto.Password))
+            {
+                existingUser.Password = UserService.EncryptPassword(userDto.Password); // Encrypt the new password
+            }
+
+            // Call the service method to update the user
+            await _userService.UpdateUserAsync(existingUser);
+
+            return Ok(new { message = "User updated successfully." });
         }
 
 
