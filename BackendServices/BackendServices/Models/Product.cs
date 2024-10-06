@@ -44,4 +44,5 @@ public class Product
     /* [BsonRepresentation(BsonType.ObjectId)]
      public string VendorId { get; set; }  // Linked to the Vendor who owns the product*/
     public string VendorEmail { get; set; }  // Store the Vendor's Email instead of VendorId
+    public DateTime CreatedDate { get; set; }
 }

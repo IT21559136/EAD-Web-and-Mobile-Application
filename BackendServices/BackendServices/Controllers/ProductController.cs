@@ -163,7 +163,8 @@ namespace BackendServices.Controllers
                 Image = productModel.Image,
                 VendorEmail = vendorEmail,  // Store Vendor's Email instead of VendorId
                 //StockStatus = 2,  // Default In Stock
-                ProductStatus = true  // Default Active
+                ProductStatus = false , // Default Active
+                CreatedDate = productModel.CreatedDate,
             };
 
             await _productService.CreateProductAsync(product);
@@ -253,6 +254,36 @@ namespace BackendServices.Controllers
             await _productService.UpdateProductStatusAsync(productId, productStatus);
             return Ok("Product status updated successfully.");
         }
+        
+        
+        [Authorize(Roles = "Admin")]
+        [HttpGet("products-by-status")]
+        public async Task<IActionResult> GetProductsByStatus([FromQuery] string category, [FromQuery] bool? productStatus = null, [FromQuery] DateTime? startDate = null)
+        {
+            // Get the list of products filtered by ProductStatus, category, and date
+            var products = await _productService.GetProductsByStatusAsync(category, productStatus, startDate);
+            return Ok(products);
+        }
+        
+        
+        [Authorize]
+        [HttpGet("category/{categoryName}")]
+        public async Task<IActionResult> GetProductsByCategory(string categoryName)
+        {
+            // Call the service method to get products by category
+            var products = await _productService.GetProductsByCategoryAsync(categoryName);
+    
+            if (products == null || !products.Any())
+            {
+                return NotFound($"No products found in the category: {categoryName}");
+            }
+    
+            return Ok(products);
+        }
+
+
+
+
 
         
         

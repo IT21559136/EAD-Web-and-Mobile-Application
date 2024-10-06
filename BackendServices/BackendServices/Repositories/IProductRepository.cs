@@ -30,4 +30,6 @@ public interface IProductRepository
     Task UpdateStockStatusAsync(string productId, int stockStatus);
     //Task UpdateCategoryStatusAsync(string category, int categoryStatus);
     Task UpdateProductStatusAsync(string productId, bool productStatus);
+    Task<List<Product>> GetProductsByStatusAsync(string category, bool? productStatus, DateTime? startDate);
+    Task<List<Product>> GetProductsByCategoryAsync(string categoryName);
 }
