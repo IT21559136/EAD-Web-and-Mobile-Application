@@ -267,5 +267,12 @@ namespace BackendServices.Services
         {
             return await _productRepository.GetProductsByCategoryAsync(categoryName);
         }
+        
+        
+        // Method to get all products
+        public async Task<List<Product>> GetAllProductsAsync()
+        {
+            return await _productRepository.GetAllProductsAsync();
+        }
     }
 }
