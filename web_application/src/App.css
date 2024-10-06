@@ -55,3 +55,19 @@
   top: 100%;
   font-size: 12px;
 }
+
+/* src/App.css */
+
+.ant-layout-sider {
+  background: #001529; /* Change this to your preferred sidebar background */
+}
+
+.logo {
+  font-size: 24px;
+  color: white;
+  font-weight: bold;
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+  background-color: #1890ff; /* Highlight color for selected menu item */
+}

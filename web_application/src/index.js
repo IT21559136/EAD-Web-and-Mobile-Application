@@ -1,13 +1,16 @@
+// src/index.js
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom'; // Import BrowserRouter
-import 'antd/dist/reset.css'; // Import Ant Design CSS
-import './index.css'; 
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext'; // Import the AuthProvider
 import App from './App';
+import './index.css';
 
 ReactDOM.render(
-  <BrowserRouter> {/* Wrap App inside BrowserRouter */}
-    <App />
+  <BrowserRouter>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </BrowserRouter>,
   document.getElementById('root')
 );
