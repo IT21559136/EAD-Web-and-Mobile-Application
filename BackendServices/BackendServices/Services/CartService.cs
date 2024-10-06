@@ -103,14 +103,12 @@ namespace BackendServices.Services
                     Description = product.Description,
                     Image = product.Image
                 });
+
+                var SenderEmail = "tharuneo37@gmail.com";
+                var Subject = "Test Subject for cart";
+                var Body = "Test Body for cart";
+                EmailService.SendCustomEmail(SenderEmail, Subject, Body);
                 
-                var client = new SmtpClient("bulk.smtp.mailtrap.io", 587)
-                {
-                    Credentials = new NetworkCredential("smtp@mailtrap.io", "2c60006e49265889677f41b8d86cff98"),
-                    EnableSsl = true
-                };
-                client.Send("hello@demomailtrap.com", "tharuneo37@gmail.com", "Adoooo", "Wede Goda yakoo");
-                System.Console.WriteLine("Sent");            
             }
 
             return cartWithDetails;
