@@ -32,7 +32,7 @@ namespace BackendServices.Controllers
             // Check if the email exists in both Vendor and User collections
             if (await _vendorService.GetVendorByEmailAsync(vendorModel.Email) != null || await _userService.GetUserByEmailAsync(vendorModel.Email) != null)
             {
-                return BadRequest("Vendor with this email already exists.");
+                return BadRequest(new { error = "Vendor with this email already exists." });
             }
 
             var newVendor = new Vendor
@@ -44,7 +44,7 @@ namespace BackendServices.Controllers
             };
 
             await _vendorService.CreateVendorAsync(newVendor);
-            return Ok("Vendor created successfully.");
+            return Ok(new { message = "Vendor created successfully." });
         }
 
 
@@ -58,7 +58,7 @@ namespace BackendServices.Controllers
             var existingVendor = await _vendorService.GetVendorByEmailAsync(updatedVendor.Email);
             if (existingVendor == null)
             {
-                return NotFound("Vendor not found.");
+                return NotFound(new { error = "Vendor not found." });
             }
 
             // Update fields
@@ -69,7 +69,7 @@ namespace BackendServices.Controllers
 
             // Sync the changes to the User collection
             await _vendorService.UpdateVendorAsync(existingVendor);
-            return Ok("Vendor updated successfully.");
+            return Ok(new { message = "Vendor updated successfully." });
         }
 
 
@@ -78,7 +78,7 @@ namespace BackendServices.Controllers
         public async Task<IActionResult> DeleteVendor(string email)
         {
             await _vendorService.DeleteVendorAsync(email);
-            return Ok("Vendor deleted successfully.");
+            return Ok(new { message = "Vendor deleted successfully." });
         }
 
 
@@ -90,12 +90,12 @@ namespace BackendServices.Controllers
             var vendor = await _vendorService.GetVendorByEmailAsync(email);
             if (vendor == null)
             {
-                return NotFound("Vendor not found.");
+                return NotFound(new { error = "Vendor not found." });
             }
 
             vendor.Status = 0;  // Deactivate
             await _vendorService.UpdateVendorAsync(vendor);
-            return Ok("Vendor deactivated.");
+            return Ok(new { message = "Vendor deactivated successfully." });
         }
 
         [Authorize(Roles = "Admin")]
@@ -105,12 +105,12 @@ namespace BackendServices.Controllers
             var vendor = await _vendorService.GetVendorByEmailAsync(email);
             if (vendor == null)
             {
-                return NotFound("Vendor not found.");
+                return NotFound(new { error = "Vendor not found." });
             }
 
             vendor.Status = 1;  // Activate
             await _vendorService.UpdateVendorAsync(vendor);
-            return Ok("Vendor activated.");
+            return Ok(new { message = "Vendor activated successfully." });
         }
 
        
@@ -129,7 +129,7 @@ namespace BackendServices.Controllers
             var vendor = await _vendorService.GetVendorByIdAsync(vendorId);
             if (vendor == null)
             {
-                return NotFound("Vendor not found.");
+                return NotFound(new { error = "Vendor not found." });
             }
 
             return Ok(vendor);
@@ -143,12 +143,12 @@ namespace BackendServices.Controllers
             var userId = User.FindFirst("UserId")?.Value;  // Get User ID from the JWT token
             if (userId == null)
             {
-                return Unauthorized("User not authenticated.");
+                return Unauthorized(new { error = "User not authenticated." });
             }
 
             // Call the VendorService to add the comment
-            await _vendorService.AddCommentAsync(vendorId, model.Comment, model.Rank, userId);
-            return Ok("Comment added successfully.");
+            await _vendorService.AddCommentAsync(vendorId, model.Comment, model.Rank,model.ProductId, userId);
+            return Ok(new { message = "Comment added successfully." });
         }
         
         
@@ -159,17 +159,17 @@ namespace BackendServices.Controllers
             var userId = User.FindFirst("UserId")?.Value;  // Get User ID from the JWT token
             if (userId == null)
             {
-                return Unauthorized("User not authenticated.");
+                return Unauthorized(new { error = "User not authenticated." });
             }
 
             // Call the VendorService to update the comment
             var result = await _vendorService.UpdateCommentAsync(vendorId, commentId, model.Comment, model.Rank, userId);
             if (!result)
             {
-                return NotFound("Comment or Vendor not found, or unauthorized to update this comment.");
+                return NotFound(new { error = "Comment or Vendor not found, or unauthorized to update this comment." });
             }
 
-            return Ok("Comment updated successfully.");
+            return Ok(new { message = "Comment updated successfully." });
         }
         
         
@@ -185,11 +185,11 @@ namespace BackendServices.Controllers
             }
             catch (ArgumentException ex)
             {
-                return NotFound(ex.Message);  // Returns HTTP 404 if vendor or comment not found
+                return NotFound(new { error = ex.Message });  // Returns HTTP 404 if vendor or comment not found
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);  // Returns HTTP 500 for any other error
+                return StatusCode(500, new { error = ex.Message }); // Returns HTTP 500 for any other error
             }
         }
 

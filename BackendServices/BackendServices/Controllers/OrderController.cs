@@ -118,7 +118,7 @@ public class OrderController : ControllerBase
         };
 
         await _orderService.CreateOrderAsync(order);
-        return Ok("Order created successfully.");
+        return Ok(new { message = "Order created successfully." });
     }
 
 
@@ -131,7 +131,7 @@ public class OrderController : ControllerBase
     public async Task<IActionResult> UpdateOrderStatus(string orderId, [FromBody] string status)
     {
         await _orderService.UpdateOrderStatusAsync(orderId, status);
-        return Ok("Order status updated.");
+        return Ok(new { message = "Order status updated successfully." });
     }
 
     // Cancel order
@@ -140,7 +140,7 @@ public class OrderController : ControllerBase
     public async Task<IActionResult> CancelOrder(string orderId, [FromBody] string cancellationNote)
     {
         await _orderService.CancelOrderAsync(orderId, cancellationNote);
-        return Ok("Order canceled.");
+        return Ok(new { message = "Order canceled successfully." });
     }
 
     // Mark order as delivered
@@ -149,7 +149,7 @@ public class OrderController : ControllerBase
     public async Task<IActionResult> MarkOrderAsDelivered(string orderId, [FromQuery] string vendorEmail = null)
     {
         await _orderService.MarkOrderAsDelivered(orderId, vendorEmail);
-        return Ok("Order marked as delivered.");
+        return Ok(new { message = "Order marked as delivered." });
     }
     
     
@@ -167,7 +167,7 @@ public class OrderController : ControllerBase
         // If no vendor email found, return unauthorized
         if (string.IsNullOrEmpty(vendorEmail))
         {
-            return Unauthorized("Vendor email not found in the token.");
+            return Unauthorized(new { error = "Vendor email not found in the token." });
         }
 
         // Call the service method to get orders by vendor email
@@ -175,7 +175,7 @@ public class OrderController : ControllerBase
     
         if (orders == null || !orders.Any())
         {
-            return NotFound($"No orders found for vendor: {vendorEmail}");
+            return NotFound(new { error = $"No orders found for vendor: {vendorEmail}" });
         }
 
         return Ok(orders);

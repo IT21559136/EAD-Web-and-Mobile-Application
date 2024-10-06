@@ -189,7 +189,7 @@ namespace BackendServices.Services
     
 
     
-    public async Task AddCommentAsync(string vendorId, string comment, int rank, string userId)
+    public async Task AddCommentAsync(string vendorId, string comment, int rank, string productId, string userId)
     {
         // Validate rank (for example, between 1 and 5)
         if (rank < 1 || rank > 5)
@@ -204,7 +204,8 @@ namespace BackendServices.Services
             Comment = comment,
             Rank = rank,
             UserId = userId,
-            Timestamp = DateTime.UtcNow
+            Timestamp = DateTime.UtcNow,
+            ProductId = productId
         };
 
         // Add the comment using the repository
