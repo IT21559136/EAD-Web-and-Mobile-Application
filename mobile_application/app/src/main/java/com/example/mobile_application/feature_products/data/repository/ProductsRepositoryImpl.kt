@@ -4,11 +4,13 @@ import com.example.mobile_application.core.util.Resource
 import com.example.mobile_application.feature_auth.data.local.AuthPreferences
 import com.example.mobile_application.feature_products.data.remote.ProductsApiService
 import com.example.mobile_application.feature_products.data.remote.mappers.toDomain
+import com.example.mobile_application.feature_products.domain.model.Category
 import com.example.mobile_application.feature_products.domain.model.Product
 import com.example.mobile_application.feature_products.domain.repository.ProductsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
+import timber.log.Timber
 import java.io.IOException
 
 class ProductsRepositoryImpl(private val productsApiService: ProductsApiService,  private val authPreferences: AuthPreferences) :
@@ -25,17 +27,33 @@ class ProductsRepositoryImpl(private val productsApiService: ProductsApiService,
         }
     }
 
-    override suspend fun getProductCategories(): List<String> {
+    override suspend fun getProductCategories(): List<Category> {
         return try {
-            productsApiService.getProductCategories()
+            val categories = productsApiService.getProductCategories(authPreferences.getAccessToken.toString())
+            Timber.d("Fetched Access Token: ${authPreferences.getAccessToken.toString()}")
+            // Log the list of categories
+            Timber.d("Fetched Categories: $categories")
+
+            categories
         } catch (e: IOException) {
+            // Log the IO error
+            Timber.e("Network error fetching categories: ${e.localizedMessage}")
             throw IOException("Could not reach the server, please check your internet connection!")
+        } catch (e: HttpException) {
+            // Log the HTTP error with status code
+            Timber.e("HTTP error fetching categories: ${e.message()} (Code: ${e.code()})")
+            throw HttpException(e.response()) // You can choose to rethrow it or handle it differently
         }
     }
 
-    override suspend fun getProductById(productId: Int): Product {
+
+    override suspend fun getProductById(productId: String): Product {
         return try {
-            productsApiService.getProductById(productId)
+            Timber.d("Fetched Token: ${authPreferences.getAccessToken}")
+            val product = productsApiService.getProductById(authPreferences.getAccessToken.toString(),productId)
+            // Log the list of categories
+            Timber.d("Fetched Product: $product")
+            product
         } catch (e: IOException) {
             throw IOException("Could not reach the server, please check your internet connection!")
         }

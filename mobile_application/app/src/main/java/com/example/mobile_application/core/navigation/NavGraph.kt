@@ -3,7 +3,6 @@ package com.example.mobile_application.core.navigation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -48,10 +47,10 @@ fun NavGraph(navController: NavHostController) {
         composable(
             route = "product_details/{productId}",
             arguments = listOf(navArgument("productId") {
-                type = NavType.IntType // Define the type of the argument (in this case, an Int)
+                type = NavType.StringType // Define the type of the argument (in this case, an Int)
             })
         ) { backStackEntry ->
-            val productId = backStackEntry.arguments?.getInt("productId") ?: return@composable
+            val productId = backStackEntry.arguments?.getString("productId") ?: return@composable
             val viewModel: ProductDetailsViewModel = hiltViewModel() // Replace with your ViewModel
 
             // Use 'mutableStateOf' without 'by' delegation

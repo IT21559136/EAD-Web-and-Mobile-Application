@@ -19,21 +19,21 @@ class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase
 ) : ViewModel() {
 
-    private val _usernameState = mutableStateOf(TextFieldState())
+    private val _usernameState = mutableStateOf(TextFieldState(text = "jana"))
     val usernameState: State<TextFieldState> = _usernameState
 
     fun setUsername(value: String) {
         _usernameState.value = _usernameState.value.copy(text = value)
     }
 
-    private val _passwordState = mutableStateOf(TextFieldState())
+    private val _passwordState = mutableStateOf(TextFieldState(text = "jana@123"))
     val passwordState: State<TextFieldState> = _passwordState
 
     fun setPassword(value: String) {
         _passwordState.value = _passwordState.value.copy(text = value)
     }
 
-    private val _emailState = mutableStateOf(TextFieldState())
+    private val _emailState = mutableStateOf(TextFieldState(text = "jana@gmail.com"))
     val emailState: State<TextFieldState> = _emailState
 
     fun setEmail(value: String) {

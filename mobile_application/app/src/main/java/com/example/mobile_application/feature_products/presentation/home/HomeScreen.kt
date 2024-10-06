@@ -236,7 +236,7 @@ private fun ProductItem(
         modifier = modifier
             .padding(4.dp)
             .clickable {
-               // navController.navigate("product_details/${product.id}") // Assuming you use product ID in route
+                navController.navigate("product_details/${product.id}") // Assuming you use product ID in route
             },
         elevation = CardDefaults.elevatedCardElevation(2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),

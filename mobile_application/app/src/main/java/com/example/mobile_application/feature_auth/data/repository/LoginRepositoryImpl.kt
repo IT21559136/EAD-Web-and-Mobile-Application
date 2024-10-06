@@ -41,6 +41,7 @@ class LoginRepositoryImpl(
             val response = authApiService.loginUser(loginRequest)
             Timber.d("Login Token: ${response.token},  Role: ${response.role}")
             authPreferences.saveAccessToken(response.token)
+            Timber.d("Auth Preferences Login Token",authPreferences.getAccessToken)
 //            if (rememberMe) {
 //                authPreferences.saveAccessToken(response.token)
 //            }
