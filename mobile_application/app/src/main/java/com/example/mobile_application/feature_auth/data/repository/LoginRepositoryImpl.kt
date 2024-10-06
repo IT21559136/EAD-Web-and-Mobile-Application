@@ -24,14 +24,6 @@ class LoginRepositoryImpl(
             // Send the registration request to the API
             authApiService.registerUser(registerRequest)
 
-            // Optionally, you can fetch the user details after successful registration
-            val newUser = getAllUsers(registerRequest.email)
-
-            if (newUser != null) {
-                // Save the user data locally
-                authPreferences.saveUserdata(newUser)
-            }
-
             // Return success if no issues
             Resource.Success(Unit)
         } catch (e: IOException) {
@@ -47,28 +39,31 @@ class LoginRepositoryImpl(
         Timber.d("Login called")
         return try {
             val response = authApiService.loginUser(loginRequest)
-            Timber.d("Login Token: ${response.token}")
+            Timber.d("Login Token: ${response.token},  Role: ${response.role}")
+            authPreferences.saveAccessToken(response.token)
+//            if (rememberMe) {
+//                authPreferences.saveAccessToken(response.token)
+//            }
 
             // Extract user ID from the token
             val userId = getUserIdFromToken(response.token)
             Timber.d("Extracted User ID: $userId")
 
-            if (userId != null) {
-                //fetch more user data using the userId
-                val userResponse = authApiService.getUser(userId.toInt())
-                authPreferences.saveUserdata(userResponse)
-            }
-            getAllUsers(loginRequest.username)?.let { authPreferences.saveUserdata(it) }
+//            if (userId != null) {
+//                //fetch more user data using the userId
+//                val bearerToken = "Bearer ${response.token}"
+//                val userResponse = authApiService.getUser(bearerToken, userId)
+//                authPreferences.saveUserdata(userResponse)
+//            }
+           // getAllUsers(loginRequest.username)?.let { authPreferences.saveUserdata(it) }
 
-            if (rememberMe) {
-                authPreferences.saveAccessToken(response.token)
-            }
             Resource.Success(Unit)
         } catch (e: IOException) {
             Log.d("login error","Login failed due to network error: ${e.localizedMessage}")
             Timber.e("Login failed due to network error: ${e.localizedMessage}")
             Resource.Error(message = "Could not reach the server, please check your internet connection!")
         } catch (e: HttpException) {
+            Timber.e("Login failed due to server error: ${e.localizedMessage}")
             Resource.Error(message = "An Unknown error occurred, please try again!")
         }
     }

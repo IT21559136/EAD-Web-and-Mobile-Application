@@ -1,6 +1,7 @@
 package com.example.mobile_application.feature_products.data.repository
 
 import com.example.mobile_application.core.util.Resource
+import com.example.mobile_application.feature_auth.data.local.AuthPreferences
 import com.example.mobile_application.feature_products.data.remote.ProductsApiService
 import com.example.mobile_application.feature_products.data.remote.mappers.toDomain
 import com.example.mobile_application.feature_products.domain.model.Product
@@ -10,12 +11,12 @@ import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
 
-class ProductsRepositoryImpl(private val productsApiService: ProductsApiService) :
+class ProductsRepositoryImpl(private val productsApiService: ProductsApiService,  private val authPreferences: AuthPreferences) :
     ProductsRepository {
     override suspend fun getProducts(): Flow<Resource<List<Product>>> = flow {
         emit(Resource.Loading())
         try {
-            val response = productsApiService.getProducts()
+            val response = productsApiService.getProducts(authPreferences.getAccessToken.toString())
             emit(Resource.Success(response.map { it.toDomain() }))
         } catch (e: IOException) {
             emit(Resource.Error(message = "Could not reach the server, please check your internet connection!"))

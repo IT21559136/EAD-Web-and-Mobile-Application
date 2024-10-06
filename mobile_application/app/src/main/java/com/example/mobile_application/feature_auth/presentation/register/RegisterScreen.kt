@@ -83,7 +83,6 @@ fun RegisterScreen(
                 onClickSignUp = {
                     keyboardController?.hide()
                     viewModel.registerUser()
-                    navController.navigate("login")
                 }
             )
         }

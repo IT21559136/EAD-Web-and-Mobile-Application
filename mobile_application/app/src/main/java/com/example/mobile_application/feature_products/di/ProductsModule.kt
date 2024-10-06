@@ -1,6 +1,7 @@
 package com.example.mobile_application.feature_products.di
 
 import com.example.mobile_application.core.util.Constants
+import com.example.mobile_application.feature_auth.data.local.AuthPreferences
 import com.example.mobile_application.feature_products.data.remote.ProductsApiService
 import com.example.mobile_application.feature_products.data.repository.ProductsRepositoryImpl
 import com.example.mobile_application.feature_products.domain.repository.ProductsRepository
@@ -31,10 +32,12 @@ object ProductsModule {
     @Provides
     @Singleton
     fun provideProductsRepository(
-        productsApiService: ProductsApiService
+        productsApiService: ProductsApiService,
+        authPreferences: AuthPreferences
     ): ProductsRepository {
         return ProductsRepositoryImpl(
-            productsApiService
+            productsApiService,
+            authPreferences
         )
     }
 

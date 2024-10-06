@@ -86,7 +86,8 @@ class RegisterViewModel @Inject constructor(
 
             when (registerResult.result) {
                 is Resource.Success -> {
-                    _eventFlow.emit(UiEvents.NavigateEvent("login"))
+                    _eventFlow.emit(UiEvents.SnackbarEvent("Registration successful!\nYour account will be activated soon..."))
+                    //_eventFlow.emit(UiEvents.NavigateEvent("login"))
                 }
                 is Resource.Error -> {
                     _eventFlow.emit(
