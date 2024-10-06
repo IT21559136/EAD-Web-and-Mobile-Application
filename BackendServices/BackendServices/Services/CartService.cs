@@ -103,8 +103,7 @@ namespace BackendServices.Services
                     Description = product.Description,
                     Image = product.Image
                 });
-
-                // Calculate total price
+                
                 var client = new SmtpClient("bulk.smtp.mailtrap.io", 587)
                 {
                     Credentials = new NetworkCredential("smtp@mailtrap.io", "2c60006e49265889677f41b8d86cff98"),
