@@ -3,11 +3,11 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const ProtectedRoute = ({ element }) => {
-  const { token } = useAuth(); // Get authentication token from AuthContext
+const ProtectedRoute = ({ children }) => {
+  const { token } = useAuth();
 
-  // If not authenticated, redirect to the login page
-  return token ? element : <Navigate to="/login" />;
+  // Redirect to login if token is not present
+  return token ? children : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;
