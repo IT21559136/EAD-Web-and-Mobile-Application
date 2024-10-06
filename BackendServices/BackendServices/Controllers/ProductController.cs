@@ -280,6 +280,23 @@ namespace BackendServices.Controllers
     
             return Ok(products);
         }
+        
+        
+        
+        
+        
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            var products = await _productService.GetAllProductsAsync();
+        
+            if (products == null || !products.Any())
+            {
+                return NotFound("No products found.");
+            }
+        
+            return Ok(products); // Return all products
+        }
 
 
 

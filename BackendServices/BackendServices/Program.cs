@@ -317,6 +317,18 @@ using MongoDB.Driver;  // Ensure this is included for MongoDB
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS Configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
+
 // Add MongoDB settings and register MongoDB client and database
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings"));
 
@@ -340,7 +352,6 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<EmailService>(); // Registering EmailService
-
 
 // Register repositories as scoped services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -387,6 +398,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Apply CORS policy
+app.UseCors("AllowAllOrigins");
+
 app.UseAuthentication();  // Ensure Authentication is used
 app.UseAuthorization();
 app.MapControllers();

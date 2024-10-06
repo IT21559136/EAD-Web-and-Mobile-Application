@@ -32,4 +32,5 @@ public interface IProductRepository
     Task UpdateProductStatusAsync(string productId, bool productStatus);
     Task<List<Product>> GetProductsByStatusAsync(string category, bool? productStatus, DateTime? startDate);
     Task<List<Product>> GetProductsByCategoryAsync(string categoryName);
+    Task<List<Product>> GetAllProductsAsync(); // Method to get all products
 }
