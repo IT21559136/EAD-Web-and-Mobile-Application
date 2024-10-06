@@ -70,7 +70,7 @@ class HomeViewModel @Inject constructor(
                                     result.data ?: emptyList()
                                 } else {
                                     result.data?.filter {
-                                        it.title.contains(
+                                        it.productName.contains(
                                             searchTerm,
                                             ignoreCase = true
                                         )

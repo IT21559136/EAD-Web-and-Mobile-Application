@@ -25,10 +25,22 @@ class ProductsRepositoryImpl(private val productsApiService: ProductsApiService)
     }
 
     override suspend fun getProductCategories(): List<String> {
-        return productsApiService.getProductCategories()
+        return try {
+            productsApiService.getProductCategories()
+        } catch (e: IOException) {
+            throw IOException("Could not reach the server, please check your internet connection!")
+        }
     }
 
-    override suspend fun getProductById(productId: Int): Product {
-        return productsApiService.getProductById(productId) // Assuming this API method exists
+    override suspend fun getProductById(productId: Int): Flow<Resource<Product>> = flow {
+        emit(Resource.Loading())
+        try {
+            val product = productsApiService.getProductById(productId)
+            emit(Resource.Success(product))
+        } catch (e: IOException) {
+            emit(Resource.Error(message = "Could not reach the server, please check your internet connection!"))
+        } catch (e: HttpException) {
+            emit(Resource.Error(message = "Failed to load product details!"))
+        }
     }
 }

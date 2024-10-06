@@ -7,11 +7,11 @@ import retrofit2.http.Path
 
 interface ProductsApiService {
 
-    @GET("products")
+    @GET("Product/list")
     suspend fun getProducts(): List<ProductDto>
 
     @GET("products/categories")
     suspend fun getProductCategories(): List<String>
-    @GET("products/{id}") // New method to get a product by ID
+    @GET("Product/{id}") // New method to get a product by ID
     suspend fun getProductById(@Path("id") productId: Int): Product
 }

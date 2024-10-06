@@ -24,7 +24,7 @@ class CartRepositoryImpl(
                     val productResponse = cartApiService.product(it.productId)
                     val cartProduct =
                         CartProduct(
-                            productResponse.title,
+                            productResponse.productName,
                             productResponse.price,
                             it.quantity,
                             productResponse.image

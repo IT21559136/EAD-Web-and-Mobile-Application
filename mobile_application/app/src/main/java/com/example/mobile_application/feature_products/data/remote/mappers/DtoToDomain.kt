@@ -4,16 +4,16 @@ import com.example.mobile_application.feature_products.data.remote.dto.ProductDt
 import com.example.mobile_application.feature_products.data.remote.dto.RatingDto
 import com.example.mobile_application.feature_products.domain.model.Product
 import com.example.mobile_application.feature_products.domain.model.Rating
+import com.google.gson.annotations.SerializedName
 
 internal fun ProductDto.toDomain(): Product {
     return Product(
+        productName = productName,
+        price = price,
+        quantity = quantity,
         category = category,
         description = description,
-        id = id,
-        image = image,
-        price = price,
-        rating = ratingDto.toDomain(),
-        title = title
+        image = image
     )
 }
 
