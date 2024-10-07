@@ -1,82 +1,66 @@
-// src/pages/Signup.js
-import React, { useState } from 'react';
-import { Form, Input, Button, message } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState, useContext } from 'react';
+import { Form, Button, Container, Alert } from 'react-bootstrap';
+import { AuthContext } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
-  const { signup } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const navigate = useNavigate();
+  const { signup } = useContext(AuthContext);
+  const [userData, setUserData] = useState({ username: '', email: '', password: '' });
+  const [error, setError] = useState('');
+  const navigate = useNavigate(); // Hook for programmatic navigation
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      message.error('Passwords do not match!');
-      return;
+    try {
+      setError(''); // Clear previous errors
+      await signup(userData);
+      // Redirect to the login page upon successful signup
+      navigate('/login');
+    } catch (err) {
+      setError('Signup failed. Please try again.');
     }
-    await signup(email, password);
-    //navigate('/login');
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: 'auto', padding: '20px' }}>
+    <Container className="p-4">
       <h2>Sign Up</h2>
-      <Form onSubmitCapture={handleSubmit}>
-        <Form.Item
-          label="Email"
-          name="email"
-          // rules={[
-          //   { required: true, message: 'Please input your email!' },
-          //   { type: 'email', message: 'Please enter a valid email!' }
-          // ]}
-        >
-          <Input 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            placeholder="Enter your email" 
+      {error && <Alert variant="danger">{error}</Alert>}
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="fullname">
+          <Form.Label>Full Name</Form.Label>
+          <Form.Control
+            type="text"
+            value={userData.username}
+            onChange={(e) => setUserData({ ...userData, username: e.target.value })}
+            placeholder="Enter your Full Name"
+            required
           />
-        </Form.Item>
-        <Form.Item
-          label="Password"
-          name="password"
-          // rules={[
-          //   { required: true, message: 'Please input your password!' },
-          //   { min: 6, message: 'Password must be at least 6 characters.' }
-          // ]}
-        >
-          <Input.Password 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            placeholder="Enter your password" 
+        </Form.Group>
+        <Form.Group controlId="email">
+          <Form.Label>Email</Form.Label>
+          <Form.Control
+            type="email"
+            value={userData.email}
+            onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+            placeholder="Enter your email"
+            required
           />
-        </Form.Item>
-        <Form.Item
-          label="Confirm Password"
-          name="confirm"
-          // rules={[
-          //   { required: true, message: 'Please confirm your password!' },
-          //   { min: 6, message: 'Password must be at least 6 characters.' }
-          // ]}
-        >
-          <Input.Password 
-            value={confirmPassword} 
-            onChange={(e) => setConfirmPassword(e.target.value)} 
-            placeholder="Confirm your password" 
+        </Form.Group>
+        <Form.Group controlId="password">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            value={userData.password}
+            onChange={(e) => setUserData({ ...userData, password: e.target.value })}
+            placeholder="Enter your password"
+            required
           />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-            Sign Up
-          </Button>
-        </Form.Item>
+        </Form.Group>
+        <Button variant="primary" type="submit" className="mt-3">
+          Sign Up
+        </Button>
       </Form>
-      <p>
-        Already have an account? <Link to="/login">Log in here</Link>
-      </p>
-    </div>
+    </Container>
   );
 };
 

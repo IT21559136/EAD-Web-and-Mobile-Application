@@ -1,10 +1,12 @@
+// src/pages/InventoryManagement.js
 import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const InventoryManagement = () => {
   return (
-    <div>
-      <h2>Inventory Management</h2>
-      <p>Manage your inventory here.</p>
+    <div className="container mx-0">
+      <h2>Inventory Management Page</h2>
+      {/* Content for product management goes here */}
     </div>
   );
 };

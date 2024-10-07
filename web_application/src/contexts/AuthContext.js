@@ -1,50 +1,60 @@
-// src/contexts/AuthContext.js
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { message } from 'antd';
+import React, { createContext, useState, useEffect } from 'react';
+import axios from 'axios'; // Use axios to handle HTTP requests
 
-const AuthContext = createContext();
-
-export const useAuth = () => useContext(AuthContext);
+// Create AuthContext
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [auth, setAuth] = useState({ token: null, user: null });
 
-  const login = async (email, password) => {
+  // Load token from local storage on mount
+  useEffect(() => {
+    const savedAuth = JSON.parse(localStorage.getItem('auth'));
+    if (savedAuth) {
+      setAuth(savedAuth);
+    }
+  }, []);
+
+  // Save auth state to local storage on change
+  useEffect(() => {
+    if (auth.token) {
+      localStorage.setItem('auth', JSON.stringify(auth));
+    } else {
+      localStorage.removeItem('auth');
+    }
+  }, [auth]);
+
+  // API call to login using backend API
+  const login = async (credentials) => {
     try {
-      const response = await fetch('/api/Auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: '', email, password }),
-      });
-
-      if (!response.ok) throw new Error('Login failed');
-
-      const data = await response.json();
-      const userData = { email, role: data.role };
-
-      setUser(userData);
-      setToken(data.token);
-
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(userData));
-
-      message.success('Logged in successfully');
+      console.log(credentials)
+      const response = await axios.post('/api/Auth/login', credentials);
+      const data = response.data;
+      setAuth({ token: data.token, user: { role: data.role } });
     } catch (error) {
-      message.error(error.message);
+      throw error;
+    }
+  };
+
+  // API call to signup using backend API
+  const signup = async (userData) => {
+    try {
+      const response = await axios.post('/api/Auth/register', userData);
+      const data = response.data;
+      setAuth({ token: data.token, user: { role: data.role } });
+    } catch (error) {
+      throw error;
     }
   };
 
   const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    message.success('Logged out successfully');
+    setAuth({ token: null, user: null });
+    localStorage.removeItem('auth');
+    window.location.href = '/login'; // Redirect to login
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ auth, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

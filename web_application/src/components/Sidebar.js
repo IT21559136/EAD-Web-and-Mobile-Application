@@ -1,54 +1,48 @@
-// src/components/Sidebar.js
+// Sidebar.js
 import React from 'react';
-import { Layout, Menu, Button } from 'antd';
-import {
-  DashboardOutlined,
-  AppstoreAddOutlined, // Use a valid icon
-  ShoppingCartOutlined,
-  StockOutlined,
-  UserAddOutlined,
-} from '@ant-design/icons';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Import the AuthContext
+import { Link, useLocation } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
+import { useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 
-const { Sider } = Layout;
+const Sidebar = ({ isOpen }) => {
+  const location = useLocation();
+  const { logout } = useContext(AuthContext);
 
-const Sidebar = ({ collapsed }) => {
-  const { logout } = useAuth(); // Use logout function from AuthContext
-
+  const menuItems = [
+    { path: '/user-management', label: 'User Management', icon: 'fas fa-users' },
+    { path: '/category-management', label: 'Category Management', icon: 'fas fa-tags' },
+    { path: '/product-management', label: 'Product Management', icon: 'fas fa-box' },
+    { path: '/inventory-management', label: 'Inventory Management', icon: 'fas fa-warehouse' },
+    { path: '/order-management', label: 'Order Management', icon: 'fas fa-shopping-cart' },
+  ];
+  
   return (
-    <Sider trigger={null} collapsible collapsed={collapsed}>
-      <div className="logo" style={{ color: 'white', textAlign: 'center', padding: '16px 0' }}>
-        My App
-      </div>
-      <Menu theme="dark" mode="inline">
-        <Menu.Item key="1" icon={<DashboardOutlined />}>
-          <Link to="/">Dashboard</Link>
-        </Menu.Item>
-        <Menu.Item key="2" icon={<AppstoreAddOutlined />}>
-          <Link to="/product-management">Product Management</Link>
-        </Menu.Item>
-        <Menu.Item key="3" icon={<ShoppingCartOutlined />}>
-          <Link to="/order-management">Order Management</Link>
-        </Menu.Item>
-        <Menu.Item key="4" icon={<StockOutlined />}>
-          <Link to="/inventory-management">Inventory Management</Link>
-        </Menu.Item>
-        <Menu.Item key="5" icon={<UserAddOutlined />}>
-          <Link to="/vendor-management">Vendor Management</Link>
-        </Menu.Item>
-      </Menu>
-      <div style={{ position: 'absolute', bottom: '16px', left: '0', right: '0', padding: '16px' }}>
-        <Button 
-          type="primary" 
-          danger 
-          onClick={logout} 
-          style={{ width: '100%' }} // Full-width button
-        >
+    <div className={`bg-dark text-white sidebar ${isOpen ? 'open' : ''}`}>
+      <ul className="list-unstyled p-3">
+        {menuItems.map((item) => (
+          <li key={item.path}>
+            <Link
+              to={item.path}
+              className={`sidebar-link ${location.pathname === item.path ? 'active' : ''}`}
+              title={item.label} // Tooltip
+            >
+              <i className={item.icon}></i> <span>{item.label}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      {/* Centered logout button */}
+      <div className="logout-container mt-auto d-flex justify-content-center flex-column align-items-center">
+        <Button variant="danger" onClick={logout} className="logout-btn">
           Logout
         </Button>
+        <div className="version-info text-center mt-2">
+          <p className="mb-1 small">App Version: 1.0.0</p>  {/* Smaller font */}
+          <p className="small">Build Version: 2024.09.30</p>
+        </div>
       </div>
-    </Sider>
+    </div>
   );
 };
 

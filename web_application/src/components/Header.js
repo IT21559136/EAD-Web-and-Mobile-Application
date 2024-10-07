@@ -1,104 +1,117 @@
-// src/components/AppHeader.js
-import React, { useState } from 'react';
-import { Layout, Button, Badge, Dropdown, Menu, Tabs, List, Avatar } from 'antd';
-import { MenuUnfoldOutlined, MenuFoldOutlined, BellOutlined, UserOutlined } from '@ant-design/icons';
+import React, { useContext, useState } from 'react';
+import { Navbar, Button, Dropdown, DropdownButton, Badge } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext'; // Import AuthContext
 
-const { Header } = Layout;
-const { TabPane } = Tabs;
-
-const AppHeader = ({ collapsed, setCollapsed }) => {
+const Header = ({ toggleSidebar }) => {
   const [notifications, setNotifications] = useState([
-    { id: 1, content: 'New order received', read: false },
-    { id: 2, content: 'Inventory low', read: false },
-    { id: 3, content: 'New message from vendor', read: true },
+    { id: 1, text: 'New user signed up', read: false },
+    { id: 2, text: 'Inventory running low', read: true },
+    { id: 3, text: 'New order placed', read: false }
   ]);
 
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
+  const [profileData, setProfileData] = useState({
+    name: 'John Doe',
+    email: 'john.doe@example.com'
+  });
+
+  const { logout } = useContext(AuthContext); // Get logout from AuthContext
+  const navigate = useNavigate();
+
+  const fetchNotifications = () => {
+    // Mock API call to fetch notifications
+    setTimeout(() => {
+      setNotifications([
+        { id: 4, text: 'New message received', read: false },
+        { id: 5, text: 'Update system', read: true }
+      ]);
+    }, 500);
   };
 
-  const markAsRead = (id) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notif) =>
-        notif.id === id ? { ...notif, read: true } : notif
+  const fetchProfileData = () => {
+    // Mock API call to fetch profile data
+    setTimeout(() => {
+      setProfileData({
+        name: 'Jane Smith',
+        email: 'jane.smith@example.com'
+      });
+    }, 500);
+  };
+
+  const toggleReadStatus = (id) => {
+    setNotifications(
+      notifications.map((notif) =>
+        notif.id === id ? { ...notif, read: !notif.read } : notif
       )
     );
   };
 
-  const unreadNotifications = notifications.filter((notif) => !notif.read);
-  const readNotifications = notifications.filter((notif) => notif.read);
-
-  const notificationContent = (
-    <div style={{ padding: 16, width: 300 }}>
-      <Tabs defaultActiveKey="1">
-        <TabPane tab={`Unread (${unreadNotifications.length})`} key="1">
-          <List
-            dataSource={unreadNotifications}
-            renderItem={(notif) => (
-              <List.Item
-                actions={[
-                  <Button type="link" onClick={() => markAsRead(notif.id)}>
-                    Mark as read
-                  </Button>,
-                ]}
-              >
-                <List.Item.Meta
-                  avatar={<Avatar icon={<BellOutlined />} />}
-                  title={notif.content}
-                />
-              </List.Item>
-            )}
-          />
-        </TabPane>
-        <TabPane tab={`Read (${readNotifications.length})`} key="2">
-          <List
-            dataSource={readNotifications}
-            renderItem={(notif) => (
-              <List.Item>
-                <List.Item.Meta
-                  avatar={<Avatar icon={<BellOutlined />} />}
-                  title={notif.content}
-                />
-              </List.Item>
-            )}
-          />
-        </TabPane>
-      </Tabs>
-    </div>
-  );
-
-  const profileMenu = (
-    <Menu>
-      <Menu.Item key="1">Profile</Menu.Item>
-      <Menu.Item key="2">Settings</Menu.Item>
-      <Menu.Item key="3">Logout</Menu.Item>
-    </Menu>
-  );
+  const handleLogout = () => {
+    logout(); // Call the logout function from AuthContext
+    navigate('/login'); // Redirect to login page after logout
+  };
 
   return (
-    <Header className="site-layout-background" style={{ padding: 0, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <div>
-        <Button
-          type="primary"
-          onClick={toggleCollapsed}
-          style={{ margin: '16px' }}
+    <Navbar bg="dark" variant="dark" expand="lg" className="px-3">
+      <Button variant="outline-light" onClick={toggleSidebar}>
+        <i className="fas fa-bars"></i>
+      </Button>
+      <Navbar.Brand className="mx-3">
+        <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>
+          Admin Dashboard
+        </Link>
+      </Navbar.Brand>
+
+      <div className="ml-auto d-flex" style={{ marginLeft: 'auto' }}>
+        {/* Notification Icon */}
+        <DropdownButton
+          variant="outline-light"
+          title={
+            <>
+              <i className="fas fa-bell"></i>
+              {notifications.some((notif) => !notif.read) && (
+                <Badge bg="danger" className="ms-1">
+                  {notifications.filter((notif) => !notif.read).length}
+                </Badge>
+              )}
+            </>
+          }
+          className="mx-2"
+          onClick={fetchNotifications}
+          align="end"
         >
-          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </Button>
-        <span style={{ fontSize: '1.5rem', marginLeft: '16px' }}>My Web Application</span>
+          <Dropdown.Header>Notifications</Dropdown.Header>
+          {notifications.map((note) => (
+            <Dropdown.Item
+              key={note.id}
+              onClick={() => toggleReadStatus(note.id)}
+              style={{ fontWeight: note.read ? 'normal' : 'bold' }}
+            >
+              {note.text}
+              {note.read ? '' : <Badge bg="success" className="ms-2">New</Badge>}
+            </Dropdown.Item>
+          ))}
+        </DropdownButton>
+
+        {/* Profile Icon */}
+        <DropdownButton
+          variant="outline-light"
+          title={<i className="fas fa-user"></i>}
+          className="mx-2"
+          onClick={fetchProfileData}
+          align="end"
+        >
+          <Dropdown.Header>Profile</Dropdown.Header>
+          <Dropdown.Item>Name: {profileData.name}</Dropdown.Item>
+          <Dropdown.Item>Email: {profileData.email}</Dropdown.Item>
+          <Dropdown.Divider />
+          <Dropdown.Item onClick={handleLogout} className="text-danger">
+            <i className="fas fa-sign-out-alt"></i> Logout
+          </Dropdown.Item>
+        </DropdownButton>
       </div>
-      <div style={{ marginRight: '16px' }}>
-        <Dropdown overlay={<Menu>{notificationContent}</Menu>} trigger={['click']} placement="bottomRight">
-          <Badge count={unreadNotifications.length}>
-            <BellOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: '16px' }} />
-          </Badge>
-        </Dropdown>
-        <Dropdown overlay={profileMenu} trigger={['click']} placement="bottomRight">
-          <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
-        </Dropdown>
-      </div>
-    </Header>
+    </Navbar>
   );
 };
 
-export default AppHeader;
+export default Header;
