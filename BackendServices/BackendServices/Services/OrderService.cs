@@ -116,13 +116,47 @@ public class OrderService
         _notificationService = notificationService;
     }
 
-    // Create a new order
+    // // Create a new order
+    // public async Task CreateOrderAsync(Order order)
+    // {
+    //     // Validate product availability
+    //     foreach (var item in order.Items)
+    //     {
+    //         var product = await _productRepository.GetProductByIdAsync(item.ProductId);
+    //         if (product.AvailableQuantity < item.Quantity)
+    //         {
+    //             throw new InvalidOperationException($"Product {product.ProductName} does not have enough stock.");
+    //         }
+    //
+    //         // Reduce product stock
+    //         product.AvailableQuantity -= item.Quantity;
+    //         await _productRepository.UpdateProductAsync(product);
+    //     }
+    //
+    //     // Save the order
+    //     await _orderRepository.CreateOrderAsync(order);
+    //
+    //     // Notify vendors about the new order
+    //     foreach (var item in order.Items)
+    //     {
+    //         // Get vendor email from the product or vendor data
+    //         var vendor = await _vendorRepository.GetVendorByEmailAsync(item.VendorEmail);
+    //
+    //         // Call notification service with the vendor's email, not the Vendor object
+    //         await _notificationService.NotifyVendorNewOrderAsync(vendor.Email, order);
+    //     }
+    // }
+    
+    
+    
+    // Create a new order with low stock notification
     public async Task CreateOrderAsync(Order order)
     {
         // Validate product availability
         foreach (var item in order.Items)
         {
             var product = await _productRepository.GetProductByIdAsync(item.ProductId);
+
             if (product.AvailableQuantity < item.Quantity)
             {
                 throw new InvalidOperationException($"Product {product.ProductName} does not have enough stock.");
@@ -130,7 +164,19 @@ public class OrderService
 
             // Reduce product stock
             product.AvailableQuantity -= item.Quantity;
+
+            // Update the product with the new quantity
             await _productRepository.UpdateProductAsync(product);
+
+            // Check for low stock and notify vendor if stock is below the threshold (<=10)
+            if (product.AvailableQuantity <= 10)
+            {
+                // Get the vendor's email using the product's vendor email
+                var vendor = await _vendorRepository.GetVendorByEmailAsync(item.VendorEmail);
+
+                // Notify the vendor of low stock
+                await _notificationService.NotifyVendorLowStockAsync(vendor.Email, product);
+            }
         }
 
         // Save the order
@@ -142,10 +188,11 @@ public class OrderService
             // Get vendor email from the product or vendor data
             var vendor = await _vendorRepository.GetVendorByEmailAsync(item.VendorEmail);
 
-            // Call notification service with the vendor's email, not the Vendor object
+            // Notify the vendor of the new order
             await _notificationService.NotifyVendorNewOrderAsync(vendor.Email, order);
         }
     }
+
 
 
     // Update order status (e.g., before dispatch)
@@ -223,6 +270,12 @@ public class OrderService
     public async Task<List<Order>> GetOrdersByVendorEmailAsync(string vendorEmail)
     {
         return await _orderRepository.GetOrdersByVendorEmailAsync(vendorEmail);
+    }
+    
+    
+    public async Task<List<Order>> GetAllOrdersAsync()
+    {
+        return await _orderRepository.GetAllOrdersAsync();
     }
     
    
