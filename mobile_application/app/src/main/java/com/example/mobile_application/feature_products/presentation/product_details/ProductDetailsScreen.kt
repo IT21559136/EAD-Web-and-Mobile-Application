@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,11 +20,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.mobile_application.R
-import com.example.mobile_application.core.presentation.ui.theme.GrayColor
 import com.example.mobile_application.core.presentation.ui.theme.MainWhiteColor
 import com.example.mobile_application.core.presentation.ui.theme.YellowMain
 import com.example.mobile_application.feature_products.domain.model.Product
 import androidx.navigation.NavController
+import com.example.mobile_application.feature_cart.presentation.cart.CartViewModel
 
 
 @ExperimentalMaterial3Api
@@ -33,9 +32,8 @@ import androidx.navigation.NavController
 fun ProductDetailsScreen(
     product: Product,
     navController: NavController,
-   // viewModel: WishlistViewModel = hiltViewModel(),
+    cartViewModel: CartViewModel = hiltViewModel(),
 ) {
-   // val inWishlist = viewModel.inWishlist(product.id).observeAsState().value != null
 
     Scaffold(
         containerColor = Color.White,
@@ -56,58 +54,15 @@ fun ProductDetailsScreen(
                         modifier = Modifier.size(32.dp)
                     )
                 }
-//                IconButton(
-//                    onClick = {
-//                        if (inWishlist) {
-//                            viewModel.deleteFromWishlist(
-//                                Wishlist(
-//                                    image = product.image,
-//                                    title = product.productName,
-//                                    id = product.id,
-//                                    liked = true,
-//                                    price = product.price,
-//                                    description = product.description,
-//                                    category = product.category,
-//                                    rating = product.rating.toWishlistRating()
-//                                )
-//                            )
-//                        } else {
-//                            viewModel.insertFavorite(
-//                                Wishlist(
-//                                    image = product.image,
-//                                    title = product.title,
-//                                    id = product.id,
-//                                    liked = true,
-//                                    price = product.price,
-//                                    description = product.description,
-//                                    category = product.category,
-//                                    rating = product.rating.toWishlistRating()
-//                                )
-//                            )
-//                        }
-//                    },
-//                ) {
-//                    Icon(
-//                        painter = if (inWishlist) {
-//                            painterResource(id = R.drawable.ic_heart_fill)
-//                        } else {
-//                            painterResource(id = R.drawable.ic_heart)
-//                        },
-//                        tint = if (inWishlist) {
-//                            YellowMain
-//                        } else {
-//                            GrayColor
-//                        },
-//                        contentDescription = null,
-//                        modifier = Modifier.size(32.dp)
-//                    )
-//                }
             }
         }
     ) {padding->
         DetailsScreenContent(
             product = product,
             modifier = Modifier.fillMaxSize().padding(start = 0.dp, top = 16.dp, end = 0.dp, bottom = 0.dp),
+            onAddToCartClick = {
+                cartViewModel.addCartItem(product, 1) // Add the product to the cart with default quantity 1
+            }
         )
     }
 }
@@ -116,6 +71,7 @@ fun ProductDetailsScreen(
 fun DetailsScreenContent(
     product: Product,
     modifier: Modifier = Modifier,
+    onAddToCartClick: () -> Unit
 ) {
     Column {
         Box(modifier = modifier.weight(1f), contentAlignment = Alignment.Center) {
@@ -214,7 +170,7 @@ fun DetailsScreenContent(
                     Spacer(modifier = Modifier.width(12.dp))
 
                     Button(
-                        onClick = { /* Handle add to cart */ },
+                        onClick = {onAddToCartClick() },
                         colors = ButtonDefaults.buttonColors(
                             contentColor = Color.Black,
                             containerColor = YellowMain

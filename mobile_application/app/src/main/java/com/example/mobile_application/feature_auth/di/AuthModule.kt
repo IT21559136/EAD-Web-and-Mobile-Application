@@ -4,8 +4,8 @@ import com.example.mobile_application.core.util.Constants.BASE_URL
 import com.example.mobile_application.core.util.getUnsafeOkHttpClient
 import com.example.mobile_application.feature_auth.data.local.AuthPreferences
 import com.example.mobile_application.feature_auth.data.remote.AuthApiService
-import com.example.mobile_application.feature_auth.data.repository.LoginRepositoryImpl
-import com.example.mobile_application.feature_auth.domain.repository.LoginRepository
+import com.example.mobile_application.feature_auth.data.repository.AuthRepositoryImpl
+import com.example.mobile_application.feature_auth.domain.repository.AuthRepository
 import com.example.mobile_application.feature_auth.domain.use_case.AutoLoginUseCase
 import com.example.mobile_application.feature_auth.domain.use_case.LoginUseCase
 import com.example.mobile_application.feature_auth.domain.use_case.LogoutUseCase
@@ -35,11 +35,11 @@ object AuthModule {
 
     @Provides
     @Singleton
-    fun provideLoginRepository(
+    fun provideAuthRepository(
         authApiService: AuthApiService,
         authPreferences: AuthPreferences
-    ): LoginRepository {
-        return LoginRepositoryImpl(
+    ): AuthRepository {
+        return AuthRepositoryImpl(
             authApiService = authApiService,
             authPreferences = authPreferences
         )
@@ -47,25 +47,25 @@ object AuthModule {
 
     @Provides
     @Singleton
-    fun provideLoginUseCase(loginRepository: LoginRepository): LoginUseCase {
-        return LoginUseCase(loginRepository)
+    fun provideLoginUseCase(authRepository: AuthRepository): LoginUseCase {
+        return LoginUseCase(authRepository)
     }
 
     @Provides
     @Singleton
-    fun provideRegisterUseCase(loginRepository: LoginRepository): RegisterUseCase {
-        return RegisterUseCase(loginRepository)
+    fun provideRegisterUseCase(authRepository: AuthRepository): RegisterUseCase {
+        return RegisterUseCase(authRepository)
     }
 
     @Provides
     @Singleton
-    fun provideAutoLoginUseCase(loginRepository: LoginRepository): AutoLoginUseCase {
-        return AutoLoginUseCase(loginRepository)
+    fun provideAutoLoginUseCase(authRepository: AuthRepository): AutoLoginUseCase {
+        return AutoLoginUseCase(authRepository)
     }
 
     @Provides
     @Singleton
-    fun provideLogoutUseCase(loginRepository: LoginRepository): LogoutUseCase {
-        return LogoutUseCase(loginRepository)
+    fun provideLogoutUseCase(authRepository: AuthRepository): LogoutUseCase {
+        return LogoutUseCase(authRepository)
     }
 }

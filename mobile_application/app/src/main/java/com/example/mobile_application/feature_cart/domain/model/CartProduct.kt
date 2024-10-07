@@ -1,8 +1,8 @@
 package com.example.mobile_application.feature_cart.domain.model
 
+import com.example.mobile_application.feature_products.domain.model.Product
+
 data class CartProduct(
-    val name: String,
-    val price: Double,
-    val quantity: Int,
-    val imageUrl: String
+    val product: Product,  // Composing with Product
+    val selectedQuantity: Int  // Additional property for selected quantity
 )

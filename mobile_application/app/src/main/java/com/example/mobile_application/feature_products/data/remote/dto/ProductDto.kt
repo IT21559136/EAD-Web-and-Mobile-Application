@@ -11,7 +11,7 @@ data class ProductDto(
     @SerializedName("price")
     val price: Double,
     @SerializedName("availableQuantity")
-    val quantity: Int,
+    val availableQuantity: Int,
     @SerializedName("category")
     val category: String,
     @SerializedName("description")

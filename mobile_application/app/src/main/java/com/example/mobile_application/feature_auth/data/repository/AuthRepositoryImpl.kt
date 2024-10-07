@@ -8,16 +8,16 @@ import com.example.mobile_application.feature_auth.data.local.AuthPreferences
 import com.example.mobile_application.feature_auth.data.remote.AuthApiService
 import com.example.mobile_application.feature_auth.data.remote.request.LoginRequest
 import com.example.mobile_application.feature_auth.data.remote.request.RegisterRequest
-import com.example.mobile_application.feature_auth.domain.repository.LoginRepository
+import com.example.mobile_application.feature_auth.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.first
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
 
-class LoginRepositoryImpl(
+class AuthRepositoryImpl(
     private val authApiService: AuthApiService,
     private val authPreferences: AuthPreferences
-) : LoginRepository {
+) : AuthRepository {
     override suspend fun register(registerRequest: RegisterRequest): Resource<Unit> {
         Timber.d("Register called")
         return try {
@@ -41,7 +41,15 @@ class LoginRepositoryImpl(
             val response = authApiService.loginUser(loginRequest)
             Timber.d("Login Token: ${response.token},  Role: ${response.role}")
             authPreferences.saveAccessToken(response.token)
-            Timber.d("Auth Preferences Login Token",authPreferences.getAccessToken)
+
+            // Check if token is saved in preferences
+            val savedToken = authPreferences.getAccessToken.first() // Collects the token value
+            if (savedToken.isNotEmpty()) {
+                Timber.d("Auth Preferences: Login Token successfully saved: $savedToken")
+            } else {
+                Timber.e("Auth Preferences: Failed to save Login Token")
+            }
+
 //            if (rememberMe) {
 //                authPreferences.saveAccessToken(response.token)
 //            }

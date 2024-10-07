@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.mobile_application.core.util.Resource
 import com.example.mobile_application.core.util.UiEvents
 import com.example.mobile_application.feature_cart.domain.model.CartProduct
+import com.example.mobile_application.feature_cart.domain.use_case.AddCartItemUseCase
 import com.example.mobile_application.feature_cart.domain.use_case.DeleteCartItemsUseCase
 import com.example.mobile_application.feature_cart.domain.use_case.GetCartItemsUseCase
+import com.example.mobile_application.feature_products.domain.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -20,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CartViewModel @Inject constructor(
     private val getCartItemsUseCase: GetCartItemsUseCase,
-    private val deleteCartItemsUseCase: DeleteCartItemsUseCase // Add use case to delete items
+    private val deleteCartItemsUseCase: DeleteCartItemsUseCase,
+    private val addCartItemUseCase: AddCartItemUseCase
 ) : ViewModel() {
     private val _state = mutableStateOf(CartItemsState())
     val state: State<CartItemsState> = _state
@@ -58,6 +61,41 @@ class CartViewModel @Inject constructor(
                             message = result.message ?: "Unknown error occurred!"
                         )
                     )
+                }
+            }
+        }
+    }
+
+    // Add a new item to the cart
+    fun addCartItem(product: Product, selectedQuantity: Int) {
+        val cartProduct = CartProduct(product,  selectedQuantity) // Create a CartProduct instance
+        viewModelScope.launch {
+            addCartItemUseCase(cartProduct).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        // Update the state with the new cart item if needed
+                        _state.value = state.value.copy(
+                            cartItems = state.value.cartItems + cartProduct // Add the item to the cart
+                        )
+                        // Show a snackbar confirming the addition
+                        _eventFlow.emit(
+                            UiEvents.SnackbarEvent(
+                                message = "${cartProduct.product.productName} has been added to the cart."
+                            )
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = state.value.copy(
+                            isLoading = true
+                        )
+                    }
+                    is Resource.Error -> {
+                        _eventFlow.emit(
+                            UiEvents.SnackbarEvent(
+                                message = result.message ?: "Failed to add item to the cart."
+                            )
+                        )
+                    }
                 }
             }
         }

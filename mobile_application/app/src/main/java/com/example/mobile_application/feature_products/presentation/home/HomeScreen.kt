@@ -102,29 +102,16 @@ fun HomeScreen(
                 filtersExpanded = false
             }
         ) {
-            DropdownMenuItem(
-                onClick = {
-                    Toast.makeText(context, "Clothes", Toast.LENGTH_SHORT).show()
-                    filtersExpanded = false // Close the menu after selection
-                },
-                text = { Text("Clothes") }
-            )
-
-            DropdownMenuItem(
-                onClick = {
-                    Toast.makeText(context, "Shoes", Toast.LENGTH_SHORT).show()
-                    filtersExpanded = false // Close the menu after selection
-                },
-                text = { Text("Shoes") }
-            )
-
-            DropdownMenuItem(
-                onClick = {
-                    Toast.makeText(context, "Electronics", Toast.LENGTH_SHORT).show()
-                    filtersExpanded = false // Close the menu after selection
-                },
-                text = { Text("Electronics") }
-            )
+            categories.forEach { category ->
+                DropdownMenuItem(
+                    onClick = {
+                        Toast.makeText(context, category, Toast.LENGTH_SHORT).show()
+                        filtersExpanded = false
+                        viewModel.setCategory(category) // Set selected category
+                    },
+                    text = { Text(category) }
+                )
+            }
         }
 
         HomeScreenContent(

@@ -1,8 +1,8 @@
 package com.example.mobile_application.feature_cart.domain.model
 
 data class UserCart(
-    val date: String,
-    val id: Int,
+    //val id: Int,
+    val customerId: String,
     val cartProducts: List<CartProduct>,
-    val userId: Int,
+    val totalPrice: Double
 )

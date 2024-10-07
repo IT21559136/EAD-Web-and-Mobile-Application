@@ -1,11 +1,12 @@
 package com.example.mobile_application.feature_cart.data.remote.dto
 
-
-import com.google.gson.annotations.SerializedName
-
 data class CartProductDto(
-    @SerializedName("productId")
-    val productId: Int,
-    @SerializedName("quantity")
-    val quantity: Int
+    val productId: String,
+    val productName: String,
+    val quantity: Int, // This represents the quantity selected in the cart
+    val price: Double,
+    val availableQuantity: Int,
+    val category: String,
+    val description: String,
+    val image: String
 )

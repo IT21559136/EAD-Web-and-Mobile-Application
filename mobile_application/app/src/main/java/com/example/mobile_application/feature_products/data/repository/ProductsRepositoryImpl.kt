@@ -8,17 +8,26 @@ import com.example.mobile_application.feature_products.domain.model.Category
 import com.example.mobile_application.feature_products.domain.model.Product
 import com.example.mobile_application.feature_products.domain.repository.ProductsRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
 
 class ProductsRepositoryImpl(private val productsApiService: ProductsApiService,  private val authPreferences: AuthPreferences) :
     ProductsRepository {
+
+    private val accessToken: String by lazy {
+        runBlocking { authPreferences.getAccessToken.first() }
+    }
+
+    private val bearerToken = "Bearer $accessToken"
+
     override suspend fun getProducts(): Flow<Resource<List<Product>>> = flow {
         emit(Resource.Loading())
         try {
-            val response = productsApiService.getProducts(authPreferences.getAccessToken.toString())
+            val response = productsApiService.getProducts(bearerToken)
             emit(Resource.Success(response.map { it.toDomain() }))
         } catch (e: IOException) {
             emit(Resource.Error(message = "Could not reach the server, please check your internet connection!"))
@@ -29,8 +38,7 @@ class ProductsRepositoryImpl(private val productsApiService: ProductsApiService,
 
     override suspend fun getProductCategories(): List<Category> {
         return try {
-            val categories = productsApiService.getProductCategories(authPreferences.getAccessToken.toString())
-            Timber.d("Fetched Access Token: ${authPreferences.getAccessToken.toString()}")
+            val categories = productsApiService.getProductCategories(bearerToken)
             // Log the list of categories
             Timber.d("Fetched Categories: $categories")
 
@@ -49,8 +57,8 @@ class ProductsRepositoryImpl(private val productsApiService: ProductsApiService,
 
     override suspend fun getProductById(productId: String): Product {
         return try {
-            Timber.d("Fetched Token: ${authPreferences.getAccessToken}")
-            val product = productsApiService.getProductById(authPreferences.getAccessToken.toString(),productId)
+            Timber.d("Fetched Token: $bearerToken")
+            val product = productsApiService.getProductById(bearerToken,productId)
             // Log the list of categories
             Timber.d("Fetched Product: $product")
             product

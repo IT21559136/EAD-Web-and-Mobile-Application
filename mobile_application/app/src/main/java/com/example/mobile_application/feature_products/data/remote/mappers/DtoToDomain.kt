@@ -11,7 +11,7 @@ internal fun ProductDto.toDomain(): Product {
         id = id,
         productName = productName,
         price = price,
-        quantity = quantity,
+        availableQuantity = availableQuantity,
         category = category,
         description = description,
         image = image

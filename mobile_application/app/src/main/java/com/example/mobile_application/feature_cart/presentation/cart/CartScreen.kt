@@ -194,7 +194,7 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
         ) {
             Text(text = "${state.selectedItems.size} items")
             Text(
-                text = "${state.selectedItems.sumOf { (it.price * it.quantity) }}",
+                text = "${state.selectedItems.sumOf { (it.product.price * it.selectedQuantity) }}",
                 color = Color.Black,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
@@ -222,7 +222,7 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
             Text(text = "Total")
             Text(
                 text = "$${
-                    state.selectedItems.sumOf { (it.price * it.quantity) } + 60.00
+                    state.selectedItems.sumOf { (it.product.price * it.selectedQuantity) } + 60.00
                 }",
                 color = Color.Black,
                 fontSize = 16.sp,
@@ -274,7 +274,7 @@ fun CartItem(
             Image(
                 painter = rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
-                        .data(data = cartItem.imageUrl)
+                        .data(data = cartItem.product.image)
                         .apply(block = fun ImageRequest.Builder.() {
                             placeholder(R.drawable.ic_placeholder)
                             crossfade(true)
@@ -289,7 +289,7 @@ fun CartItem(
                 modifier = Modifier.weight(2f).padding(10.dp)
             ) {
                 Text(
-                    text = cartItem.name,
+                    text = cartItem.product.productName,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 14.sp,
@@ -297,7 +297,7 @@ fun CartItem(
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Text(
-                    text = "$${cartItem.price}",
+                    text = "$${cartItem.product.price}",
                     color = Color.Black,
                     fontSize = 18.sp,
                     maxLines = 3,
@@ -307,7 +307,7 @@ fun CartItem(
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
-                    text = "${cartItem.quantity} Pc",
+                    text = "${cartItem.selectedQuantity} Pc",
                     color = Color.Black,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold

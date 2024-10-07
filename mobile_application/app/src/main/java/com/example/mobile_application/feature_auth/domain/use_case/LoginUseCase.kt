@@ -2,10 +2,10 @@ package com.example.mobile_application.feature_auth.domain.use_case
 
 import com.example.mobile_application.feature_auth.data.remote.request.LoginRequest
 import com.example.mobile_application.feature_auth.domain.model.LoginResult
-import com.example.mobile_application.feature_auth.domain.repository.LoginRepository
+import com.example.mobile_application.feature_auth.domain.repository.AuthRepository
 
 class LoginUseCase(
-    private val loginRepository: LoginRepository
+    private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke(
         username: String,
@@ -34,7 +34,7 @@ class LoginUseCase(
         )
 
         return LoginResult(
-            result = loginRepository.login(loginRequest, rememberMe)
+            result = authRepository.login(loginRequest, rememberMe)
         )
     }
 }

@@ -2,11 +2,11 @@ package com.example.mobile_application.feature_auth.domain.use_case
 
 import com.example.mobile_application.feature_auth.data.remote.request.RegisterRequest
 import com.example.mobile_application.feature_auth.domain.model.LoginResult
-import com.example.mobile_application.feature_auth.domain.repository.LoginRepository
+import com.example.mobile_application.feature_auth.domain.repository.AuthRepository
 import javax.inject.Inject
 
 class RegisterUseCase @Inject constructor(
-    private val loginRepository: LoginRepository
+    private val authRepository: AuthRepository
 ){
     suspend operator fun invoke(
         username: String,
@@ -39,7 +39,7 @@ class RegisterUseCase @Inject constructor(
         )
 
         return LoginResult(
-            result = loginRepository.register(registerRequest)
+            result = authRepository.register(registerRequest)
         )
     }
 }
