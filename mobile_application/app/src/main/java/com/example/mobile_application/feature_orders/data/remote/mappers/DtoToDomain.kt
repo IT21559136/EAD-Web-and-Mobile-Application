@@ -13,13 +13,14 @@ fun OrderDto.toDomain(): Order {
         customerNote = customerNote,
         status = status,
         orderDate = orderDate,
-        vendorStatuses = vendorStatuses
+        vendorStatuses = vendorStatuses?: listOf()
     )
 }
 
 fun OrderItemDto.toDomain(): OrderItem {
     return OrderItem(
         productId = productId,
+        productName = productName,
         quantity = quantity,
         vendorEmail = vendorEmail,
         orderItemStatus = orderItemStatus

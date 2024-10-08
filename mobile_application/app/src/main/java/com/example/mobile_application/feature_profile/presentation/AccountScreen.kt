@@ -1,273 +1,217 @@
 package com.example.mobile_application.feature_profile.presentation
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ChevronRight
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
 import com.example.mobile_application.R
-import com.example.mobile_application.core.presentation.ui.theme.GrayColor
-import com.example.mobile_application.core.presentation.ui.theme.YellowMain
-import com.example.mobile_application.core.util.UiEvents
-import com.example.mobile_application.feature_profile.domain.model.Account
-import com.example.mobile_application.feature_profile.domain.model.User
-import kotlinx.coroutines.flow.collectLatest
-import java.util.*
+import com.example.mobile_application.core.presentation.ui.theme.MainWhiteColor
 
-@ExperimentalMaterial3Api
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountScreen(
-    navController: NavController,
-    viewModel: ProfileViewModel = hiltViewModel()
-) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    LaunchedEffect(key1 = true) {
-        viewModel.getProfile()
-        viewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is UiEvents.SnackbarEvent -> {
-                    snackbarHostState.showSnackbar(
-                        message = event.message,
-                        duration = SnackbarDuration.Short
-                    )
-                }
-                is UiEvents.NavigateEvent -> {
-                    navController.navigate(event.route) {
-                        // Adjusting back stack
-                        popUpTo("account") { inclusive = false }
-                        popUpTo("home") { inclusive = false }
-                        popUpTo("orders") { inclusive = false }
-                        popUpTo("cart") { inclusive = false }
-                    }
-                }
+fun AccountScreen(navController: NavController) {
+    var name by remember { mutableStateOf(TextFieldValue("Jana")) }
+    var email by remember { mutableStateOf(TextFieldValue("jana@gmail.com")) }
+    var phone by remember { mutableStateOf(TextFieldValue("+1234567890")) }
+    var address by remember { mutableStateOf(TextFieldValue("123 Main St, City")) } // New address state
+    var modified by remember { mutableStateOf(false) }
+    var isEditing by remember { mutableStateOf(false) } // Track editing state
 
-                else -> {}
-            }
-        }
+    // Dropdown menu state
+    var expanded by remember { mutableStateOf(false) }
+
+    // Function to check if any field has changed
+    fun checkForChanges(newName: TextFieldValue, newEmail: TextFieldValue, newPhone: TextFieldValue, newAddress: TextFieldValue) {
+        modified = newName.text != name.text || newEmail.text != email.text || newPhone.text != phone.text || newAddress.text != address.text
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White // Set the background color here
+                    containerColor = MainWhiteColor
                 ),
                 title = {
                     Text(
-                        text = "My Profile",
+                        modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
+                        text = "My Profile",
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.fillMaxWidth()
+                        fontWeight = FontWeight.SemiBold
                     )
+                },
+                actions = {
+                    IconButton(onClick = { expanded = !expanded }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_menu), // Use your menu icon
+                            contentDescription = "Menu"
+                        )
+                    }
+
+                    // Dropdown Menu
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        DropdownMenuItem(onClick = {
+                            // Handle Logout action
+                            expanded = false
+                        },
+                            text = { Text("Logout") }
+                        )
+                        DropdownMenuItem(onClick = {
+                            // Handle Deactivate action
+                            expanded = false
+                        },
+                            text = { Text("Deactivate") }
+                        )
+                    }
                 }
             )
         }
-    ) { padding->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            AccountScreenContent(
-                user = viewModel.profileState.value,
-                onClickSignOut = { viewModel.logout() }
-            )
-        }
-    }
-}
-
-@Composable
-private fun AccountScreenContent(
-    user: User,
-    onClickSignOut: () -> Unit,
-) {
-    LazyColumn {
-        item {
-            UserItem(
-                user = user,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(130.dp)
-                    .padding(4.dp)
-            )
-        }
-        items(accountItems) { item ->
-            AccountCard(item = item)
-        }
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-            SignOutButton(onClick = onClickSignOut)
-        }
-    }
-}
-
-@Composable
-private fun AccountCard(item: Account) {
-    Card(
-        modifier = Modifier.padding(8.dp),
-        border = BorderStroke(0.3.dp, GrayColor),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = item.title,
-                    color = Color.Black,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = item.content,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Light,
-                    fontSize = 12.sp
-                )
-            }
-            IconButton(onClick = { /*TODO: Implement navigation or action*/ }) {
-                Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
-            }
-        }
-    }
-}
-
-@Composable
-private fun SignOutButton(onClick: () -> Unit) {
-    Button(
-        modifier = Modifier.padding(8.dp),
-        onClick = onClick,
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            text = "Sign Out",
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-fun UserItem(
-    user: User,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.elevatedCardElevation(3.dp),
-    ) {
-        Row {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    ImageRequest.Builder(LocalContext.current)
-                        .data("https://firebasestorage.googleapis.com/v0/b/savingszetu.appspot.com/o/50293753.jpeg?alt=media&token=a7174053-5253-49ed-b885-08f428df0287")
-                        .placeholder(R.drawable.ic_placeholder)
-                        .crossfade(true)
-                        .build()
-                ),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(5.dp)
-                    .weight(1f)
-                    .clip(CircleShape)
-                    .fillMaxHeight(),
-                contentScale = ContentScale.Inside
-            )
-            Spacer(modifier = Modifier.width(5.dp))
-            UserDetails(user)
-        }
-    }
-}
-
-@Composable
-private fun UserDetails(user: User) {
-    Row(modifier = Modifier.fillMaxWidth()) {
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .weight(2f) // This will now work because it's inside a Row
-                .padding(5.dp),
-            horizontalAlignment = Alignment.Start
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "${user.name?.firstname?.capitalize(Locale.getDefault())} ${user.name?.lastname?.capitalize(Locale.getDefault())}",
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold
+            // Circle with First Letter of Name
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .background(Color.Gray.copy(alpha = 0.3f), shape = CircleShape)
+                    .clickable { /* Change picture action */ },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = name.text.first().toString(), // Display the first letter of the name
+                    fontSize = 46.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Editable Name
+            OutlinedTextField(
+                value = name,
+                onValueChange = {
+                    name = it
+                    checkForChanges(it, email, phone, address) // Include address in change check
+                },
+                label = { Text("Name") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = isEditing // Toggle enabled state based on isEditing
             )
-            Spacer(modifier = Modifier.height(5.dp))
-            Text(
-                text = "@${user.username}",
-                color = Color.Black,
-                fontSize = 16.sp,
-                maxLines = 3,
-                fontWeight = FontWeight.Light
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Editable Email
+            OutlinedTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                    checkForChanges(name, it, phone, address) // Include address in change check
+                },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = isEditing // Toggle enabled state based on isEditing
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            EditProfileButton()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Editable Phone
+            OutlinedTextField(
+                value = phone,
+                onValueChange = {
+                    phone = it
+                    checkForChanges(name, email, it, address) // Include address in change check
+                },
+                label = { Text("Phone") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = isEditing // Toggle enabled state based on isEditing
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Editable Address
+            OutlinedTextField(
+                value = address,
+                onValueChange = {
+                    address = it
+                    checkForChanges(name, email, phone, it) // Include address in change check
+                },
+                label = { Text("Address") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = isEditing // Toggle enabled state based on isEditing
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Edit Button
+            Button(
+                onClick = {
+                    if (isEditing) {
+                        // If already editing, reset modified state
+                        modified = false
+                    }
+                    isEditing = !isEditing // Toggle editing state
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(if (isEditing) "Save" else "Edit") // Change button text based on editing state
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Conditional Buttons for Update and Cancel
+            if (modified) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Button(
+                        onClick = {
+                            // Handle Update action
+                            // Reset modified state after update
+                            modified = false
+                        },
+                        modifier = Modifier.weight(1f).padding(end = 8.dp)
+                    ) {
+                        Text("Update")
+                    }
+
+                    Button(
+                        onClick = {
+                            // Reset fields to original values
+                            name = TextFieldValue("Jana")
+                            email = TextFieldValue("jana@gmail.com")
+                            phone = TextFieldValue("+1234567890")
+                            address = TextFieldValue("123 Main St, City") // Reset address
+                            modified = false
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
         }
     }
 }
-
-@Composable
-private fun EditProfileButton() {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Button(
-            modifier = Modifier.align(Alignment.End),
-            onClick = { /* TODO: Implement edit profile action */ },
-            colors = ButtonDefaults.buttonColors(
-                contentColor = Color.Black,
-                containerColor = YellowMain
-            ),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Text(
-                modifier = Modifier.padding(3.dp),
-                fontSize = 11.sp,
-                textAlign = TextAlign.Center,
-                text = "Edit profile"
-            )
-        }
-    }
-}
-
-private val accountItems = listOf(
-    Account("My Orders", "You have 10 completed orders"),
-    Account("Shipping Address", "2 addresses have been set"),
-    Account("My Reviews", "Reviewed 3 items"),
-    Account("Settings", "Notifications, password, language")
-)
