@@ -13,9 +13,15 @@ const Login = () => {
     e.preventDefault();
     try {
       setError(''); // Clear error before attempting login
-      await login(credentials);
-      // Redirect to the dashboard or homepage upon successful login
-      navigate('/');
+      const role = await login(credentials); // Assuming login returns user role
+      // Redirect to the appropriate dashboard based on user role
+      if (role === 'Admin') {
+        navigate('/'); // Admin Dashboard
+      } else if (role === 'Vendor') {
+        navigate('/vendor-dashboard'); // Vendor Dashboard
+      } else {
+        setError('Role not recognized'); // Handle unexpected roles
+      }
     } catch (err) {
       setError('Invalid username, email, or password');
     }

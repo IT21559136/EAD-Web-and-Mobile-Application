@@ -206,3 +206,152 @@ export const setOrderItemStatus = (orderId, itemId) => {
         resolve(`Status set for item ${itemId} in order ${orderId}`);
     });
 };
+
+// Simulated dataset for vendor orders
+export const vendorOrdersData = [
+    {
+        id: "6700e1f1b22d35f5e90776bc",
+        productName: "Wireless Headphones",
+        customerId: "CUST001",
+        items: [
+            { productId: "66fe5526e91963f6c3b043eb", quantity: 5, vendorEmail: "lokuge@gmail.com", orderItemStatus: "New", productName: "Wireless Headphones" },
+            { productId: "66fe5526e91966f6c3b043eb", quantity: 10, vendorEmail: "lokuge@gmail.com", orderItemStatus: "Shipped", productName: "Bluetooth Speaker" },
+            { productId: "66fe5526e91967f6c3b043eb", quantity: 2, vendorEmail: "lokuge@gmail.com", orderItemStatus: "New", productName: "Smartwatch" },
+        ],
+        status: "Processing",
+        orderDate: "2024-10-05T06:51:29.329Z",
+        customerNote: "Hello, please quickly deliver."
+    },
+    {
+        id: "6700e1f1b22d35f5e90776bd",
+        productName: "Gaming Mouse",
+        customerId: "CUST002",
+        items: [
+            { productId: "66fe5526e91968f6c3b043eb", quantity: 1, vendorEmail: "lokuge@gmail.com", orderItemStatus: "Delivered", productName: "Gaming Mouse" },
+            { productId: "66fe5526e91969f6c3b043eb", quantity: 7, vendorEmail: "lokuge@gmail.com", orderItemStatus: "Cancelled", productName: "Mechanical Keyboard" },
+        ],
+        status: "Cancelled",
+        orderDate: "2024-10-06T10:30:29.329Z",
+        customerNote: "The delivery was delayed."
+    },
+    {
+        id: "6700e1f1b22d35f5e90776be",
+        productName: "USB-C Charger",
+        customerId: "CUST003",
+        items: [
+            { productId: "66fe5526e91970f6c3b043eb", quantity: 3, vendorEmail: "lokuge@gmail.com", orderItemStatus: "New", productName: "USB-C Charger" },
+            { productId: "66fe5526e91971f6c3b043eb", quantity: 4, vendorEmail: "lokuge@gmail.com", orderItemStatus: "Shipped", productName: "Wireless Charger" },
+        ],
+        status: "Processing",
+        orderDate: "2024-10-07T12:45:29.329Z",
+        customerNote: "Please include a receipt."
+    },
+    {
+        id: "6700e1f1b22d35f5e90776bf",
+        productName: "Laptop Stand",
+        customerId: "CUST004",
+        items: [
+            { productId: "66fe5526e91972f6c3b043eb", quantity: 6, vendorEmail: "nisal@gmail.com", orderItemStatus: "New", productName: "Laptop Stand" },
+            { productId: "66fe5526e91973f6c3b043eb", quantity: 8, vendorEmail: "nisal@gmail.com", orderItemStatus: "New", productName: "Ergonomic Chair" },
+        ],
+        status: "Processing",
+        orderDate: "2024-10-08T08:15:29.329Z",
+        customerNote: "Urgent delivery needed."
+    },
+    {
+        id: "6700e1f1b22d35f5e90776c0",
+        productName: "4K Monitor",
+        customerId: "CUST005",
+        items: [
+            { productId: "66fe5526e91974f6c3b043eb", quantity: 10, vendorEmail: "nisal@gmail.com", orderItemStatus: "Delivered", productName: "4K Monitor" },
+        ],
+        status: "Delivered",
+        orderDate: "2024-10-09T09:00:29.329Z",
+        customerNote: "Thank you for the quick service."
+    },
+    {
+        id: "6700e1f1b22d35f5e90776c1",
+        productName: "Wireless Mouse",
+        customerId: "CUST006",
+        items: [
+            { productId: "66fe5526e91975f6c3b043eb", quantity: 3, vendorEmail: "nisal@gmail.com", orderItemStatus: "Shipped", productName: "Wireless Mouse" },
+            { productId: "66fe5526e91976f6c3b043eb", quantity: 5, vendorEmail: "nisal@gmail.com", orderItemStatus: "New", productName: "Gaming Headset" },
+        ],
+        status: "Processing",
+        orderDate: "2024-10-10T14:20:29.329Z",
+        customerNote: "Deliver on the weekend."
+    },
+];
+
+
+// API response with axios interceptor
+axios.interceptors.response.use((config) => {
+    if (config.url === '/api/vendor/orders') {
+        return { data: vendorOrdersData };
+    }
+    return config;
+});
+
+// API call to fetch vendor orders
+export const vendorFetchOrders = async () => {
+    try {
+        return vendorOrdersData;
+    } catch (error) {
+        console.error('Error fetching vendor orders:', error);
+        throw error;
+    }
+};
+
+// Function to create a new vendor order
+export const vendorCreateOrder = async (newVendorOrder) => {
+    try {
+        newVendorOrder.id = `ORD${Date.now()}`; // Generate a unique order ID
+        vendorOrdersData.push(newVendorOrder);
+        return newVendorOrder;
+    } catch (error) {
+        console.error('Error creating vendor order:', error);
+        throw error;
+    }
+};
+
+// Function to update an existing vendor order
+export const vendorUpdateOrder = async (orderId, updatedVendorDetails) => {
+    try {
+        const index = vendorOrdersData.findIndex(order => order.id === orderId);
+        if (index !== -1) {
+            vendorOrdersData[index] = { ...vendorOrdersData[index], ...updatedVendorDetails };
+            return vendorOrdersData[index];
+        } else {
+            throw new Error('Vendor order not found');
+        }
+    } catch (error) {
+        console.error('Error updating vendor order:', error);
+        throw error;
+    }
+};
+
+// Function to delete a vendor order
+export const vendorDeleteOrder = async (orderId) => {
+    try {
+        const index = vendorOrdersData.findIndex(order => order.id === orderId);
+        if (index !== -1) {
+            const deletedOrder = vendorOrdersData.splice(index, 1);
+            return deletedOrder[0];
+        } else {
+            throw new Error('Vendor order not found');
+        }
+    } catch (error) {
+        console.error('Error deleting vendor order:', error);
+        throw error;
+    }
+};
+
+// Function to filter vendor orders by status
+export const vendorFilterOrdersByStatus = async (status) => {
+    try {
+        return vendorOrdersData.filter(order => order.status === status);
+    } catch (error) {
+        console.error('Error filtering vendor orders:', error);
+        throw error;
+    }
+};

@@ -57,7 +57,7 @@ const Header = ({ toggleSidebar }) => {
         </Button>
         <Navbar.Brand className="mx-3">
           <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>
-            Admin Dashboard
+            E-COM STORE
           </Link>
         </Navbar.Brand>
 
