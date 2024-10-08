@@ -278,5 +278,11 @@ public class OrderService
         return await _orderRepository.GetAllOrdersAsync();
     }
     
+    
+    public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId)
+    {
+        return await _orderRepository.GetOrdersByCustomerIdAsync(customerId);
+    }
+    
    
 }
