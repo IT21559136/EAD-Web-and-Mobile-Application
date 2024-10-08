@@ -231,6 +231,21 @@ public class OrderController : ControllerBase
         var orders = await _orderService.GetAllOrdersAsync();
         return Ok(orders);
     }
+    
+    
+    [Authorize(Roles = "User")]
+    [HttpGet("customer-orders")]
+    public async Task<IActionResult> GetOrdersByCustomer()
+    {
+        var customerId = User.FindFirst("UserId")?.Value;
+        if (string.IsNullOrEmpty(customerId))
+        {
+            return Unauthorized(new { message = "Invalid user token" });
+        }
+
+        var orders = await _orderService.GetOrdersByCustomerIdAsync(customerId);
+        return Ok(orders);
+    }
 
 
 }
