@@ -26,6 +26,7 @@ public interface IOrderRepository
     Task<List<Order>> GetOrdersByVendorEmailAsync(string vendorEmail);
     
     Task<List<Order>> GetAllOrdersAsync();
+    Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId);
 
     // Get all orders for a customer
     // Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId);
