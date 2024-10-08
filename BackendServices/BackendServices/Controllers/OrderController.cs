@@ -187,13 +187,13 @@ public class OrderController : ControllerBase
 
     // Mark order as delivered
     [Authorize(Roles = "CSR, Admin, Vendor")]
-    [HttpPut("deliver/{orderId}")]
-    public async Task<IActionResult> MarkOrderAsDelivered(string orderId, [FromQuery] string vendorEmail = null)
-    {
-        await _orderService.MarkOrderAsDelivered(orderId, vendorEmail);
-        return Ok(new { message = "Order marked as delivered." });
-    }
-    
+    // [HttpPut("deliver/{orderId}")]
+    // public async Task<IActionResult> MarkOrderAsDelivered(string orderId, [FromQuery] string vendorEmail = null)
+    // {
+    //     await _orderService.MarkOrderAsDelivered(orderId, vendorEmail);
+    //     return Ok(new { message = "Order marked as delivered." });
+    // }
+    //
     
 
     
@@ -246,6 +246,25 @@ public class OrderController : ControllerBase
         var orders = await _orderService.GetOrdersByCustomerIdAsync(customerId);
         return Ok(orders);
     }
+    
+    
+    
+    [Authorize(Roles = "Vendor")]
+    [HttpPut("update-status/{itemId}")]
+    public async Task<IActionResult> UpdateVendorOrderItemStatus(string itemId, [FromBody] VendorOrderStatusUpdateDTO updateDto)
+    {
+        var vendorEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+        if (string.IsNullOrEmpty(vendorEmail))
+        {
+            return Unauthorized(new { message = "Invalid vendor token" });
+        }
+
+        // Update the order item status for the vendor
+        await _orderService.UpdateOrderItemStatusAsync(itemId, vendorEmail, updateDto.NewStatus);
+
+        return Ok(new { message = "Order item status updated successfully." });
+    }
+
 
 
 }

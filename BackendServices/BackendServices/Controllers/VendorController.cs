@@ -192,6 +192,25 @@ namespace BackendServices.Controllers
                 return StatusCode(500, new { error = ex.Message }); // Returns HTTP 500 for any other error
             }
         }
+        
+        
+        
+        // [Authorize(Roles = "Vendor")]
+        // [HttpPut("update-status/{orderId}")]
+        // public async Task<IActionResult> UpdateVendorOrderStatus(string orderId, [FromBody] VendorOrderStatusUpdateDTO updateDto)
+        // {
+        //     var vendorEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+        //     if (string.IsNullOrEmpty(vendorEmail))
+        //     {
+        //         return Unauthorized(new { message = "Invalid vendor token" });
+        //     }
+        //
+        //     // Update the order status for the vendor
+        //     await _vendorService.UpdateOrderItemStatusAsync(orderId, vendorEmail, updateDto.NewStatus);
+        //
+        //     return Ok(new { message = "Order item status updated successfully." });
+        // }
+
 
 
 
