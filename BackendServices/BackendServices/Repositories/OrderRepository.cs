@@ -92,5 +92,12 @@ public class OrderRepository : IOrderRepository
         return await _orders.Find(filter).ToListAsync();
     }
     
+    
+    public async Task<Order> GetOrderByItemIdAsync(string itemId)
+    {
+        // Find the order that contains the specific item by ItemId
+        return await _orders.Find(o => o.Items.Any(i => i.Id == itemId)).FirstOrDefaultAsync();
+    }
+
  
 }

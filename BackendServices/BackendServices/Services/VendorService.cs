@@ -127,11 +127,16 @@ namespace BackendServices.Services
 {
     private readonly IVendorRepository _vendorRepository;
     private readonly UserService _userService; // Used to sync between Vendor and User collections
+    private readonly IOrderRepository _orderRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly INotificationService _notificationService;
 
-    public VendorService(IVendorRepository vendorRepository, UserService userService)
+    public VendorService(IVendorRepository vendorRepository, UserService userService,IOrderRepository orderRepository)
     {
         _vendorRepository = vendorRepository;
         _userService = userService;
+        _orderRepository = orderRepository;
+        
     }
 
     public async Task<Vendor> GetVendorByEmailAsync(string email)
@@ -251,6 +256,35 @@ namespace BackendServices.Services
     {
         await _vendorRepository.DeleteCommentAsync(vendorId, commentId);
     }
+    
+    
+    
+    // // Vendor updates their product status in the order
+    // public async Task UpdateOrderItemStatusAsync(string orderId, string vendorEmail, string newStatus)
+    // {
+    //     var order = await _orderRepository.GetOrderByIdAsync(orderId);
+    //     if (order == null) throw new ArgumentException("Order not found");
+    //
+    //     // Find the item that belongs to the vendor
+    //     var item = order.Items.FirstOrDefault(i => i.VendorEmail == vendorEmail);
+    //     if (item == null) throw new ArgumentException("Order item for the vendor not found");
+    //
+    //     // Update the order item status
+    //     item.OrderItemStatus = newStatus;
+    //
+    //     // Update the overall order status
+    //     order.UpdateOrderStatus();
+    //
+    //     // Save the updated order
+    //     await _orderRepository.UpdateOrderAsync(order);
+    //
+    //     // Notify customer if order is fully delivered
+    //     if (order.Status == "Delivered")
+    //     {
+    //         var customer = await _userRepository.GetUserByIdAsync(order.CustomerId);
+    //         await _notificationService.NotifyCustomerOrderDeliveredAsync(customer.Email, order);
+    //     }
+    // }
 
 
     
