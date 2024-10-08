@@ -143,7 +143,8 @@ public class OrderController : ControllerBase
                 Id = ObjectId.GenerateNewId().ToString(), 
                 ProductId = itemDto.ProductId,
                 Quantity = itemDto.Quantity,
-                VendorEmail = vendorEmail
+                VendorEmail = vendorEmail,
+                
             };
 
             orderItems.Add(orderItem);

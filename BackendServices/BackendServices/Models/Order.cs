@@ -116,6 +116,7 @@ public class VendorStatus
     public string Status { get; set; } = "Not Ready";  // "Not Ready", "Partially Delivered", "Delivered"
 }
 
+[BsonIgnoreExtraElements]
 public class Order
 {
     [BsonId]
@@ -148,6 +149,7 @@ public class Order
     }
 }
 
+[BsonIgnoreExtraElements]
 public class OrderItem
 {
     public string Id { get; set; }
@@ -155,5 +157,8 @@ public class OrderItem
     public int Quantity { get; set; }
     public string VendorEmail { get; set; }  // Vendor for the product
     public string OrderItemStatus { get; set; } = "New";  // "New", "Processing", "Partially Delivered", "Delivered"
+    
+    [BsonIgnore]
+    public string ProductName { get; set; }
 }
 
