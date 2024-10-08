@@ -290,10 +290,34 @@ public class OrderService
     }
     
     
+    // public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId)
+    // {
+    //     return await _orderRepository.GetOrdersByCustomerIdAsync(customerId);
+    // }
+    
     public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId)
     {
-        return await _orderRepository.GetOrdersByCustomerIdAsync(customerId);
+        // Fetch orders from the repository
+        var orders = await _orderRepository.GetOrdersByCustomerIdAsync(customerId);
+    
+        // For each order, fetch the product name for each item
+        foreach (var order in orders)
+        {
+            foreach (var item in order.Items)
+            {
+                // Fetch the product details using the ProductId
+                var product = await _productRepository.GetProductByIdAsync(item.ProductId);
+                if (product != null)
+                {
+                    // Attach the product name to the order item
+                    item.ProductName = product.ProductName;
+                }
+            }
+        }
+
+        return orders;
     }
+
     
     
     
