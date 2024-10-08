@@ -5,10 +5,10 @@ import com.example.mobile_application.feature_orders.domain.repository.OrderRepo
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class OrderStatusUseCase @Inject constructor(
-    private val repository: OrderRepository
+class CancelOrderUseCase @Inject constructor(
+    private val orderRepository: OrderRepository
 ) {
-    suspend operator fun invoke(orderId: String, vendorEmail:String?):Flow<Resource<Unit>> {
-        return repository.markOrderAsDelivered(orderId, vendorEmail )
+    suspend operator fun invoke(orderId: String, note: String): Flow<Resource<Unit>> {
+        return orderRepository.cancelOrder(orderId, note)
     }
 }

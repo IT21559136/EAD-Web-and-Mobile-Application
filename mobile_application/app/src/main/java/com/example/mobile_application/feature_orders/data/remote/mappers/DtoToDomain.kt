@@ -1,19 +1,22 @@
 package com.example.mobile_application.feature_orders.data.remote.mappers
 
 import com.example.mobile_application.feature_orders.data.remote.dto.OrderDto
+import com.example.mobile_application.feature_orders.data.remote.dto.OrderItemDto
 import com.example.mobile_application.feature_orders.domain.model.Order
-import com.example.mobile_application.feature_products.data.remote.dto.RatingDto
-import com.example.mobile_application.feature_products.domain.model.Product
-import com.example.mobile_application.feature_products.domain.model.Rating
+import com.example.mobile_application.feature_orders.domain.model.OrderItem
 
-internal fun OrderDto.toDomain(): Order {
+fun OrderDto.toDomain(): Order {
     return Order(
-        id = id,
-        productName = productName,
-        image = image,
-        price = price,
-        quantity= quantity,
-        status = status,
-        isReviewed = isReviewed
+        customerId = this.customerId,
+        items = this.items.map { it.toDomain() },  // Mapping each OrderItemDto to OrderItem
+        customerNote = this.customerNote,
+    )
+}
+
+fun OrderItemDto.toDomain(): OrderItem {
+    return OrderItem(
+        productId = productId,
+        quantity = quantity,
+        vendorEmail = vendorEmail
     )
 }
