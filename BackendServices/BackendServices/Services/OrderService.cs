@@ -107,22 +107,29 @@ public class OrderService
     private readonly IProductRepository _productRepository;
     private readonly IVendorRepository _vendorRepository;
     private readonly INotificationService _notificationService;
+    private readonly IUserRepository _userRepository;
 
-    public OrderService(IOrderRepository orderRepository, IProductRepository productRepository, IVendorRepository vendorRepository, INotificationService notificationService)
+    public OrderService(IOrderRepository orderRepository, IProductRepository productRepository, IVendorRepository vendorRepository, INotificationService notificationService,IUserRepository userRepository)
     {
         _orderRepository = orderRepository;
         _productRepository = productRepository;
         _vendorRepository = vendorRepository;
         _notificationService = notificationService;
+        _userRepository = userRepository;
     }
 
-    // // Create a new order
+   
+    
+    
+    
+    // // Create a new order with low stock notification
     // public async Task CreateOrderAsync(Order order)
     // {
     //     // Validate product availability
     //     foreach (var item in order.Items)
     //     {
     //         var product = await _productRepository.GetProductByIdAsync(item.ProductId);
+    //
     //         if (product.AvailableQuantity < item.Quantity)
     //         {
     //             throw new InvalidOperationException($"Product {product.ProductName} does not have enough stock.");
@@ -130,7 +137,19 @@ public class OrderService
     //
     //         // Reduce product stock
     //         product.AvailableQuantity -= item.Quantity;
+    //
+    //         // Update the product with the new quantity
     //         await _productRepository.UpdateProductAsync(product);
+    //
+    //         // Check for low stock and notify vendor if stock is below the threshold (<=10)
+    //         if (product.AvailableQuantity <= 10)
+    //         {
+    //             // Get the vendor's email using the product's vendor email
+    //             var vendor = await _vendorRepository.GetVendorByEmailAsync(item.VendorEmail);
+    //
+    //             // Notify the vendor of low stock
+    //             await _notificationService.NotifyVendorLowStockAsync(vendor.Email, product);
+    //         }
     //     }
     //
     //     // Save the order
@@ -142,17 +161,16 @@ public class OrderService
     //         // Get vendor email from the product or vendor data
     //         var vendor = await _vendorRepository.GetVendorByEmailAsync(item.VendorEmail);
     //
-    //         // Call notification service with the vendor's email, not the Vendor object
+    //         // Notify the vendor of the new order
     //         await _notificationService.NotifyVendorNewOrderAsync(vendor.Email, order);
     //     }
     // }
     
     
     
-    // Create a new order with low stock notification
+    // Create a new order
     public async Task CreateOrderAsync(Order order)
     {
-        // Validate product availability
         foreach (var item in order.Items)
         {
             var product = await _productRepository.GetProductByIdAsync(item.ProductId);
@@ -164,17 +182,12 @@ public class OrderService
 
             // Reduce product stock
             product.AvailableQuantity -= item.Quantity;
-
-            // Update the product with the new quantity
             await _productRepository.UpdateProductAsync(product);
 
-            // Check for low stock and notify vendor if stock is below the threshold (<=10)
+            // Check for low stock and notify vendor
             if (product.AvailableQuantity <= 10)
             {
-                // Get the vendor's email using the product's vendor email
                 var vendor = await _vendorRepository.GetVendorByEmailAsync(item.VendorEmail);
-
-                // Notify the vendor of low stock
                 await _notificationService.NotifyVendorLowStockAsync(vendor.Email, product);
             }
         }
@@ -185,13 +198,11 @@ public class OrderService
         // Notify vendors about the new order
         foreach (var item in order.Items)
         {
-            // Get vendor email from the product or vendor data
             var vendor = await _vendorRepository.GetVendorByEmailAsync(item.VendorEmail);
-
-            // Notify the vendor of the new order
             await _notificationService.NotifyVendorNewOrderAsync(vendor.Email, order);
         }
     }
+
 
 
 
@@ -225,45 +236,45 @@ public class OrderService
         //await _notificationService.NotifyCustomerOrderCanceledAsync(order.CustomerId, order);
     }
 
-    // Mark an order or item as delivered
-    public async Task MarkOrderAsDelivered(string orderId, string vendorEmail = null)
-    {
-        var order = await _orderRepository.GetOrderByIdAsync(orderId);
-        if (order == null)
-        {
-            throw new InvalidOperationException("Order not found.");
-        }
-    
-        if (vendorEmail != null)
-        {
-            // Mark individual vendor's product as delivered
-            var vendorStatus = order.VendorStatuses.FirstOrDefault(vs => vs.VendorEmail == vendorEmail);
-            if (vendorStatus != null)
-            {
-                vendorStatus.Status = "Delivered";
-            }
-    
-            // Check if all vendors have delivered
-            if (order.VendorStatuses.All(vs => vs.Status == "Delivered"))
-            {
-                order.Status = "Delivered";
-            }
-            else
-            {
-                order.Status = "Partially Delivered";
-            }
-        }
-        else
-        {
-            // Mark the entire order as delivered by CSR/Admin
-            order.Status = "Delivered";
-        }
-    
-        await _orderRepository.UpdateOrderAsync(order);
-    
-        // Notify the customer
-        await _notificationService.NotifyCustomerOrderDeliveredAsync(order.CustomerId, order);
-    }
+    // // Mark an order or item as delivered
+    // public async Task MarkOrderAsDelivered(string orderId, string vendorEmail = null)
+    // {
+    //     var order = await _orderRepository.GetOrderByIdAsync(orderId);
+    //     if (order == null)
+    //     {
+    //         throw new InvalidOperationException("Order not found.");
+    //     }
+    //
+    //     if (vendorEmail != null)
+    //     {
+    //         // Mark individual vendor's product as delivered
+    //         var vendorStatus = order.VendorStatuses.FirstOrDefault(vs => vs.VendorEmail == vendorEmail);
+    //         if (vendorStatus != null)
+    //         {
+    //             vendorStatus.Status = "Delivered";
+    //         }
+    //
+    //         // Check if all vendors have delivered
+    //         if (order.VendorStatuses.All(vs => vs.Status == "Delivered"))
+    //         {
+    //             order.Status = "Delivered";
+    //         }
+    //         else
+    //         {
+    //             order.Status = "Partially Delivered";
+    //         }
+    //     }
+    //     else
+    //     {
+    //         // Mark the entire order as delivered by CSR/Admin
+    //         order.Status = "Delivered";
+    //     }
+    //
+    //     await _orderRepository.UpdateOrderAsync(order);
+    //
+    //     // Notify the customer
+    //     await _notificationService.NotifyCustomerOrderDeliveredAsync(order.CustomerId, order);
+    // }
     
     
     // Fetch orders by vendor email
@@ -277,6 +288,67 @@ public class OrderService
     {
         return await _orderRepository.GetAllOrdersAsync();
     }
+    
+    
+    // public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId)
+    // {
+    //     return await _orderRepository.GetOrdersByCustomerIdAsync(customerId);
+    // }
+    
+    public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId)
+    {
+        // Fetch orders from the repository
+        var orders = await _orderRepository.GetOrdersByCustomerIdAsync(customerId);
+    
+        // For each order, fetch the product name for each item
+        foreach (var order in orders)
+        {
+            foreach (var item in order.Items)
+            {
+                // Fetch the product details using the ProductId
+                var product = await _productRepository.GetProductByIdAsync(item.ProductId);
+                if (product != null)
+                {
+                    // Attach the product name to the order item
+                    item.ProductName = product.ProductName;
+                }
+            }
+        }
+
+        return orders;
+    }
+
+    
+    
+    
+    
+    public async Task UpdateOrderItemStatusAsync(string itemId, string vendorEmail, string newStatus)
+    {
+        // Find the order containing this item
+        var order = await _orderRepository.GetOrderByItemIdAsync(itemId);
+        if (order == null) throw new ArgumentException("Order not found");
+
+        // Find the item in the order
+        var item = order.Items.FirstOrDefault(i => i.Id == itemId && i.VendorEmail == vendorEmail);
+        if (item == null) throw new ArgumentException("Order item for the vendor not found");
+
+        // Update the order item status
+        item.OrderItemStatus = newStatus;
+
+        // Update the overall order status
+        order.UpdateOrderStatus();
+
+        // Save the updated order
+        await _orderRepository.UpdateOrderAsync(order);
+
+        // If the order is fully delivered, notify the customer
+        if (order.Status == "Delivered")
+        {
+            var customer = await _userRepository.GetUserByIdAsync(order.CustomerId);
+            await _notificationService.NotifyCustomerOrderDeliveredAsync(customer.Email, order);
+        }
+    }
+
     
    
 }

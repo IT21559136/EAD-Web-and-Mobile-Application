@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.hilt)
     alias(libs.plugins.google.ksp)
+    kotlin("plugin.serialization")
     id("kotlin-parcelize")
     kotlin("kapt")
 }
@@ -115,10 +116,12 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Gson for JSON parsing
-    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
 
     // Dagger Hilt for Dependency Injection
     implementation(libs.google.hilt.android)
+    implementation(libs.protolite.well.known.types)
     kapt(libs.google.hilt.compiler)
     implementation(libs.google.hilt.navigation.compose)
 

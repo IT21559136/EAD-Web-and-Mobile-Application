@@ -1,6 +1,7 @@
 package com.example.mobile_application.di
 
 import com.example.mobile_application.core.util.Constants.BASE_URL
+import com.example.mobile_application.feature_auth.data.local.AuthPreferences
 import com.example.mobile_application.feature_orders.data.remote.OrderApiService
 import com.example.mobile_application.feature_orders.data.repository.OrderRepositoryImpl
 import com.example.mobile_application.feature_orders.domain.repository.OrderRepository
@@ -30,8 +31,11 @@ object OrderModule {
 
     @Provides
     @Singleton
-    fun provideOrderRepository(apiService: OrderApiService): OrderRepository {
-        return OrderRepositoryImpl(apiService)
+    fun provideOrderRepository(
+        apiService: OrderApiService,
+        authPreferences: AuthPreferences
+    ): OrderRepository {
+        return OrderRepositoryImpl(apiService, authPreferences)
     }
 
     @Provides

@@ -2,6 +2,7 @@ package com.example.mobile_application.feature_cart.data.remote
 
 import com.example.mobile_application.feature_cart.data.remote.dto.UserCartDto
 import com.example.mobile_application.feature_cart.data.remote.request.AddCartItemRequest
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -29,5 +30,5 @@ interface CartApiService {
     suspend fun removeCartItem(
         @Header("Authorization") token: String,
         @Path("productId") productId: String
-    ): Unit
+    ): Response<Unit>
 }

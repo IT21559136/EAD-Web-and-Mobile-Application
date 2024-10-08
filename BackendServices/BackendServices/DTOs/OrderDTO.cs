@@ -26,4 +26,5 @@ public class OrderItemDTO
 {
     public string ProductId { get; set; }  // Product identifier
     public int Quantity { get; set; }  // Quantity of the product ordered
+    
 }

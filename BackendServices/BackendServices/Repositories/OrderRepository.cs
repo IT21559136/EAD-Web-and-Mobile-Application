@@ -86,5 +86,18 @@ public class OrderRepository : IOrderRepository
         return await _orders.Find(_ => true).ToListAsync(); // Fetch all orders from the collection
     }
     
+    public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId)
+    {
+        var filter = Builders<Order>.Filter.Eq(o => o.CustomerId, customerId);
+        return await _orders.Find(filter).ToListAsync();
+    }
+    
+    
+    public async Task<Order> GetOrderByItemIdAsync(string itemId)
+    {
+        // Find the order that contains the specific item by ItemId
+        return await _orders.Find(o => o.Items.Any(i => i.Id == itemId)).FirstOrDefaultAsync();
+    }
+
  
 }

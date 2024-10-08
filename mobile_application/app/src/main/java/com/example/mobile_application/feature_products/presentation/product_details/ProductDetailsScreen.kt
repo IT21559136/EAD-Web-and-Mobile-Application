@@ -24,7 +24,9 @@ import com.example.mobile_application.core.presentation.ui.theme.MainWhiteColor
 import com.example.mobile_application.core.presentation.ui.theme.YellowMain
 import com.example.mobile_application.feature_products.domain.model.Product
 import androidx.navigation.NavController
+import com.example.mobile_application.core.util.UiEvents
 import com.example.mobile_application.feature_cart.presentation.cart.CartViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 
 @ExperimentalMaterial3Api
@@ -35,8 +37,25 @@ fun ProductDetailsScreen(
     cartViewModel: CartViewModel = hiltViewModel(),
 ) {
 
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(key1 = true) {
+        cartViewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is UiEvents.SnackbarEvent -> {
+                    snackBarHostState.showSnackbar(
+                        message = event.message,
+                        duration = SnackbarDuration.Short
+                    )
+                }
+                else -> {}
+            }
+        }
+    }
+
     Scaffold(
         containerColor = Color.White,
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         topBar = {
             Row(
                 Modifier.fillMaxWidth().padding(16.dp),
@@ -61,7 +80,7 @@ fun ProductDetailsScreen(
             product = product,
             modifier = Modifier.fillMaxSize().padding(start = 0.dp, top = 16.dp, end = 0.dp, bottom = 0.dp),
             onAddToCartClick = {
-                cartViewModel.addCartItem(product, 1) // Add the product to the cart with default quantity 1
+                cartViewModel.addCartItem(product, 1)
             }
         )
     }

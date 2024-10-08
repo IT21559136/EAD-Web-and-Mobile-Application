@@ -1,5 +1,6 @@
 package com.example.mobile_application.feature_cart.presentation.cart
 
+import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,6 +12,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +27,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.mobile_application.R
@@ -35,17 +41,25 @@ import com.example.mobile_application.core.presentation.ui.theme.YellowMain
 import com.example.mobile_application.core.util.LoadingAnimation
 import com.example.mobile_application.core.util.UiEvents
 import com.example.mobile_application.feature_cart.domain.model.CartProduct
+import com.example.mobile_application.feature_cart.domain.model.toJson
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartScreen(
-    navController: NavController,
+    navController: NavHostController,
     viewModel: CartViewModel = hiltViewModel(),
 ) {
 
-    val state = viewModel.state.value
+    val state  by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Trigger getCartItems every time the screen is displayed
+    LaunchedEffect(Unit) {
+        viewModel.getCartItems()
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -53,6 +67,7 @@ fun CartScreen(
                 is UiEvents.SnackbarEvent -> {
                     snackbarHostState.showSnackbar(
                         message = event.message,
+                        duration = SnackbarDuration.Short
                     )
                 }
                 else -> {}
@@ -60,8 +75,10 @@ fun CartScreen(
         }
     }
 
+
     Scaffold(
         containerColor = Color.White,//MainWhiteColor,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -92,10 +109,14 @@ fun CartScreen(
         }
     ) {padding->
         Box(
-            modifier = Modifier.fillMaxSize().padding(padding)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
         ) {
             CartScreenContent(
                 state = state,
+                viewModel = viewModel,
+                navController = navController,
                 modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 12.dp),
                 onItemSelected = { item, isSelected ->
                     viewModel.onItemSelected(item, isSelected)
@@ -108,6 +129,8 @@ fun CartScreen(
 @Composable
 private fun CartScreenContent(
     state: CartItemsState,
+    viewModel: CartViewModel,
+    navController: NavHostController,
     modifier: Modifier = Modifier,
     onItemSelected: (CartProduct, Boolean) -> Unit
 ) {
@@ -120,7 +143,10 @@ private fun CartScreenContent(
             items(state.cartItems) { cartItem ->
                 CartItem(
                     cartItem = cartItem,
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(4.dp),
                     isSelected = state.selectedItems.contains(cartItem), // Check if item is selected
                     onItemSelected = onItemSelected
                 )
@@ -146,7 +172,9 @@ private fun CartScreenContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     textAlign = TextAlign.Center,
                     text = state.error,
                     color = Color.Red
@@ -179,22 +207,36 @@ private fun CartScreenContent(
         if (state.cartItems.isNotEmpty()) {
             CheckoutComponent(
                 state = state,
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().background(Color.White).padding(12.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(12.dp),
+                navController = navController,
+                viewModel = viewModel
             )
         }
     }
 }
 
 @Composable
-private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.padding(5.dp).fillMaxWidth()) {
+private fun CheckoutComponent(
+    state: CartItemsState,
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    viewModel: CartViewModel
+) {
+    val totalPrice = state.selectedItems.sumOf { (it.product.price * it.selectedQuantity) }
+    Column(modifier = modifier
+        .padding(5.dp)
+        .fillMaxWidth()) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "${state.selectedItems.size} items")
             Text(
-                text = "${state.selectedItems.sumOf { (it.product.price * it.selectedQuantity) }}",
+                text = "$$totalPrice",
                 color = Color.Black,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
@@ -202,18 +244,6 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
         }
         Spacer(modifier = Modifier.height(5.dp))
 
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "Shipping fee")
-            Text(
-                text = "$60.00", color = Color.Black,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-        Spacer(modifier = Modifier.height(5.dp))
 
         Row(
             Modifier.fillMaxWidth(),
@@ -221,9 +251,7 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
         ) {
             Text(text = "Total")
             Text(
-                text = "$${
-                    state.selectedItems.sumOf { (it.product.price * it.selectedQuantity) } + 60.00
-                }",
+                text = "$$totalPrice",
                 color = Color.Black,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
@@ -232,11 +260,26 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
         Spacer(modifier = Modifier.height(12.dp))
 
         Button(
-            onClick = {},
-            shape = RoundedCornerShape(8)
+            onClick = {
+                val selectedItems = state.selectedItems
+                val totalPrice = selectedItems.sumOf { it.product.price * it.selectedQuantity }
+                // Update the shared view model
+                viewModel.checkoutOrder(selectedItems, totalPrice)
+
+                Timber.d("selected items when click checkout: $selectedItems")
+
+                // Navigate to OrderConfirm screen
+                navController.navigate("orderConfirm")
+            },
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                contentColor = Color.White, containerColor = DarkBlue
+            ),
         ) {
             Text(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 text = "Checkout",
                 textAlign = TextAlign.Center
             )
@@ -281,12 +324,17 @@ fun CartItem(
                         }).build()
                 ),
                 contentDescription = null,
-                modifier = Modifier.padding(12.dp).weight(1f).fillMaxHeight(),
+                modifier = Modifier
+                    .padding(12.dp)
+                    .weight(1f)
+                    .fillMaxHeight(),
                 contentScale = ContentScale.Inside,
             )
 
             Column(
-                modifier = Modifier.weight(2f).padding(10.dp)
+                modifier = Modifier
+                    .weight(2f)
+                    .padding(10.dp)
             ) {
                 Text(
                     text = cartItem.product.productName,
