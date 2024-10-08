@@ -33,6 +33,9 @@ public class NotificationService : INotificationService
     {
         var subject = $"Low Stock Alert for {product.ProductName}";
         var message = $"Your product '{product.ProductName}' is low on stock. Only {product.AvailableQuantity} items remaining.";
+        
+        Console.WriteLine($"[Low Stock Notification] Sending to {vendorEmail}: {message}");
+        //await Task.CompletedTask;
         await SendNotificationAsync(vendorEmail, subject, message);
     }
 

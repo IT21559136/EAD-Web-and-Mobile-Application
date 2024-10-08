@@ -81,5 +81,10 @@ public class OrderRepository : IOrderRepository
         return await _orders.Find(filter).ToListAsync();
     }
     
+    public async Task<List<Order>> GetAllOrdersAsync()
+    {
+        return await _orders.Find(_ => true).ToListAsync(); // Fetch all orders from the collection
+    }
+    
  
 }

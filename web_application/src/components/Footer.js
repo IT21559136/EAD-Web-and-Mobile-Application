@@ -1,12 +1,12 @@
 import React from 'react';
-import { Layout } from 'antd';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const { Footer } = Layout;
+function Footer() {
+  return (
+    <footer className="bg-dark text-white text-center py-2 mt-auto">
+      <p>&copy; 2024 My Website</p>
+    </footer>
+  );
+}
 
-const AppFooter = () => (
-  <Footer style={{ textAlign: 'center' }}>
-    My Web Application ©2024 Created by Your Name
-  </Footer>
-);
-
-export default AppFooter;
+export default Footer;

@@ -1,73 +1,122 @@
+/* App.css */
+
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+}
+
+.navbar {
+  width: 100%;
+}
+
+.sidebar {
+  width: 200px;
+  transition: transform 0.3s ease-in-out;
+  height: calc(100vh - 56px); /* Adjust height to fit between header and footer */
+  position: fixed;
+  top: 56px; /* Adjust based on header height */
+  left: 0;
+  display: flex; /* Use flexbox to layout children */
+  z-index: 1050;
+  flex-direction: column; /* Align children in a column */
+  transform: translateX(-100%);
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.logout-container {
+  margin-top: auto;
+  padding: 1px;
+  /* padding-bottom: 65px; */
+}
+
+/* Adjust content when sidebar is open */
+.content.with-sidebar {
+  margin-left: 200px;
+  padding-left: 20px;
+  padding-right: 20px;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* Adjust content when sidebar is hidden */
+.content.without-sidebar {
+  margin-left: 0;
+  padding-left: 10px;  /* Reduced padding */
+  padding-right: 10px; /* Reduced padding */
+  width: 100%;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 20px; /* Default padding for general content */
+  transition: padding 0.3s ease-in-out; /* Smooth transition for padding changes */
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .content.with-sidebar {
+    margin-left: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .sidebar {
+    width: 200px;
+    transform: translateX(-100%);
+    position: fixed;
+    z-index: 1050;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+.sidebar ul {
+  flex-grow: 1; /* Allow ul to grow and take up available space */
+  overflow-y: auto; /* Enable scrolling if content overflows */
+}
+
+.sidebar ul li {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+.sidebar ul li a {
   color: white;
+  text-decoration: none; /* Remove underline */
+  white-space: nowrap; /* Prevent line break */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Display "..." when text is too long */
+  display: block;
+  padding: 10px;
+  transition: background-color 0.3s ease; /* Add hover effect */
 }
 
-.App-link {
-  color: #61dafb;
+.sidebar ul li a:hover {
+  background-color: #495057; /* Darker hover color */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.site-layout-background {
-  background: #fff;
-}
-
-.logo {
-  font-size: 1.5rem;
+.sidebar ul li a.active {
+  background-color: #515457; /* Highlight active link */
   font-weight: bold;
 }
 
-.ant-layout-header {
-  background: #fff;
+/* Optional: Adjust the tooltip's appearance (default browser tooltip) */
+.sidebar ul li a[title] {
+  cursor: pointer;
 }
 
-.editable-row .ant-form-item-explain {
-  position: absolute;
-  top: 100%;
-  font-size: 12px;
+.sidebar .btn {
+  margin-top: auto; /* Push logout button to the bottom */
+  /* margin-bottom: ; */
 }
 
-/* src/App.css */
-
-.ant-layout-sider {
-  background: #001529; /* Change this to your preferred sidebar background */
-}
-
-.logo {
-  font-size: 24px;
-  color: white;
-  font-weight: bold;
-}
-
-.ant-menu-dark .ant-menu-item-selected {
-  background-color: #1890ff; /* Highlight color for selected menu item */
+footer {
+  flex-shrink: 0; /* Prevent footer from shrinking */
+  /* Add other footer styles if necessary */
 }

@@ -1,63 +1,55 @@
-// src/pages/Login.js
-import React, { useState } from 'react';
-import { Form, Input, Button, message } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState, useContext } from 'react';
+import { Form, Button, Container, Alert } from 'react-bootstrap';
+import { AuthContext } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+  const [credentials, setCredentials] = useState({ username: '', email: '', password: '' });
+  const [error, setError] = useState('');
+  const navigate = useNavigate(); // Hook for programmatic navigation
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(email, password);
-    navigate('/');
+    try {
+      setError(''); // Clear error before attempting login
+      await login(credentials);
+      // Redirect to the dashboard or homepage upon successful login
+      navigate('/');
+    } catch (err) {
+      setError('Invalid username, email, or password');
+    }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: 'auto', padding: '20px' }}>
+    <Container className="p-4">
       <h2>Login</h2>
-      <Form onSubmitCapture={handleSubmit}>
-        <Form.Item
-          label="Email"
-          name="email"
-          // rules={[
-          //   { required: true, message: 'Please input your email!' },
-          //   { type: 'email', message: 'Please enter a valid email!' }
-          // ]}
-        >
-          <Input 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            placeholder="Enter your email" 
+      {error && <Alert variant="danger">{error}</Alert>}
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="email">
+          <Form.Label>Email</Form.Label>
+          <Form.Control
+            value={credentials.email}
+            onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+            placeholder="Enter your email"
+            required
           />
-        </Form.Item>
-        <Form.Item
-          label="Password"
-          name="password"
-          // rules={[
-          //   { required: true, message: 'Please input your password!' },
-          //   { min: 6, message: 'Password must be at least 6 characters.' }
-          // ]}
-        >
-          <Input.Password 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            placeholder="Enter your password" 
+        </Form.Group>
+        <Form.Group controlId="password">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            value={credentials.password}
+            onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+            placeholder="Enter your password"
+            required
           />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-            Login
-          </Button>
-        </Form.Item>
+        </Form.Group>
+        <Button variant="primary" type="submit" className="mt-3">
+          Login
+        </Button>
       </Form>
-      <p>
-        Don't have an account? <Link to="/signup">Sign up here</Link>
-      </p>
-    </div>
+    </Container>
   );
 };
 

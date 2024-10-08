@@ -84,17 +84,56 @@ public class OrderController : ControllerBase
     }
 
     // Create new order
+    // [Authorize]
+    // [HttpPost("create")]
+    // public async Task<IActionResult> CreateOrder([FromBody] OrderDTO orderDto)
+    // {
+    //     //var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    //     var customerId = User.FindFirst("UserId")?.Value;
+    //
+    //     // Prepare a list to hold the order items
+    //     var orderItems = new List<OrderItem>();
+    //
+    //     // Use a foreach loop to map OrderItemDTO to OrderItem asynchronously
+    //     foreach (var itemDto in orderDto.Items)
+    //     {
+    //         var vendorEmail = await _productService.GetVendorEmailByProductIdAsync(itemDto.ProductId);  // Get the vendor email for each product
+    //
+    //         var orderItem = new OrderItem
+    //         {
+    //             Id = ObjectId.GenerateNewId().ToString(), 
+    //             ProductId = itemDto.ProductId,
+    //             Quantity = itemDto.Quantity,
+    //             VendorEmail = vendorEmail
+    //         };
+    //
+    //         orderItems.Add(orderItem);
+    //     }
+    //
+    //     var order = new Order
+    //     {
+    //         CustomerId = customerId,
+    //         Items = orderItems,
+    //         CustomerNote = orderDto.CustomerNote
+    //     };
+    //
+    //     await _orderService.CreateOrderAsync(order);
+    //     return Ok(new { message = "Order created successfully." });
+    // }
+    
+    
+    
+    
     [Authorize]
     [HttpPost("create")]
     public async Task<IActionResult> CreateOrder([FromBody] OrderDTO orderDto)
     {
-        //var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var customerId = User.FindFirst("UserId")?.Value;
 
         // Prepare a list to hold the order items
         var orderItems = new List<OrderItem>();
 
-        // Use a foreach loop to map OrderItemDTO to OrderItem asynchronously
+        // Map OrderItemDTO to OrderItem asynchronously
         foreach (var itemDto in orderDto.Items)
         {
             var vendorEmail = await _productService.GetVendorEmailByProductIdAsync(itemDto.ProductId);  // Get the vendor email for each product
@@ -117,9 +156,12 @@ public class OrderController : ControllerBase
             CustomerNote = orderDto.CustomerNote
         };
 
+        // Create the order and handle notifications
         await _orderService.CreateOrderAsync(order);
+
         return Ok(new { message = "Order created successfully." });
     }
+
 
 
 
@@ -178,6 +220,15 @@ public class OrderController : ControllerBase
             return NotFound(new { error = $"No orders found for vendor: {vendorEmail}" });
         }
 
+        return Ok(orders);
+    }
+    
+    
+    [Authorize(Roles = "Admin")]
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllOrders()
+    {
+        var orders = await _orderService.GetAllOrdersAsync();
         return Ok(orders);
     }
 
