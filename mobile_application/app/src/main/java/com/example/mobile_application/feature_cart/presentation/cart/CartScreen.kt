@@ -11,6 +11,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,8 +46,13 @@ fun CartScreen(
     viewModel: CartViewModel = hiltViewModel(),
 ) {
 
-    val state = viewModel.state.value
+    val state  by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Trigger getCartItems every time the screen is displayed
+    LaunchedEffect(Unit) {
+        viewModel.getCartItems()
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -53,6 +60,7 @@ fun CartScreen(
                 is UiEvents.SnackbarEvent -> {
                     snackbarHostState.showSnackbar(
                         message = event.message,
+                        duration = SnackbarDuration.Short
                     )
                 }
                 else -> {}
@@ -62,6 +70,7 @@ fun CartScreen(
 
     Scaffold(
         containerColor = Color.White,//MainWhiteColor,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -233,7 +242,10 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
 
         Button(
             onClick = {},
-            shape = RoundedCornerShape(8)
+            shape = RoundedCornerShape(8),
+            colors = ButtonDefaults.buttonColors(
+                contentColor = Color.White, containerColor = DarkBlue
+            ),
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth().padding(8.dp),

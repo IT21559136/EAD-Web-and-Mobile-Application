@@ -46,22 +46,52 @@ import com.example.mobile_application.core.util.UiEvents
 import com.example.mobile_application.feature_products.domain.model.Product
 import androidx.navigation.NavHostController
 import com.example.mobile_application.core.presentation.ui.theme.DarkBlue
+import com.example.mobile_application.feature_cart.presentation.cart.CartViewModel
 import kotlinx.coroutines.flow.collectLatest
-import kotlin.io.encoding.Base64
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    cartViewModel: CartViewModel = hiltViewModel(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var filtersExpanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val productsState = viewModel.productsState.value
     val categories = viewModel.categoriesState.value
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event -> // Specify the type here
+            when (event) {
+                is UiEvents.SnackbarEvent -> {
+                    snackBarHostState.showSnackbar(
+                        message = event.message,
+                    )
+                }
+                else -> {}
+            }
+        }
+    }
+
+
+    LaunchedEffect(key1 = true) {
+        cartViewModel.eventFlow.collectLatest { event -> // Specify the type here
+            when (event) {
+                is UiEvents.SnackbarEvent -> {
+                    snackBarHostState.showSnackbar(
+                        message = event.message,
+                    )
+                }
+                else -> {}
+            }
+        }
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         topBar = {
             MyTopAppBar(
                 currentSearchText = viewModel.searchTerm.value,
@@ -80,21 +110,6 @@ fun HomeScreen(
             )
         },
     ) { padding->
-        val snackbarHostState = remember { SnackbarHostState() }
-
-        LaunchedEffect(key1 = true) {
-            viewModel.eventFlow.collectLatest { event -> // Specify the type here
-                when (event) {
-                    is UiEvents.SnackbarEvent -> {
-                        snackbarHostState.showSnackbar(
-                            message = event.message,
-                        )
-                    }
-                    else -> {}
-                }
-            }
-        }
-
         DropdownMenu(
             expanded = filtersExpanded,
             offset = DpOffset(x = 200.dp, y = -600.dp),
@@ -124,7 +139,8 @@ fun HomeScreen(
             onSelectCategory = { category ->
                 viewModel.setCategory(category)
                 viewModel.getProducts(viewModel.selectedCategory.value)
-            }
+            },
+            cartViewModel = cartViewModel
         )
     }
 }
@@ -140,6 +156,7 @@ private fun HomeScreenContent(
     bannerImageUrl: String,
     selectedCategory: String,
     onSelectCategory: (String) -> Unit,
+    cartViewModel: CartViewModel
 ) {
     Box(modifier.fillMaxWidth()) {
         LazyVerticalGrid(
@@ -189,7 +206,10 @@ private fun HomeScreenContent(
                 ProductItem(
                     product = product,
                     navController = navController,
-                    modifier = Modifier.width(150.dp)
+                    modifier = Modifier.width(150.dp),
+                    onAddToCartClick = {
+                        cartViewModel.addCartItem(product, 1)
+                    }
                 )
             }
         }
@@ -218,6 +238,7 @@ private fun ProductItem(
     product: Product,
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    onAddToCartClick: () -> Unit
 ) {
     Card(
         modifier = modifier
@@ -296,7 +317,7 @@ private fun ProductItem(
             )
 
             OutlinedButton(
-                onClick = {},
+                onClick = {onAddToCartClick()},
                 modifier = Modifier
                     .size(40.dp)
                     .align(Alignment.End),
