@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Modal, Form } from 'react-bootstrap';
-import { fetchProducts, fetchCategories, addProduct, editProduct, deleteProduct } from './mockApi';
+import { fetchCategories } from '../apiControllers/categoryApi';
 import { storage } from '../contexts/firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import axios from 'axios';
