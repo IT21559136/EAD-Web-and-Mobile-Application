@@ -22,6 +22,7 @@ import com.example.mobile_application.feature_auth.presentation.auth_dashboard.A
 import com.example.mobile_application.feature_auth.presentation.login.LoginScreen
 import com.example.mobile_application.feature_auth.presentation.register.RegisterScreen
 import com.example.mobile_application.feature_cart.presentation.cart.CartScreen
+import com.example.mobile_application.feature_cart.presentation.cart.OrderConfirmScreen
 import com.example.mobile_application.feature_orders.presentation.OrderScreen
 import com.example.mobile_application.feature_products.domain.model.Product
 import com.example.mobile_application.feature_products.presentation.home.HomeScreen
@@ -42,7 +43,6 @@ fun NavGraph(navController: NavHostController) {
         composable("orders") { OrderScreen(navController) }
         composable("cart") { CartScreen(navController) }
 
-        // Product Details Route (with productId as argument)
         // Product Details Route (with productId as argument)
         composable(
             route = "product_details/{productId}",
@@ -78,5 +78,12 @@ fun NavGraph(navController: NavHostController) {
                 }
             }
         }
+
+        composable("orderConfirm/{selectedItemsJson}/{totalPrice}") { backStackEntry ->
+            val selectedItemsJson = backStackEntry.arguments?.getString("selectedItemsJson") ?: ""
+            val totalPrice = backStackEntry.arguments?.getString("totalPrice") ?: "0.00"
+            OrderConfirmScreen(navController)
+        }
+
     }
 }

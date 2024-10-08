@@ -34,6 +34,10 @@ class CartViewModel @Inject constructor(
     private val _state = MutableStateFlow(CartItemsState())
     val state: StateFlow<CartItemsState> = _state.asStateFlow()
 
+    // State for confirm cart items
+    private val _confirmState = MutableStateFlow(ConfirmState())
+    val confirmState: StateFlow<ConfirmState> =_confirmState.asStateFlow()
+
     private val _eventFlow = MutableSharedFlow<UiEvents>()
     val eventFlow: SharedFlow<UiEvents> = _eventFlow.asSharedFlow()
 
@@ -146,5 +150,12 @@ class CartViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun confirmOrder(selectedItems: List<CartProduct>) {
+        // Assuming you perform some operations and want to update confirmedItems
+        _confirmState.value = _confirmState.value.copy(
+            selectedItems = selectedItems // Ensure you're assigning CartProduct list
+        )
     }
 }

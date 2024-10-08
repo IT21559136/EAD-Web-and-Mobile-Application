@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.mobile_application.R
@@ -37,6 +38,7 @@ import com.example.mobile_application.core.presentation.ui.theme.YellowMain
 import com.example.mobile_application.core.util.LoadingAnimation
 import com.example.mobile_application.core.util.UiEvents
 import com.example.mobile_application.feature_cart.domain.model.CartProduct
+import com.example.mobile_application.feature_cart.domain.model.toJson
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,7 +103,9 @@ fun CartScreen(
         }
     ) {padding->
         Box(
-            modifier = Modifier.fillMaxSize().padding(padding)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
         ) {
             CartScreenContent(
                 state = state,
@@ -129,7 +133,10 @@ private fun CartScreenContent(
             items(state.cartItems) { cartItem ->
                 CartItem(
                     cartItem = cartItem,
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(4.dp),
                     isSelected = state.selectedItems.contains(cartItem), // Check if item is selected
                     onItemSelected = onItemSelected
                 )
@@ -155,7 +162,9 @@ private fun CartScreenContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     textAlign = TextAlign.Center,
                     text = state.error,
                     color = Color.Red
@@ -188,22 +197,30 @@ private fun CartScreenContent(
         if (state.cartItems.isNotEmpty()) {
             CheckoutComponent(
                 state = state,
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().background(Color.White).padding(12.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(12.dp),
+                navController = rememberNavController()
             )
         }
     }
 }
 
 @Composable
-private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.padding(5.dp).fillMaxWidth()) {
+private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifier, navController: NavController) {
+    val totalPrice = state.selectedItems.sumOf { (it.product.price * it.selectedQuantity) }
+    Column(modifier = modifier
+        .padding(5.dp)
+        .fillMaxWidth()) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "${state.selectedItems.size} items")
             Text(
-                text = "${state.selectedItems.sumOf { (it.product.price * it.selectedQuantity) }}",
+                text = "$$totalPrice",
                 color = Color.Black,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
@@ -211,18 +228,18 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
         }
         Spacer(modifier = Modifier.height(5.dp))
 
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "Shipping fee")
-            Text(
-                text = "$60.00", color = Color.Black,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-        Spacer(modifier = Modifier.height(5.dp))
+//        Row(
+//            Modifier.fillMaxWidth(),
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//            Text(text = "Shipping fee")
+//            Text(
+//                text = "$60.00", color = Color.Black,
+//                fontSize = 16.sp,
+//                fontWeight = FontWeight.SemiBold
+//            )
+//        }
+//        Spacer(modifier = Modifier.height(5.dp))
 
         Row(
             Modifier.fillMaxWidth(),
@@ -230,9 +247,7 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
         ) {
             Text(text = "Total")
             Text(
-                text = "$${
-                    state.selectedItems.sumOf { (it.product.price * it.selectedQuantity) } + 60.00
-                }",
+                text = "$$totalPrice",
                 color = Color.Black,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
@@ -241,14 +256,18 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
         Spacer(modifier = Modifier.height(12.dp))
 
         Button(
-            onClick = {},
+            onClick = {
+                navController.navigate("orderConfirm/${state.selectedItems.toJson()}/$totalPrice")
+            },
             shape = RoundedCornerShape(8),
             colors = ButtonDefaults.buttonColors(
                 contentColor = Color.White, containerColor = DarkBlue
             ),
         ) {
             Text(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 text = "Checkout",
                 textAlign = TextAlign.Center
             )
@@ -293,12 +312,17 @@ fun CartItem(
                         }).build()
                 ),
                 contentDescription = null,
-                modifier = Modifier.padding(12.dp).weight(1f).fillMaxHeight(),
+                modifier = Modifier
+                    .padding(12.dp)
+                    .weight(1f)
+                    .fillMaxHeight(),
                 contentScale = ContentScale.Inside,
             )
 
             Column(
-                modifier = Modifier.weight(2f).padding(10.dp)
+                modifier = Modifier
+                    .weight(2f)
+                    .padding(10.dp)
             ) {
                 Text(
                     text = cartItem.product.productName,
