@@ -65,7 +65,7 @@ fun OrderScreen(
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        text = "My Cart",
+                        text = "My Orders",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -97,7 +97,7 @@ fun OrderScreenContent(
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        modifier.fillMaxSize().padding(horizontal = 16.dp)
+        modifier.fillMaxSize().padding(horizontal = 12.dp)
     ) {
         items(orders) { order ->
             OrderItem(
@@ -150,7 +150,7 @@ fun OrderItem(
             // Iterate over each item in the order and display its product name
             order.items.forEach { item ->
                 Text(
-                    text = item.productId, // Assuming OrderItem has a property 'productName'
+                    text = item.productName, // Assuming OrderItem has a property 'productName'
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
                     maxLines = 1,

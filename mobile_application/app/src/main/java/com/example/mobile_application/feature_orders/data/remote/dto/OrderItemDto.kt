@@ -8,6 +8,9 @@ data class OrderItemDto(
     @SerializedName("productId")
     val productId: String,
 
+    @SerializedName("productName")
+    val productName: String,
+
     @SerializedName("quantity")
     val quantity: Int,
 

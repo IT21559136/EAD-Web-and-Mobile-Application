@@ -9,5 +9,5 @@ data class Order(
     val customerNote: String,
     val status:String,
     val orderDate: String,
-    val vendorStatuses: List<VendorStatus>
+    val vendorStatuses: List<VendorStatus> = listOf()
 )

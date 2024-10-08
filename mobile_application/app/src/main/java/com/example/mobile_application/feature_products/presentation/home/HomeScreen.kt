@@ -163,32 +163,6 @@ private fun HomeScreenContent(
             columns = GridCells.Fixed(2),
             contentPadding = PaddingValues(16.dp)
         ) {
-            item(span = { GridItemSpan(2) }) {
-                Card(
-                    elevation = CardDefaults.elevatedCardElevation(0.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(170.dp)
-                ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(
-                            ImageRequest.Builder(LocalContext.current)
-                                .data(data = bannerImageUrl)
-                                .apply(block = fun ImageRequest.Builder.() {
-                                    placeholder(R.drawable.ic_placeholder)
-                                    crossfade(true)
-                                }).build()
-                        ),
-                        contentScale = ContentScale.Crop,
-                        contentDescription = "Black Friday Banner"
-                    )
-                }
-            }
-
-            item(span = { GridItemSpan(2) }) {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
 
             item(span = { GridItemSpan(2) }) {
                 Categories(
@@ -307,34 +281,41 @@ private fun ProductItem(
                     fontWeight = FontWeight.Light
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "$${product.price}",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
 
-            OutlinedButton(
-                onClick = {onAddToCartClick()},
-                modifier = Modifier
-                    .size(40.dp)
-                    .align(Alignment.End),
-                shape = CircleShape,
-                border = BorderStroke(0.dp, Color.Transparent),
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White,
-                    containerColor = YellowMain,
-                )
+            Row(
+                modifier = Modifier,
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.Top,
             ) {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    imageVector = Icons.Filled.AddShoppingCart,
-                    contentDescription = null,
-                    tint = MainWhiteColor
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "$${product.price}",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
                 )
+
+                Spacer(modifier = Modifier.width(40.dp))
+                OutlinedButton(
+                    onClick = { onAddToCartClick() },
+                    modifier = Modifier
+                        .size(40.dp),
+                    shape = CircleShape,
+                    border = BorderStroke(0.dp, Color.Transparent),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.White,
+                        containerColor = YellowMain,
+                    )
+                ) {
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        imageVector = Icons.Filled.AddShoppingCart,
+                        contentDescription = null,
+                        tint = MainWhiteColor
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(12.dp))
         }
@@ -363,22 +344,8 @@ fun MyTopAppBar(
                     horizontalArrangement = Arrangement.SpaceAround,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(
-                            ImageRequest.Builder(LocalContext.current)
-                                .data(data = "https://firebasestorage.googleapis.com/v0/b/mealtime-7a501.appspot.com/o/tinywow_Joomia%20Black%20Friday_16608968%20(1).png?alt=media&token=8b874def-e543-482e-80f7-c8cbe9d9f206")
-                                .apply(block = fun ImageRequest.Builder.() {
-                                    crossfade(true)
-                                }).build()
-                        ),
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(35.dp),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop
-                    )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Hi, Janani", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "Hi, Jana", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Icon(
