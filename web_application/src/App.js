@@ -28,19 +28,18 @@ const App = () => {
       <Router>
         <div className="App">
           <Header toggleSidebar={toggleSidebar} />
-          <div className="d-flex flex-grow-1">
+          <div className="d-flex flex-grow-1 content-with-header">
             <Sidebar isOpen={isSidebarOpen} />
             <Container fluid className={`content ${isSidebarOpen ? 'with-sidebar' : 'without-sidebar'}`}>
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 
-                {/* Protected Routes based on user roles */}
                 <Route path="/" element={<PrivateRoute element={AdminDashboard} allowedRoles={['Admin']} />} />
                 <Route path="/user-management" element={<PrivateRoute element={UserManagement} allowedRoles={['Admin']} />} />
                 <Route path="/product-management" element={<PrivateRoute element={ProductManagement} allowedRoles={['Admin']} />} />
-                <Route path="/inventory-management" element={<PrivateRoute element={InventoryManagement} allowedRoles={['Vendor']} />} />
-                <Route path="/order-management" element={<PrivateRoute element={OrderManagement} allowedRoles={['Vendor']} />} />
+                <Route path="/inventory-management" element={<PrivateRoute element={InventoryManagement} allowedRoles={['Vendor', 'Admin']} />} />
+                <Route path="/order-management" element={<PrivateRoute element={OrderManagement} allowedRoles={['Vendor', 'Admin']} />} />
                 <Route path="/category-management" element={<PrivateRoute element={CategoryManagement} allowedRoles={['Vendor', 'Admin']} />} />
               </Routes>
             </Container>

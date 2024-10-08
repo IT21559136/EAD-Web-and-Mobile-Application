@@ -120,3 +120,15 @@ footer {
   flex-shrink: 0; /* Prevent footer from shrinking */
   /* Add other footer styles if necessary */
 }
+
+/* Add this to your App.css or Header.css */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.content-with-header {
+  padding-top: 50px; /* Adjust this value based on the height of your header */
+}

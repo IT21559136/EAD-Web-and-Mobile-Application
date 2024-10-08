@@ -19,7 +19,6 @@ const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
 
   const fetchNotifications = () => {
-    // Mock API call to fetch notifications
     setTimeout(() => {
       setNotifications([
         { id: 4, text: 'New message received', read: false },
@@ -29,7 +28,6 @@ const Header = ({ toggleSidebar }) => {
   };
 
   const fetchProfileData = () => {
-    // Mock API call to fetch profile data
     setTimeout(() => {
       setProfileData({
         name: 'Jane Smith',
@@ -47,70 +45,70 @@ const Header = ({ toggleSidebar }) => {
   };
 
   const handleLogout = () => {
-    logout(); // Call the logout function from AuthContext
-    navigate('/login'); // Redirect to login page after logout
+    logout(); 
+    navigate('/login'); 
   };
 
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" className="px-3">
-      <Button variant="outline-light" onClick={toggleSidebar}>
-        <i className="fas fa-bars"></i>
-      </Button>
-      <Navbar.Brand className="mx-3">
-        <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>
-          Admin Dashboard
-        </Link>
-      </Navbar.Brand>
+    <div className="fixed-header">
+      <Navbar bg="dark" variant="dark" expand="lg" className="px-3">
+        <Button variant="outline-light" onClick={toggleSidebar}>
+          <i className="fas fa-bars"></i>
+        </Button>
+        <Navbar.Brand className="mx-3">
+          <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>
+            Admin Dashboard
+          </Link>
+        </Navbar.Brand>
 
-      <div className="ml-auto d-flex" style={{ marginLeft: 'auto' }}>
-        {/* Notification Icon */}
-        <DropdownButton
-          variant="outline-light"
-          title={
-            <>
-              <i className="fas fa-bell"></i>
-              {notifications.some((notif) => !notif.read) && (
-                <Badge bg="danger" className="ms-1">
-                  {notifications.filter((notif) => !notif.read).length}
-                </Badge>
-              )}
-            </>
-          }
-          className="mx-2"
-          onClick={fetchNotifications}
-          align="end"
-        >
-          <Dropdown.Header>Notifications</Dropdown.Header>
-          {notifications.map((note) => (
-            <Dropdown.Item
-              key={note.id}
-              onClick={() => toggleReadStatus(note.id)}
-              style={{ fontWeight: note.read ? 'normal' : 'bold' }}
-            >
-              {note.text}
-              {note.read ? '' : <Badge bg="success" className="ms-2">New</Badge>}
+        <div className="ml-auto d-flex" style={{ marginLeft: 'auto' }}>
+          <DropdownButton
+            variant="outline-light"
+            title={
+              <>
+                <i className="fas fa-bell"></i>
+                {notifications.some((notif) => !notif.read) && (
+                  <Badge bg="danger" className="ms-1">
+                    {notifications.filter((notif) => !notif.read).length}
+                  </Badge>
+                )}
+              </>
+            }
+            className="mx-2"
+            onClick={fetchNotifications}
+            align="end"
+          >
+            <Dropdown.Header>Notifications</Dropdown.Header>
+            {notifications.map((note) => (
+              <Dropdown.Item
+                key={note.id}
+                onClick={() => toggleReadStatus(note.id)}
+                style={{ fontWeight: note.read ? 'normal' : 'bold' }}
+              >
+                {note.text}
+                {note.read ? '' : <Badge bg="success" className="ms-2">New</Badge>}
+              </Dropdown.Item>
+            ))}
+          </DropdownButton>
+
+          <DropdownButton
+            variant="outline-light"
+            title={<i className="fas fa-user"></i>}
+            className="mx-2"
+            onClick={fetchProfileData}
+            align="end"
+          >
+            <Dropdown.Header>Profile</Dropdown.Header>
+            <Dropdown.Item>Name: {profileData.name}</Dropdown.Item>
+            <Dropdown.Item>Email: {profileData.email}</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={handleLogout} className="text-danger">
+              <i className="fas fa-sign-out-alt"></i> Logout
             </Dropdown.Item>
-          ))}
-        </DropdownButton>
-
-        {/* Profile Icon */}
-        <DropdownButton
-          variant="outline-light"
-          title={<i className="fas fa-user"></i>}
-          className="mx-2"
-          onClick={fetchProfileData}
-          align="end"
-        >
-          <Dropdown.Header>Profile</Dropdown.Header>
-          <Dropdown.Item>Name: {profileData.name}</Dropdown.Item>
-          <Dropdown.Item>Email: {profileData.email}</Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item onClick={handleLogout} className="text-danger">
-            <i className="fas fa-sign-out-alt"></i> Logout
-          </Dropdown.Item>
-        </DropdownButton>
-      </div>
-    </Navbar>
+          </DropdownButton>
+        </div>
+      </Navbar>
+    </div>
   );
 };
 

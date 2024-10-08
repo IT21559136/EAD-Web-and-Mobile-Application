@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Modal, Form } from 'react-bootstrap';
-import { fetchCategories, addCategory, editCategory, deleteCategory } from './mockApi';
+import { fetchCategories, addCategory, editCategory, deleteCategory } from '../apiControllers/categoryApi';
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
