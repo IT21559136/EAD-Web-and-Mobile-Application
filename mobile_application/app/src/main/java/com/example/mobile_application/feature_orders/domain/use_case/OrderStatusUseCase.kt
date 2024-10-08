@@ -8,7 +8,7 @@ import javax.inject.Inject
 class OrderStatusUseCase @Inject constructor(
     private val repository: OrderRepository
 ) {
-    suspend operator fun invoke(orderId: String, vendorEmail:String?):Flow<Resource<Unit>> {
+    suspend operator fun invoke(orderId: String, vendorEmail:String):Flow<Resource<Unit>> {
         return repository.markOrderAsDelivered(orderId, vendorEmail )
     }
 }

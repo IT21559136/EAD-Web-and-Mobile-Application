@@ -10,6 +10,6 @@ class GetOrdersUseCase @Inject constructor(
     private val repository: OrderRepository
 ) {
     suspend operator fun invoke(): Flow<Resource<List<Order>>> {
-        return repository.getAllOrders()
+        return repository.getMyOrders()
     }
 }

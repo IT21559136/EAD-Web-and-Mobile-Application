@@ -50,9 +50,9 @@ class AuthRepositoryImpl(
                 Timber.e("Auth Preferences: Failed to save Login Token")
             }
 
-//            if (rememberMe) {
-//                authPreferences.saveAccessToken(response.token)
-//            }
+            if (rememberMe) {
+                authPreferences.saveAccessToken(response.token)
+            }
 
             // Extract user ID from the token
             val userId = getUserIdFromToken(response.token)

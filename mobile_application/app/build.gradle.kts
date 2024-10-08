@@ -121,6 +121,7 @@ dependencies {
 
     // Dagger Hilt for Dependency Injection
     implementation(libs.google.hilt.android)
+    implementation(libs.protolite.well.known.types)
     kapt(libs.google.hilt.compiler)
     implementation(libs.google.hilt.navigation.compose)
 

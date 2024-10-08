@@ -378,7 +378,7 @@ fun MyTopAppBar(
                         contentScale = ContentScale.Crop
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Hi, John", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "Hi, Janani", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Icon(

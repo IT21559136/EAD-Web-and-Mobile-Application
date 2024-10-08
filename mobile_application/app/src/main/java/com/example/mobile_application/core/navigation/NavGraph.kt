@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,7 +22,9 @@ import androidx.navigation.navArgument
 import com.example.mobile_application.feature_auth.presentation.auth_dashboard.AuthDashboardScreen
 import com.example.mobile_application.feature_auth.presentation.login.LoginScreen
 import com.example.mobile_application.feature_auth.presentation.register.RegisterScreen
+import com.example.mobile_application.feature_cart.domain.model.CartProduct
 import com.example.mobile_application.feature_cart.presentation.cart.CartScreen
+import com.example.mobile_application.feature_cart.presentation.cart.CartViewModel
 import com.example.mobile_application.feature_cart.presentation.cart.OrderConfirmScreen
 import com.example.mobile_application.feature_orders.presentation.OrderScreen
 import com.example.mobile_application.feature_products.domain.model.Product
@@ -29,11 +32,14 @@ import com.example.mobile_application.feature_products.presentation.home.HomeScr
 import com.example.mobile_application.feature_products.presentation.product_details.ProductDetailsScreen
 import com.example.mobile_application.feature_products.presentation.product_details.ProductDetailsViewModel
 import com.example.mobile_application.feature_profile.presentation.AccountScreen
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavGraph(navController: NavHostController) {
+    val cartViewModel: CartViewModel = viewModel()
     NavHost(navController = navController, startDestination = "auth_dashboard") {
         composable("auth_dashboard") { AuthDashboardScreen(navController) }
         composable("login") { LoginScreen(navController) }
@@ -41,7 +47,9 @@ fun NavGraph(navController: NavHostController) {
         composable("home") { HomeScreen(navController) }
         composable("account") { AccountScreen(navController) }
         composable("orders") { OrderScreen(navController) }
-        composable("cart") { CartScreen(navController) }
+        composable("cart") { CartScreen(navController, cartViewModel) }
+        composable("orderConfirm") { OrderConfirmScreen(navController, cartViewModel)}
+
 
         // Product Details Route (with productId as argument)
         composable(
@@ -77,12 +85,6 @@ fun NavGraph(navController: NavHostController) {
                     CircularProgressIndicator()
                 }
             }
-        }
-
-        composable("orderConfirm/{selectedItemsJson}/{totalPrice}") { backStackEntry ->
-            val selectedItemsJson = backStackEntry.arguments?.getString("selectedItemsJson") ?: ""
-            val totalPrice = backStackEntry.arguments?.getString("totalPrice") ?: "0.00"
-            OrderConfirmScreen(navController)
         }
 
     }

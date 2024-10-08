@@ -8,5 +8,6 @@ data class ConfirmState(
     val orderConfirmed: Boolean = false, // Indicates if the order has been confirmed
     val selectedItems: List<CartProduct> = emptyList(), // Holds the list of items being confirmed
     val totalPrice: Double = 0.0,    // Total price of the order
+    var customerNote: String = "",
     val shippingAddress: String = "", // Shipping address for the order
 )

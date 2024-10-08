@@ -1,5 +1,6 @@
 package com.example.mobile_application.feature_cart.presentation.cart
 
+import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,7 +27,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -39,12 +42,14 @@ import com.example.mobile_application.core.util.LoadingAnimation
 import com.example.mobile_application.core.util.UiEvents
 import com.example.mobile_application.feature_cart.domain.model.CartProduct
 import com.example.mobile_application.feature_cart.domain.model.toJson
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartScreen(
-    navController: NavController,
+    navController: NavHostController,
     viewModel: CartViewModel = hiltViewModel(),
 ) {
 
@@ -69,6 +74,7 @@ fun CartScreen(
             }
         }
     }
+
 
     Scaffold(
         containerColor = Color.White,//MainWhiteColor,
@@ -109,6 +115,8 @@ fun CartScreen(
         ) {
             CartScreenContent(
                 state = state,
+                viewModel = viewModel,
+                navController = navController,
                 modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 12.dp),
                 onItemSelected = { item, isSelected ->
                     viewModel.onItemSelected(item, isSelected)
@@ -121,6 +129,8 @@ fun CartScreen(
 @Composable
 private fun CartScreenContent(
     state: CartItemsState,
+    viewModel: CartViewModel,
+    navController: NavHostController,
     modifier: Modifier = Modifier,
     onItemSelected: (CartProduct, Boolean) -> Unit
 ) {
@@ -202,14 +212,20 @@ private fun CartScreenContent(
                     .fillMaxWidth()
                     .background(Color.White)
                     .padding(12.dp),
-                navController = rememberNavController()
+                navController = navController,
+                viewModel = viewModel
             )
         }
     }
 }
 
 @Composable
-private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifier, navController: NavController) {
+private fun CheckoutComponent(
+    state: CartItemsState,
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    viewModel: CartViewModel
+) {
     val totalPrice = state.selectedItems.sumOf { (it.product.price * it.selectedQuantity) }
     Column(modifier = modifier
         .padding(5.dp)
@@ -228,18 +244,6 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
         }
         Spacer(modifier = Modifier.height(5.dp))
 
-//        Row(
-//            Modifier.fillMaxWidth(),
-//            horizontalArrangement = Arrangement.SpaceBetween
-//        ) {
-//            Text(text = "Shipping fee")
-//            Text(
-//                text = "$60.00", color = Color.Black,
-//                fontSize = 16.sp,
-//                fontWeight = FontWeight.SemiBold
-//            )
-//        }
-//        Spacer(modifier = Modifier.height(5.dp))
 
         Row(
             Modifier.fillMaxWidth(),
@@ -257,9 +261,17 @@ private fun CheckoutComponent(state: CartItemsState, modifier: Modifier = Modifi
 
         Button(
             onClick = {
-                navController.navigate("orderConfirm/${state.selectedItems.toJson()}/$totalPrice")
+                val selectedItems = state.selectedItems
+                val totalPrice = selectedItems.sumOf { it.product.price * it.selectedQuantity }
+                // Update the shared view model
+                viewModel.checkoutOrder(selectedItems, totalPrice)
+
+                Timber.d("selected items when click checkout: $selectedItems")
+
+                // Navigate to OrderConfirm screen
+                navController.navigate("orderConfirm")
             },
-            shape = RoundedCornerShape(8),
+            shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 contentColor = Color.White, containerColor = DarkBlue
             ),

@@ -3,8 +3,10 @@ package com.example.mobile_application.feature_products.domain.model
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data class Product(
     val id: String,
     val productName: String,

@@ -9,7 +9,7 @@ import javax.inject.Inject
 class OrderReviewUseCase @Inject constructor(
     private val repository: OrderRepository
 ) {
-    suspend operator fun invoke(orderId: Int, rating: Float, review: String): Flow<Resource<Unit>> = flow  {
+    suspend operator fun invoke(orderId: String, rating: Float, review: String): Flow<Resource<Unit>> = flow  {
         repository.addOrderReview(orderId, rating, review)
     }
 }

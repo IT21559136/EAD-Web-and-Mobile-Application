@@ -12,6 +12,8 @@ import com.example.mobile_application.feature_cart.domain.use_case.AddCartItemUs
 import com.example.mobile_application.feature_cart.domain.use_case.DeleteCartItemsUseCase
 import com.example.mobile_application.feature_cart.domain.use_case.GetCartItemsUseCase
 import com.example.mobile_application.feature_products.domain.model.Product
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -152,10 +154,24 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun confirmOrder(selectedItems: List<CartProduct>) {
-        // Assuming you perform some operations and want to update confirmedItems
-        _confirmState.value = _confirmState.value.copy(
-            selectedItems = selectedItems // Ensure you're assigning CartProduct list
-        )
+    fun checkoutOrder(selectedItems: List<CartProduct>, totalPrice: Double) {
+        viewModelScope.launch {
+            Timber.d("Checkout Items: $selectedItems")
+            if (selectedItems.isNotEmpty()) {
+                _confirmState.value = confirmState.value.copy(
+                    selectedItems = selectedItems,
+                    totalPrice = totalPrice,
+                    //totalPrice = calculateTotalPrice(selectedItems) // Ensure to calculate the total price here
+                )
+            } else {
+                _eventFlow.emit(
+                    UiEvents.SnackbarEvent(
+                        message = "No items selected for checkout."
+                    )
+                )
+            }
+        }
     }
+
+
 }
