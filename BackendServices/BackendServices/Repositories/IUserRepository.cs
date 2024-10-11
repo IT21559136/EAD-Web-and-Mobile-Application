@@ -6,6 +6,7 @@ namespace BackendServices;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+//This interface defines the contract for user data access operations, outlining the methods that any user repository implementation must provide.
 public interface IUserRepository
 {
     Task<User> GetUserByEmailAsync(string email);

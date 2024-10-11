@@ -69,6 +69,7 @@ namespace BackendServices.Controllers;
 // }
 
 
+//This controller manages order-related operations, including creating, updating, retrieving, and canceling orders. It utilizes the OrderService and ProductService for business logic.
 [ApiController]
 [Route("api/[controller]")]
 public class OrderController : ControllerBase
@@ -123,6 +124,7 @@ public class OrderController : ControllerBase
     
     
     
+    //Create Order API Endpoint (Accessible by Authenticated Users)
     
     [Authorize]
     [HttpPost("create")]
@@ -169,6 +171,7 @@ public class OrderController : ControllerBase
 
 
     // Update order status
+    //Update Order Status API Endpoint (Accessible by CSR and Admin)
     [Authorize(Roles = "CSR, Admin")]
     [HttpPut("status/{orderId}")]
     public async Task<IActionResult> UpdateOrderStatus(string orderId, [FromBody] string status)
@@ -178,6 +181,7 @@ public class OrderController : ControllerBase
     }
 
     // Cancel order
+    //Cancel Order API Endpoint (Accessible by CSR and Admin)
     [Authorize(Roles = "CSR, Admin")]
     [HttpPut("cancel/{orderId}")]
     public async Task<IActionResult> CancelOrder(string orderId, [FromBody] string cancellationNote)
@@ -199,7 +203,7 @@ public class OrderController : ControllerBase
 
     
     
-    
+    //Retrieve Vendor Orders API Endpoint (Accessible by Vendor and Admin)
     [Authorize(Roles = "Vendor, Admin")]
     [HttpGet("my-orders")]
     public async Task<IActionResult> GetMyOrders()
@@ -224,7 +228,7 @@ public class OrderController : ControllerBase
         return Ok(orders);
     }
     
-    
+    // Retrieve All Orders API Endpoint (Accessible by Admin)
     [Authorize(Roles = "Admin")]
     [HttpGet("all")]
     public async Task<IActionResult> GetAllOrders()
@@ -234,6 +238,7 @@ public class OrderController : ControllerBase
     }
     
     
+    //Retrieve Customer Orders API Endpoint (Accessible by User)
     [Authorize(Roles = "User")]
     [HttpGet("customer-orders")]
     public async Task<IActionResult> GetOrdersByCustomer()
@@ -249,7 +254,7 @@ public class OrderController : ControllerBase
     }
     
     
-    
+    //Update Vendor Order Item Status API Endpoint (Accessible by Vendor)
     [Authorize(Roles = "Vendor")]
     [HttpPut("update-status/{itemId}")]
     public async Task<IActionResult> UpdateVendorOrderItemStatus(string itemId, [FromBody] VendorOrderStatusUpdateDTO updateDto)

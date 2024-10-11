@@ -127,6 +127,7 @@ using BCrypt.Net;
             _jwtHelper = jwtHelper;
         }
 
+        //Register User API Endpoint
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO model)
         {
@@ -150,6 +151,7 @@ using BCrypt.Net;
             return Ok(new { message = "User registered successfully." });
         }
 
+        //Authentication API Endpoint for Login
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
@@ -179,6 +181,7 @@ using BCrypt.Net;
             return Ok(new { message = "Account deactivated." });
         }
 
+        // Account Activation API Endpoint (CSR Role)
         [Authorize(Roles = "CSR")]
         [HttpPost("activate")]
         public async Task<IActionResult> ActivateAccount([FromBody] string email)
@@ -253,6 +256,7 @@ using BCrypt.Net;
         
         
         // 1. Endpoint to delete the logged-in user's own account
+        //Self-Account Deletion API Endpoint (Restricted for Vendors)
         [Authorize]
         [HttpDelete("delete-account")]
         public async Task<IActionResult> DeleteAccount()
@@ -285,6 +289,7 @@ using BCrypt.Net;
         
         
         // 2. Endpoint for Admin/CSR to delete another user's account, including vendors
+        //Admin/CSR User Deletion API Endpoint
         [Authorize(Roles = "Admin,CSR")]
         [HttpDelete("delete-user/{id}")]
         public async Task<IActionResult> DeleteUser(string id)
@@ -301,8 +306,7 @@ using BCrypt.Net;
         }
         
         
-        
-
+        //Admin/CSR Retrieve All Users API Endpoint
         [Authorize(Roles = "Admin, CSR")]
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers()
@@ -312,6 +316,7 @@ using BCrypt.Net;
             return Ok(users);
         }
 
+        //Retrieve User by ID API Endpoint (Accessible by Admin, Vendor, CSR, User)
        [Authorize(Roles = "Admin, Vendor, CSR, User")]
         [HttpGet("users/{id}")]
         public async Task<IActionResult> GetUserById(string id)
@@ -326,7 +331,7 @@ using BCrypt.Net;
         }
         
         
-        
+        //Update User API Endpoint
         [Authorize]
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UserDTO userDto)

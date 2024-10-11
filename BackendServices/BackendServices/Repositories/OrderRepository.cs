@@ -58,16 +58,19 @@ public class OrderRepository : IOrderRepository
         
     }
 
+    //Create Order Method
     public async Task CreateOrderAsync(Order order)
     {
         await _orders.InsertOneAsync(order);
     }
 
+    //Get Order by ID Method
     public async Task<Order> GetOrderByIdAsync(string orderId)
     {
         return await _orders.Find(o => o.Id == orderId).FirstOrDefaultAsync();
     }
 
+    //Update Order Method
     public async Task UpdateOrderAsync(Order order)
     {
         await _orders.ReplaceOneAsync(o => o.Id == order.Id, order);
@@ -81,18 +84,20 @@ public class OrderRepository : IOrderRepository
         return await _orders.Find(filter).ToListAsync();
     }
     
+    //. Get All Orders Method
     public async Task<List<Order>> GetAllOrdersAsync()
     {
         return await _orders.Find(_ => true).ToListAsync(); // Fetch all orders from the collection
     }
     
+    // Get Orders by Customer ID Method
     public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId)
     {
         var filter = Builders<Order>.Filter.Eq(o => o.CustomerId, customerId);
         return await _orders.Find(filter).ToListAsync();
     }
     
-    
+    // Get Order by Item ID Method
     public async Task<Order> GetOrderByItemIdAsync(string itemId)
     {
         // Find the order that contains the specific item by ItemId

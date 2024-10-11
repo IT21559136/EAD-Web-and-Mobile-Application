@@ -24,8 +24,10 @@ namespace BackendServices.Controllers
             _jwtHelper = jwtHelper;
             _userService = userService;
         }
-
-        [Authorize(Roles = "Admin")]  // Only Admins can create vendors
+        
+        //Create Vendor Endpoint
+        // Only Admins can create vendors
+        [Authorize(Roles = "Admin")]  
         [HttpPost("create")]
         public async Task<IActionResult> CreateVendor([FromBody] VendorDTO vendorModel)
         {
@@ -50,7 +52,7 @@ namespace BackendServices.Controllers
 
 
 
-
+        //Update Vendor Endpoint
         [Authorize(Roles = "Admin")]
         [HttpPut("update/{vendorId}")]
         public async Task<IActionResult> UpdateVendor(string vendorId, [FromBody] VendorDTO updatedVendor)
@@ -73,6 +75,7 @@ namespace BackendServices.Controllers
         }
 
 
+        //Delete Vendor Endpoint
         [Authorize(Roles = "Admin")]
         [HttpDelete("delete/{email}")]
         public async Task<IActionResult> DeleteVendor(string email)
@@ -83,6 +86,7 @@ namespace BackendServices.Controllers
 
 
 
+        //Deactivate Vendor Endpoint
         [Authorize(Roles = "Admin, Vendor")]
         [HttpPost("deactivate/{email}")]
         public async Task<IActionResult> DeactivateVendor(string email)
@@ -98,6 +102,7 @@ namespace BackendServices.Controllers
             return Ok(new { message = "Vendor deactivated successfully." });
         }
 
+        // Activate Vendor Endpoint
         [Authorize(Roles = "Admin")]
         [HttpPost("activate/{email}")]
         public async Task<IActionResult> ActivateVendor(string email)
@@ -136,6 +141,7 @@ namespace BackendServices.Controllers
         }
         
         
+        //Add Comment to Vendor Endpoint
         [Authorize]
         [HttpPost("comment/{vendorId}")]
         public async Task<IActionResult> AddComment(string vendorId, [FromBody] CommentDTO model)
@@ -152,6 +158,7 @@ namespace BackendServices.Controllers
         }
         
         
+        //Update Vendor Comment Endpoint
         [Authorize]
         [HttpPut("comment/{vendorId}/{commentId}")]
         public async Task<IActionResult> UpdateComment(string vendorId, string commentId, [FromBody] CommentDTO model)
@@ -173,7 +180,7 @@ namespace BackendServices.Controllers
         }
         
         
-        
+        // Delete Vendor Comment Endpoint
         [Authorize]
         [HttpDelete("{vendorId}/comments/{commentId}")]
         public async Task<IActionResult> DeleteComment(string vendorId, string commentId)

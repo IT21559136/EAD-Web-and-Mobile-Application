@@ -169,6 +169,7 @@ public class OrderService
     
     
     // Create a new order
+    //Create Order API Endpoint (Accessible by Authenticated Users)
     public async Task CreateOrderAsync(Order order)
     {
         foreach (var item in order.Items)
@@ -207,6 +208,8 @@ public class OrderService
 
 
     // Update order status (e.g., before dispatch)
+    
+    //Update Order Status API Endpoint (Accessible by CSR and Admin)
     public async Task UpdateOrderStatusAsync(string orderId, string status)
     {
         var order = await _orderRepository.GetOrderByIdAsync(orderId);
@@ -220,6 +223,7 @@ public class OrderService
     }
 
     // Cancel an order (with note)
+    //Cancel Order API Endpoint (Accessible by CSR and Admin)
     public async Task CancelOrderAsync(string orderId, string cancellationNote)
     {
         var order = await _orderRepository.GetOrderByIdAsync(orderId);
@@ -295,6 +299,7 @@ public class OrderService
     //     return await _orderRepository.GetOrdersByCustomerIdAsync(customerId);
     // }
     
+    // Get Customer Orders API Endpoint (Accessible by Authenticated Users)
     public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId)
     {
         // Fetch orders from the repository
@@ -322,6 +327,7 @@ public class OrderService
     
     
     
+    // Update Vendor Order Item Status API Endpoint (Accessible by Vendor)
     public async Task UpdateOrderItemStatusAsync(string itemId, string vendorEmail, string newStatus)
     {
         // Find the order containing this item

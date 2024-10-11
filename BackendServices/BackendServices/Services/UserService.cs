@@ -74,6 +74,7 @@ namespace BackendServices.Services
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
+    //This class provides methods for user management, interfacing with the user repository to perform operations related to user accounts.
     public class UserService
     {
         private readonly IUserRepository _userRepository;
@@ -83,41 +84,57 @@ namespace BackendServices.Services
             _userRepository = userRepository;
         }
 
+        //Retrieves a user by their email address from the repository.
         public async Task<User> GetUserByEmailAsync(string email)
         {
             return await _userRepository.GetUserByEmailAsync(email);
         }
+        
 
+       //Creates a new user in the repository.
         public async Task CreateUserAsync(User user)
         {
             await _userRepository.CreateUserAsync(user);
         }
+        
 
+        //Updates the details of an existing user in the repository.
         public async Task UpdateUserAsync(User user)
         {
             await _userRepository.UpdateUserAsync(user);
         }
-
+        
+        
+        //Checks if the provided email address is unique and not already associated with an existing user.
         public async Task<bool> IsEmailUniqueAsync(string email)
         {
             return await _userRepository.IsEmailUniqueAsync(email);
         }
 
-        public async Task DeleteUserAsync(string userId)
+        
+       // Deletes a user from the repository based on the specified user ID.
+       public async Task DeleteUserAsync(string userId)
         {
             await _userRepository.DeleteUserAsync(userId);
         }
+       
+       
 
+        //Retrieves a list of all users from the repository.
         public async Task<List<User>> GetAllUsersAsync()
         {
             return await _userRepository.GetAllUsersAsync();
         }
+        
+        
 
+        //Retrieves a user by their unique identifier (ID) from the repository.
         public async Task<User> GetUserByIdAsync(string id)
         {
             return await _userRepository.GetUserByIdAsync(id);
         }
-
+        
+        //Encrypts the provided password using BCrypt hashing for secure storage.
         public static string EncryptPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);
