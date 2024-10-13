@@ -15,6 +15,8 @@ import Signup from './pages/Signup';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './contexts/PrivateRoute';
 import CategoryManagement from './pages/CategoryManagement';
+import VendorDashboard from './pages/VendorDashboard';
+import VendorOrderManagement from './pages/VendorOrderList';
 
 const App = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -24,8 +26,8 @@ const App = () => {
   };
 
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <div className="App">
           <Header toggleSidebar={toggleSidebar} />
           <div className="d-flex flex-grow-1 content-with-header">
@@ -36,18 +38,20 @@ const App = () => {
                 <Route path="/signup" element={<Signup />} />
                 
                 <Route path="/" element={<PrivateRoute element={AdminDashboard} allowedRoles={['Admin']} />} />
+                <Route path="/vendor-dashboard" element={<PrivateRoute element={VendorDashboard} allowedRoles={['Vendor', 'Admin']} />} />
                 <Route path="/user-management" element={<PrivateRoute element={UserManagement} allowedRoles={['Admin']} />} />
-                <Route path="/product-management" element={<PrivateRoute element={ProductManagement} allowedRoles={['Admin']} />} />
+                <Route path="/product-management" element={<PrivateRoute element={ProductManagement} allowedRoles={['Admin', 'Vendor']} />} />
                 <Route path="/inventory-management" element={<PrivateRoute element={InventoryManagement} allowedRoles={['Vendor', 'Admin']} />} />
                 <Route path="/order-management" element={<PrivateRoute element={OrderManagement} allowedRoles={['Vendor', 'Admin']} />} />
+                <Route path="/vendor-order-management" element={<PrivateRoute element={VendorOrderManagement} allowedRoles={['Vendor', 'Admin']} />} />
                 <Route path="/category-management" element={<PrivateRoute element={CategoryManagement} allowedRoles={['Vendor', 'Admin']} />} />
               </Routes>
             </Container>
           </div>
           <Footer />
         </div>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 };
 

@@ -1,4 +1,3 @@
-// Sidebar.js
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
@@ -7,20 +6,29 @@ import { AuthContext } from '../contexts/AuthContext';
 
 const Sidebar = ({ isOpen }) => {
   const location = useLocation();
-  const { logout } = useContext(AuthContext);
-
-  const menuItems = [
-    { path: '/user-management', label: 'User Management', icon: 'fas fa-users' },
-    { path: '/category-management', label: 'Category Management', icon: 'fas fa-tags' },
-    { path: '/product-management', label: 'Product Management', icon: 'fas fa-box' },
-    { path: '/inventory-management', label: 'Inventory Management', icon: 'fas fa-warehouse' },
-    { path: '/order-management', label: 'Order Management', icon: 'fas fa-shopping-cart' },
-  ];
+  const { logout, auth } = useContext(AuthContext);
   
+  // Define menu items with roles
+  const menuItems = [
+    { path: '/', label: 'Admin Dashboard', icon: 'fas fa-users', roles: ['Admin'] },
+    { path: '/vendor-dashboard', label: 'Vendor Dashboard', icon: 'fas fa-shopping-cart', roles: ['Vendor'] },
+    { path: '/user-management', label: 'User Management', icon: 'fas fa-users', roles: ['Admin'] },
+    { path: '/category-management', label: 'Category Management', icon: 'fas fa-tags', roles: ['Admin'] },
+    { path: '/product-management', label: 'Product Management', icon: 'fas fa-box', roles: ['Admin', 'Vendor'] },
+    { path: '/inventory-management', label: 'Inventory Management', icon: 'fas fa-warehouse', roles: ['Admin'] },
+    { path: '/order-management', label: 'Order Management', icon: 'fas fa-shopping-cart', roles: ['Admin'] },
+    { path: '/vendor-order-management', label: 'Vendor Order Management', icon: 'fas fa-shopping-cart', roles: ['Vendor'] },
+  ];
+
+  // Filter menu items based on user's role
+  const allowedMenuItems = menuItems.filter(item => 
+    item.roles.includes(auth.user?.role)
+  );
+
   return (
     <div className={`bg-dark text-white sidebar ${isOpen ? 'open' : ''}`}>
       <ul className="list-unstyled p-3">
-        {menuItems.map((item) => (
+        {allowedMenuItems.map((item) => (
           <li key={item.path}>
             <Link
               to={item.path}

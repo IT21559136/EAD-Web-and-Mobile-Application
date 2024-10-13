@@ -1,11 +1,13 @@
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios'; // Use axios to handle HTTP requests
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 // Create AuthContext
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({ token: null, user: null });
+  const navigate = useNavigate(); // Initialize useNavigate
 
   // Helper function to check if the token is expired
   const isTokenExpired = (expirationTime) => {
@@ -48,10 +50,17 @@ export const AuthProvider = ({ children }) => {
   // API call to login using backend API
   const login = async (credentials) => {
     try {
-      console.log(credentials);
       const response = await axios.post('/api/Auth/login', credentials);
       const data = response.data;
       setAuth({ token: data.token, user: { role: data.role } });
+
+      // Redirect based on user role
+      if (data.role === 'Admin') {
+        navigate('/'); // Admin Dashboard
+      } else if (data.role === 'Vendor') {
+        navigate('/vendor-dashboard'); // Vendor Dashboard
+      }
+      // Add other roles if necessary
     } catch (error) {
       throw error;
     }
@@ -63,6 +72,7 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post('/api/Auth/register', userData);
       const data = response.data;
       setAuth({ token: data.token, user: { role: data.role } });
+      navigate('/'); // Redirect after signup, you can customize this
     } catch (error) {
       throw error;
     }
@@ -72,7 +82,7 @@ export const AuthProvider = ({ children }) => {
     setAuth({ token: null, user: null });
     localStorage.removeItem('auth');
     localStorage.removeItem('tokenExpiration');
-    window.location.href = '/login'; // Redirect to login
+    navigate('/login'); // Redirect to login
   };
 
   return (
