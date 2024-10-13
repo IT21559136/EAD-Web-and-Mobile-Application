@@ -15,7 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -24,6 +29,7 @@ import androidx.navigation.NavHostController
 import com.example.mobile_application.R
 import com.example.mobile_application.core.presentation.ui.theme.MainWhiteColor
 import com.example.mobile_application.core.presentation.ui.theme.YellowMain
+import com.example.mobile_application.core.presentation.ui.theme.poppins
 import kotlin.system.exitProcess
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -47,7 +53,7 @@ fun AuthDashboardScreen(
                 contentAlignment = Alignment.TopStart
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.banner_image),
+                    painter = painterResource(id = R.drawable.banner_image35),
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
@@ -59,15 +65,21 @@ fun AuthDashboardScreen(
                         .padding(horizontal = 16.dp, vertical = 16.dp),
                     verticalArrangement = Arrangement.Bottom
                 ) {
-                    // Fixed by moving the `text` parameter as the first argument
                     Text(
-                        text = "Make your shopping enjoyable with us",  // `text` moved to the first argument
+
+                        text = "Shop smart\nlive stylish\nbe you.",
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 8.dp, end = 24.dp),
-                        color = YellowMain,
-                        fontSize = 24.sp
+                        color = MainWhiteColor,
+                        fontSize = 40.sp,
+                        fontWeight = FontWeight.Thin,
+                        textAlign = TextAlign.Left,
+                        lineHeight = 60.sp,
+                        letterSpacing = 3.sp,
+                        maxLines = 3
                     )
+
                     Spacer(modifier = Modifier.height(32.dp))
                     Button(
                         onClick = {

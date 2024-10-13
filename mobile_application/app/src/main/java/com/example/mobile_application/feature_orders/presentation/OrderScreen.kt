@@ -189,13 +189,20 @@ fun OrderItem(
             ) {
                 // Show rating if order is delivered
                 if (order.status == "Delivered") {
-                    Button(
-                        onClick = { showReviewDialog = true },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = YellowMain
-                        )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(), // Fill the width of the parent
+                        horizontalArrangement = Arrangement.End, // Aligns items to the end
+                        verticalAlignment = Alignment.CenterVertically, // Optionally align vertically
                     ) {
-                        Text(text = "Rate Vendor")
+                        Button(
+                            onClick = { showReviewDialog = true },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = YellowMain
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                        ) {
+                            Text(text = "Rate Vendor")
+                        }
                     }
                 }
 

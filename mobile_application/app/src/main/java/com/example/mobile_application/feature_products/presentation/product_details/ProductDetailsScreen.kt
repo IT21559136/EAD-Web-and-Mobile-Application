@@ -128,7 +128,7 @@ fun DetailsScreenContent(
                         text = product.productName,
                         color = Color.Black,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp,
+                        fontSize = 20.sp,
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -165,9 +165,9 @@ fun DetailsScreenContent(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
-                        text = "$${product.description}",
+                        text = "${product.description}",
                         color = Color.Black,
-                        fontSize = 12.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Light
                     )
                 }
